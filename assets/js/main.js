@@ -57,11 +57,11 @@
     if (!isMobile) {
       // Inject multiple small orbs for desktop (Lava Lamp effect)
       var orbColors = [
-        'rgba(178, 137, 239, 0.4)', 
-        'rgba(150, 97, 255, 0.35)', 
-        'rgba(212, 168, 255, 0.3)',
-        'rgba(100, 50, 200, 0.4)',
-        'rgba(180, 130, 255, 0.35)'
+        'rgba(76, 29, 149, 0.3)',   // Deep violet
+        'rgba(88, 28, 135, 0.35)',  // Deep purple
+        'rgba(59, 7, 100, 0.4)',    // Darkest purple
+        'rgba(107, 33, 168, 0.25)', // Muted purple 
+        'rgba(46, 16, 101, 0.3)'    // Deep indigo
       ];
 
       for (var i = 0; i < 15; i++) {

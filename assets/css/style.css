@@ -42,9 +42,9 @@ body {
 
 /* ── Dynamic Lava Mesh System (Desktop) ── */
 :root {
-  --color-bg1: #08080c; 
+  --color-bg1: #050508; 
   --color-bg2: #0b0b0f;
-  --color-interactive: 178, 137, 239;
+  --color-interactive: 107, 33, 168; /* Deeper Purple */
   --blending: hard-light;
 }
 
