@@ -40,18 +40,18 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* ── Updated Mesh Gradient System (Lava Lamp Style) ── */
+/* ── Updated Mesh Gradient System (Balanced Lava Lamp) ── */
 :root {
-  --color-bg1: #060608; /* Darker bg */
-  --color-bg2: #0b0514;
+  --color-bg1: #08080c; 
+  --color-bg2: #0b0b0f;
   --color1: 178, 137, 239; 
-  --color2: 130, 80, 220;  /* Muted */
-  --color3: 180, 120, 255; 
-  --color4: 80, 40, 180;   /* Deeper */
-  --color5: 150, 90, 255; 
+  --color2: 150, 97, 255;  
+  --color3: 212, 168, 255; 
+  --color4: 100, 50, 200;  
+  --color5: 180, 130, 255; 
   --color-interactive: 178, 137, 239;
   --circle-size: 80%;
-  --blending: soft-light; /* Smoother than hard-light */
+  --blending: hard-light; /* Back to hard-light for visibility */
 }
 
 .gradient-bg {
@@ -65,14 +65,11 @@ body {
   z-index: 0;
 }
 
-.gradient-bg svg {
-  display: none;
-}
-
 .gradients-container {
   filter: url(#goo) blur(40px);
   width: 100%;
   height: 100%;
+  opacity: 0.8; /* Slight fade to avoid glare */
 }
 
 .gradient-bg [class^="g"] {
@@ -81,39 +78,39 @@ body {
   width: var(--circle-size);
   height: var(--circle-size);
   border-radius: 50%;
-  opacity: 0.6; /* Muted brightness */
+  opacity: 1; 
 }
 
 .g1 {
-  background: radial-gradient(circle at center, rgba(var(--color1), 0.5) 0, rgba(var(--color1), 0) 50%) no-repeat;
+  background: radial-gradient(circle at center, rgba(var(--color1), 0.8) 0, rgba(var(--color1), 0) 50%) no-repeat;
   top: 10%;
   left: 10%;
   animation: lavaDrift 25s ease-in-out infinite;
 }
 
 .g2 {
-  background: radial-gradient(circle at center, rgba(var(--color2), 0.5) 0, rgba(var(--color2), 0) 50%) no-repeat;
+  background: radial-gradient(circle at center, rgba(var(--color2), 0.8) 0, rgba(var(--color2), 0) 50%) no-repeat;
   top: 40%;
   left: 50%;
   animation: lavaDrift 30s ease-in-out infinite reverse;
 }
 
 .g3 {
-  background: radial-gradient(circle at center, rgba(var(--color3), 0.5) 0, rgba(var(--color3), 0) 50%) no-repeat;
+  background: radial-gradient(circle at center, rgba(var(--color3), 0.8) 0, rgba(var(--color3), 0) 50%) no-repeat;
   top: 60%;
   left: 20%;
   animation: lavaDrift 35s ease-in-out infinite 2s;
 }
 
 .g4 {
-  background: radial-gradient(circle at center, rgba(var(--color4), 0.5) 0, rgba(var(--color4), 0) 50%) no-repeat;
+  background: radial-gradient(circle at center, rgba(var(--color4), 0.8) 0, rgba(var(--color4), 0) 50%) no-repeat;
   top: 20%;
   left: 60%;
   animation: lavaDrift 40s ease-in-out infinite reverse 5s;
 }
 
 .g5 {
-  background: radial-gradient(circle at center, rgba(var(--color5), 0.5) 0, rgba(var(--color5), 0) 50%) no-repeat;
+  background: radial-gradient(circle at center, rgba(var(--color5), 0.8) 0, rgba(var(--color5), 0) 50%) no-repeat;
   top: 70%;
   left: 70%;
   animation: lavaDrift 28s ease-in-out infinite 1s;
@@ -121,13 +118,13 @@ body {
 
 .interactive {
   position: absolute;
-  background: radial-gradient(circle at center, rgba(var(--color-interactive), 0.6) 0, rgba(var(--color-interactive), 0) 50%) no-repeat;
-  mix-blend-mode: hard-light; /* Keep interactive sharp */
+  background: radial-gradient(circle at center, rgba(var(--color-interactive), 0.8) 0, rgba(var(--color-interactive), 0) 50%) no-repeat;
+  mix-blend-mode: var(--blending);
   width: 800px;
   height: 800px;
   top: -400px;
   left: -400px;
-  opacity: 0.5;
+  opacity: 0.6;
 }
 
 /* ── Noise ── */
