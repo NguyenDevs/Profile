@@ -75,7 +75,7 @@
       
       orb.style.left = Math.random() * 95 + '%';
       
-      var duration = Math.random() * 15 + (isMobile ? 30 : 25); // Slower on mobile
+      var duration = Math.random() * 15 + 25; // Uniform speed: 25s to 40s
       orb.style.setProperty('--dur', duration + 's');
       orb.style.setProperty('--delay', (Math.random() * -40) + 's');
       
