@@ -102,18 +102,11 @@
       }
     };
 
-    var removeListeners = function() {
-      ['click', 'touchstart', 'scroll', 'mousedown', 'keydown'].forEach(function(ev) {
-        document.removeEventListener(ev, runAutoplay);
-      });
-    };
-
     var toggleMusic = function (e) {
       if (e) e.stopPropagation();
       if (music.paused) {
         music.play().then(function() {
           updateState();
-          removeListeners();
         }).catch(function(err) {
           console.warn('[Music] Playback blocked', err);
         });
@@ -124,29 +117,6 @@
     };
 
     btn.addEventListener('click', toggleMusic);
-
-    // Initial play attempt - triggered by ANY interaction
-    var runAutoplay = function (e) {
-      // If user clicked the button directly, let toggleMusic handle it to avoid double-trigger
-      if (e && e.target && e.target.closest('#music-btn')) return;
-      
-      if (!music.paused) {
-        removeListeners();
-        return;
-      }
-      
-      music.play().then(function() {
-        updateState();
-        removeListeners();
-      }).catch(function(err) {
-        // Still blocked, will try again on next interaction
-        updateState();
-      });
-    };
-
-    ['click', 'touchstart', 'scroll', 'mousedown', 'keydown'].forEach(function(ev) {
-      document.addEventListener(ev, runAutoplay);
-    });
     
     // Check state periodically
     setInterval(function() {
