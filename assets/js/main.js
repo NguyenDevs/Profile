@@ -42,10 +42,17 @@
       });
   }
 
+  /* ── Enhanced device detection ── */
+  var checkMobile = function() {
+    return (window.innerWidth <= 1024) || (navigator.maxTouchPoints > 0);
+  };
+  var isMobile = checkMobile();
+  if (isMobile) document.body.classList.add('is-mobile');
+
   /* ── Dynamic background orb injector ── */
   function initDynamicBackground() {
     var container = document.querySelector('.bg-ambient');
-    if (!container) return;
+    if (!container || isMobile) return; // Completely skip orb injection on mobile for max stability
 
     var orbColors = [
       'rgba(147, 51, 234, 0.3)',  // Purple-600 (Darker)
@@ -54,24 +61,18 @@
       'rgba(216, 180, 254, 0.2)'   // Purple-300 (Very light)
     ];
 
-    var isMobile = window.innerWidth <= 768;
-    var orbCount = isMobile ? 4 : 8;
-
-    for (var i = 0; i < orbCount; i++) {
+    for (var i = 0; i < 8; i++) {
       var orb = document.createElement('div');
       orb.className = 'bg-orb';
       
-      var size = isMobile ? (Math.random() * 100 + 80) : (Math.random() * 150 + 100);
+      var size = (Math.random() * 150 + 100);
       orb.style.width = size + 'px';
       orb.style.height = size + 'px';
       orb.style.background = orbColors[Math.floor(Math.random() * orbColors.length)];
       
       orb.style.left = Math.random() * 90 + '%';
-      if (isMobile) {
-        orb.style.top = Math.random() * 80 + '%'; // Scatter them across the height on mobile
-      }
       
-      var duration = Math.random() * 15 + (isMobile ? 25 : 20); // Slower on mobile
+      var duration = Math.random() * 15 + 20;
       orb.style.setProperty('--dur', duration + 's');
       orb.style.setProperty('--delay', (Math.random() * -35) + 's');
       
