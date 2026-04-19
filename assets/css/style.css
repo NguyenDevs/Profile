@@ -162,6 +162,30 @@ body {
   100% { background-position: 0%   50%; opacity: 0.6; }
 }
 
+@keyframes subtlePulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+}
+
+/* ── Mobile Optimization: Static & Light Animation ── */
+@media (max-width: 768px) {
+  .bg-ambient::before, 
+  .bg-ambient::after {
+    animation: none; /* Make orbs static */
+  }
+  
+  .bg-aurora {
+    animation: subtlePulse 10s ease-in-out infinite; /* Very light pulse instead of sweep */
+    background-position: 50% 50%;
+  }
+
+  .bg-orb {
+    animation: none !important; /* Stop lava lamp movement on mobile */
+    opacity: 0.25 !important;   /* Keep them visible but static and subtle */
+    transform: translateY(-20vh) !important; /* Position them somewhere visible since they don't rise */
+  }
+}
+
 /* ── Layout ── */
 .wrapper {
   position: relative;

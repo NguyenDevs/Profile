@@ -67,6 +67,9 @@
       orb.style.background = orbColors[Math.floor(Math.random() * orbColors.length)];
       
       orb.style.left = Math.random() * 90 + '%';
+      if (isMobile) {
+        orb.style.top = Math.random() * 80 + '%'; // Scatter them across the height on mobile
+      }
       
       var duration = Math.random() * 15 + (isMobile ? 25 : 20); // Slower on mobile
       orb.style.setProperty('--dur', duration + 's');
