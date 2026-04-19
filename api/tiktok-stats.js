@@ -57,7 +57,7 @@ export default async function handler(request) {
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'Cache-Control': 's-maxage=43200, stale-while-revalidate' 
+        'Cache-Control': 's-maxage=86400, stale-while-revalidate' 
       }
     });
   } catch (e) {
