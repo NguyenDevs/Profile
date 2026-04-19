@@ -54,35 +54,36 @@
     var container = document.querySelector('.gradients-container');
     if (!container) return;
 
+    // Use fewer orbs on mobile for performance
+    var orbCount = isMobile ? 8 : 15;
+    var orbColors = [
+      'rgba(76, 29, 149, 0.3)',   // Deep violet
+      'rgba(88, 28, 135, 0.35)',  // Deep purple
+      'rgba(59, 7, 100, 0.4)',    // Darkest purple
+      'rgba(107, 33, 168, 0.25)', // Muted purple 
+      'rgba(46, 16, 101, 0.3)'    // Deep indigo
+    ];
+
+    for (var i = 0; i < orbCount; i++) {
+      var orb = document.createElement('div');
+      orb.className = 'bg-orb';
+      
+      var size = Math.random() * (isMobile ? 150 : 200) + (isMobile ? 100 : 150);
+      orb.style.width = size + 'px';
+      orb.style.height = size + 'px';
+      orb.style.background = orbColors[Math.floor(Math.random() * orbColors.length)];
+      
+      orb.style.left = Math.random() * 95 + '%';
+      
+      var duration = Math.random() * 15 + (isMobile ? 30 : 25); // Slower on mobile
+      orb.style.setProperty('--dur', duration + 's');
+      orb.style.setProperty('--delay', (Math.random() * -40) + 's');
+      
+      container.appendChild(orb);
+    }
+
+    // Interactive mouse follow - DESKTOP ONLY
     if (!isMobile) {
-      // Inject multiple small orbs for desktop (Lava Lamp effect)
-      var orbColors = [
-        'rgba(76, 29, 149, 0.3)',   // Deep violet
-        'rgba(88, 28, 135, 0.35)',  // Deep purple
-        'rgba(59, 7, 100, 0.4)',    // Darkest purple
-        'rgba(107, 33, 168, 0.25)', // Muted purple 
-        'rgba(46, 16, 101, 0.3)'    // Deep indigo
-      ];
-
-      for (var i = 0; i < 15; i++) {
-        var orb = document.createElement('div');
-        orb.className = 'bg-orb';
-        
-        var size = Math.random() * 200 + 150; // Random small/medium sizes
-        orb.style.width = size + 'px';
-        orb.style.height = size + 'px';
-        orb.style.background = orbColors[Math.floor(Math.random() * orbColors.length)];
-        
-        orb.style.left = Math.random() * 95 + '%';
-        
-        var duration = Math.random() * 15 + 25; // 25s to 40s (Slow drift)
-        orb.style.setProperty('--dur', duration + 's');
-        orb.style.setProperty('--delay', (Math.random() * -40) + 's');
-        
-        container.appendChild(orb);
-      }
-
-      // Interactive mouse follow
       var interBubble = document.querySelector('.interactive');
       if (interBubble) {
         var curX = 0, curY = 0, tgX = 0, tgY = 0;

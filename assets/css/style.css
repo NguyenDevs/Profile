@@ -112,22 +112,14 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-/* ── Mobile Optimization (Static) ── */
+/* ── Mobile Optimization (Dynamic permitted) ── */
 @media (max-width: 1024px), screen and (max-width: 1024px) {
-  .gradient-bg {
-    background: radial-gradient(circle at 20% 20%, #1a0533 0%, #0b0b0f 100%) !important;
-    animation: none !important;
-  }
-  .gradients-container, .bg-noise { 
+  .interactive { 
     display: none !important; 
   }
 }
 
-body.is-mobile .gradient-bg {
-  background: radial-gradient(circle at 20% 20%, #1a0533 0%, #0b0b0f 100%) !important;
-}
-body.is-mobile .gradients-container,
-body.is-mobile .bg-noise {
+body.is-mobile .interactive {
   display: none !important;
 }
 
