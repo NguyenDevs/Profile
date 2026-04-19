@@ -30,6 +30,7 @@ body {
   min-height: 100dvh;
   overflow-x: hidden;
   position: relative;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* ── Dynamic Ambient Background System ── */
@@ -39,6 +40,7 @@ body {
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
+  transform: translateZ(0);
 }
 
 /* Orb 1 – top-left purple, large slow loop */
@@ -53,6 +55,7 @@ body {
   border-radius: 50%;
   animation: orbFloat1 18s ease-in-out infinite;
   filter: blur(40px);
+  will-change: transform;
 }
 
 /* Orb 2 – bottom-right lavender, counter-loop */
@@ -67,18 +70,20 @@ body {
   border-radius: 50%;
   animation: orbFloat2 22s ease-in-out infinite;
   filter: blur(50px);
+  will-change: transform;
 }
 
 /* Extra orbs via .bg-orb children (injected by JS) */
 .bg-orb {
   position: absolute;
   bottom: -20%;
-  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+  border-radius: 50%;
   filter: blur(50px);
   opacity: 0;
   mix-blend-mode: screen;
   pointer-events: none;
   animation: lavaRise var(--dur, 25s) var(--delay, 0s) linear infinite;
+  will-change: transform, opacity;
 }
 
 /* Shimmer aurora sweep */
@@ -87,16 +92,18 @@ body {
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  transform: translateZ(0);
   background: linear-gradient(
     120deg,
     transparent 0%,
-    rgba(178,137,239,0.04) 30%,
-    rgba(150,97,255,0.06) 50%,
-    rgba(212,168,255,0.04) 70%,
+    rgba(178,137,239,0.03) 30%,
+    rgba(150,97,255,0.05) 50%,
+    rgba(212,168,255,0.03) 70%,
     transparent 100%
   );
   background-size: 200% 200%;
-  animation: auroraSweep 14s ease-in-out infinite;
+  animation: auroraSweep 18s ease-in-out infinite;
+  will-change: opacity;
 }
 
 /* Noise grain overlay */
@@ -105,9 +112,15 @@ body {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
-  background-size: 180px;
-  opacity: 0.5;
+  transform: translateZ(0);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
+  background-size: 200px;
+  opacity: 0.4;
+}
+
+/* Hide SVG noise on low-power/mobile if still stuttery (optional) */
+@media (max-width: 768px) {
+  .bg-noise { opacity: 0.2; background-size: 150px; }
 }
 
 /* ── Orb keyframes ── */
@@ -115,25 +128,34 @@ body {
   0% {
     transform: translateY(0) scale(1) rotate(0deg);
     opacity: 0;
-    border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
   }
   15% {
-    opacity: 0.4;
+    opacity: 0.3;
   }
   50% {
-    transform: translateY(-50vh) scale(1.2) rotate(180deg);
-    opacity: 0.6;
-    border-radius: 60% 40% 30% 70% / 50% 30% 70% 50%;
+    transform: translateY(-50vh) scale(1.15) rotate(180deg);
+    opacity: 0.5;
   }
   85% {
-    opacity: 0.4;
+    opacity: 0.3;
   }
   100% {
     transform: translateY(-120vh) scale(1) rotate(360deg);
     opacity: 0;
-    border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
   }
 }
+
+@keyframes orbFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(5%, 10%) scale(1.05); }
+  66% { transform: translate(-5%, 5%) scale(0.95); }
+}
+
+@keyframes orbFloat2 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(-8%, -12%) rotate(10deg) scale(1.1); }
+}
+
 @keyframes auroraSweep {
   0%   { background-position: 0%   50%; opacity: 0.6; }
   50%  { background-position: 100% 50%; opacity: 1;   }
@@ -800,8 +822,8 @@ body {
 .music-waves span:nth-child(3) { height: 16px; animation: musicWaveInside 0.7s infinite alternate 0.4s; }
 
 @keyframes musicWaveInside {
-  0%   { height: 6px;  transform: scaleY(0.4); }
-  100% { height: 20px; transform: scaleY(1);   }
+  0%   { transform: scaleY(0.4); }
+  100% { transform: scaleY(1);   }
 }
 
 .icon-muted {

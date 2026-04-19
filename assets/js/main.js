@@ -54,18 +54,21 @@
       'rgba(216, 180, 254, 0.2)'   // Purple-300 (Very light)
     ];
 
-    for (var i = 0; i < 8; i++) {
+    var isMobile = window.innerWidth <= 768;
+    var orbCount = isMobile ? 4 : 8;
+
+    for (var i = 0; i < orbCount; i++) {
       var orb = document.createElement('div');
       orb.className = 'bg-orb';
       
-      var size = Math.random() * 150 + 100; // 100px to 250px (not too big, not too small)
+      var size = isMobile ? (Math.random() * 100 + 80) : (Math.random() * 150 + 100);
       orb.style.width = size + 'px';
       orb.style.height = size + 'px';
       orb.style.background = orbColors[Math.floor(Math.random() * orbColors.length)];
       
       orb.style.left = Math.random() * 90 + '%';
       
-      var duration = Math.random() * 15 + 20; // 20s to 35s (Slow drift)
+      var duration = Math.random() * 15 + (isMobile ? 25 : 20); // Slower on mobile
       orb.style.setProperty('--dur', duration + 's');
       orb.style.setProperty('--delay', (Math.random() * -35) + 's');
       
