@@ -49,35 +49,31 @@
   var isMobile = checkMobile();
   if (isMobile) document.body.classList.add('is-mobile');
 
-  /* ── Dynamic background orb injector ── */
+  /* ── Dynamic background (Mesh Gradient Interactive) ── */
   function initDynamicBackground() {
-    var container = document.querySelector('.bg-ambient');
-    if (!container || isMobile) return; // Completely skip orb injection on mobile for max stability
+    if (isMobile) return;
 
-    var orbColors = [
-      'rgba(147, 51, 234, 0.3)',  // Purple-600 (Darker)
-      'rgba(192, 132, 252, 0.25)', // Purple-400 (Ligher)
-      'rgba(168, 85, 247, 0.3)',  // Purple-500
-      'rgba(216, 180, 254, 0.2)'   // Purple-300 (Very light)
-    ];
+    var interBubble = document.querySelector('.interactive');
+    if (!interBubble) return;
 
-    for (var i = 0; i < 8; i++) {
-      var orb = document.createElement('div');
-      orb.className = 'bg-orb';
-      
-      var size = (Math.random() * 150 + 100);
-      orb.style.width = size + 'px';
-      orb.style.height = size + 'px';
-      orb.style.background = orbColors[Math.floor(Math.random() * orbColors.length)];
-      
-      orb.style.left = Math.random() * 90 + '%';
-      
-      var duration = Math.random() * 15 + 20;
-      orb.style.setProperty('--dur', duration + 's');
-      orb.style.setProperty('--delay', (Math.random() * -35) + 's');
-      
-      container.appendChild(orb);
+    var curX = 0;
+    var curY = 0;
+    var tgX = 0;
+    var tgY = 0;
+
+    function move() {
+      curX += (tgX - curX) / 20;
+      curY += (tgY - curY) / 20;
+      interBubble.style.transform = 'translate(' + Math.round(curX) + 'px, ' + Math.round(curY) + 'px)';
+      requestAnimationFrame(move);
     }
+
+    window.addEventListener('mousemove', function (event) {
+      tgX = event.clientX;
+      tgY = event.clientY;
+    });
+
+    move();
   }
 
 
