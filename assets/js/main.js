@@ -49,31 +49,56 @@
   var isMobile = checkMobile();
   if (isMobile) document.body.classList.add('is-mobile');
 
-  /* ── Dynamic background (Mesh Gradient Interactive) ── */
+  /* ── Dynamic background (Lava Mesh) ── */
   function initDynamicBackground() {
-    if (isMobile) return;
+    var container = document.querySelector('.gradients-container');
+    if (!container) return;
 
-    var interBubble = document.querySelector('.interactive');
-    if (!interBubble) return;
+    if (!isMobile) {
+      // Inject multiple small orbs for desktop (Lava Lamp effect)
+      var orbColors = [
+        'rgba(178, 137, 239, 0.4)', 
+        'rgba(150, 97, 255, 0.35)', 
+        'rgba(212, 168, 255, 0.3)',
+        'rgba(100, 50, 200, 0.4)',
+        'rgba(180, 130, 255, 0.35)'
+      ];
 
-    var curX = 0;
-    var curY = 0;
-    var tgX = 0;
-    var tgY = 0;
+      for (var i = 0; i < 15; i++) {
+        var orb = document.createElement('div');
+        orb.className = 'bg-orb';
+        
+        var size = Math.random() * 200 + 150; // Random small/medium sizes
+        orb.style.width = size + 'px';
+        orb.style.height = size + 'px';
+        orb.style.background = orbColors[Math.floor(Math.random() * orbColors.length)];
+        
+        orb.style.left = Math.random() * 95 + '%';
+        
+        var duration = Math.random() * 15 + 25; // 25s to 40s (Slow drift)
+        orb.style.setProperty('--dur', duration + 's');
+        orb.style.setProperty('--delay', (Math.random() * -40) + 's');
+        
+        container.appendChild(orb);
+      }
 
-    function move() {
-      curX += (tgX - curX) / 20;
-      curY += (tgY - curY) / 20;
-      interBubble.style.transform = 'translate(' + Math.round(curX) + 'px, ' + Math.round(curY) + 'px)';
-      requestAnimationFrame(move);
+      // Interactive mouse follow
+      var interBubble = document.querySelector('.interactive');
+      if (interBubble) {
+        var curX = 0, curY = 0, tgX = 0, tgY = 0;
+        function move() {
+          curX += (tgX - curX) / 20;
+          curY += (tgY - curY) / 20;
+          interBubble.style.transform = 'translate(' + Math.round(curX) + 'px, ' + Math.round(curY) + 'px)';
+          requestAnimationFrame(move);
+        }
+        window.addEventListener('mousemove', function (e) {
+          tgX = e.clientX;
+          tgY = e.clientY;
+        });
+        move();
+      }
     }
-
-    window.addEventListener('mousemove', function (event) {
-      tgX = event.clientX;
-      tgY = event.clientY;
-    });
-
-    move();
   }
 
 
