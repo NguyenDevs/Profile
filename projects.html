@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- ── Charset & Viewport ── -->
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+  <!-- ── Primary Meta ── -->
+  <title>MY PROJECTS — NGUYENDEVS</title>
+  <meta name="description" content="Explore the projects and creations of NguyenDevs. Member of MixelArt.">
+  <meta name="theme-color" content="#0b0b0f">
+
+  <!-- ── Open Graph ── -->
+  <meta property="og:title"       content="MY PROJECTS — NGUYENDEVS">
+  <meta property="og:description" content="Explore the projects and creations of NguyenDevs. Member of MixelArt.">
+  <meta property="og:image"       content="assets/images/og-image.png">
+  <meta property="og:url"         content="./projects.html">
+  <meta property="og:type"        content="website">
+
+  <!-- ── Google Fonts ── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=Rubik:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- ── Page Stylesheet ── -->
+  <link rel="stylesheet" href="assets/css/style.css">
+  
+  <style>
+    .projects-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 24px 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .projects-header {
+      text-align: center;
+      margin-bottom: 60px;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .projects-header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff 0%, var(--accent3) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      width: 100%;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .project-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 28px;
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(135deg, var(--accent) 0%, transparent 100%);
+      opacity: 0;
+      transition: opacity 0.5s;
+      z-index: 0;
+    }
+
+    .project-card:hover {
+      transform: translateY(-12px);
+      border-color: var(--border-hover);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.4), 0 0 20px rgba(178,137,239,0.1);
+    }
+    
+    .project-card:hover::before {
+      opacity: 0.08;
+    }
+
+    /* Platform Badge */
+    .platform-badge {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      padding: 6px 12px;
+      border-radius: 100px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 2;
+      transition: all 0.3s ease;
+      cursor: default;
+    }
+    .platform-badge svg { width: 12px; height: 12px; fill: currentColor; }
+
+    /* Specific Badge Glows */
+    .badge-android:hover {
+      color: #3DDC84;
+      background: rgba(61, 220, 132, 0.1);
+      border-color: rgba(61, 220, 132, 0.4);
+      box-shadow: 0 0 15px rgba(61, 220, 132, 0.2);
+    }
+    .badge-plugin:hover {
+      color: #ff9f43;
+      background: rgba(255, 159, 67, 0.1);
+      border-color: rgba(255, 159, 67, 0.4);
+      box-shadow: 0 0 15px rgba(255, 159, 67, 0.2);
+    }
+
+    .project-icon {
+      font-size: 2.8rem;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
+      filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));
+    }
+
+    .project-content {
+      flex: 1;
+      position: relative;
+      z-index: 1;
+    }
+
+    .project-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    .project-desc {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 24px;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      font-weight: 300;
+    }
+
+    .project-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .lang-tag {
+      font-size: 0.6rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 5px 12px;
+      background: rgba(178, 137, 239, 0.1);
+      color: var(--accent);
+      border-radius: 8px;
+      border: 1px solid rgba(178, 137, 239, 0.15);
+      transition: all 0.3s;
+    }
+    .project-card:hover .lang-tag {
+      background: rgba(178, 137, 239, 0.2);
+      border-color: rgba(178, 137, 239, 0.3);
+      color: #fff;
+    }
+
+    .repo-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      color: #fff;
+      text-decoration: none;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.4s;
+      position: relative;
+      z-index: 1;
+    }
+
+    .repo-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 0 25px rgba(178, 137, 239, 0.4);
+      transform: scale(1.03);
+    }
+    .repo-btn svg { transition: transform 0.3s; }
+    .repo-btn:hover svg { transform: translate(2px, -2px); }
+
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+      .projects-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    }
+
+    @media (max-width: 640px) {
+      .projects-grid { grid-template-columns: 1fr; }
+      .projects-container { padding: 40px 20px 140px; }
+      .project-card { padding: 32px; border-radius: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- ── Background ── -->
+  <div class="gradient-bg">
+    <div class="gradients-container">
+      <div class="interactive"></div>
+    </div>
+  </div>
+
+  <div class="projects-container">
+    <header class="projects-header">
+      <h1>PROJECTS</h1>
+      <p style="color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.72rem; font-weight: 600;">Software Engineering & Creative Coding</p>
+    </header>
+
+    <div class="projects-grid">
+      <!-- FreesiaII -->
+      <div class="project-card">
+        <div class="platform-badge badge-plugin">
+          <svg viewBox="0 0 24 24"><path d="M4 2h16a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm2 2v2h2V4H6zm0 4v2h2V8H6zm0 4v2h2v-2H6zm0 4v2h2v-2H6zM10 4v2h4V4h-4zm0 4v2h4V8h-4zm0 4v2h4v-2h-4zm0 4v2h4v-2h-4zm6-12v2h2V4h-2zm0 4v2h2V8h-2zm0 4v2h2v-2h-2zm0 4v2h2v-2h-2z"/></svg>
+          Plugin
+        </div>
+        <div class="project-icon">🌸</div>
+        <div class="project-content">
+          <h3>FreesiaII</h3>
+          <p class="project-desc">A high-performance server-side proxy plugin designed to synchronize YSM custom player models across Minecraft BungeeCord/Velocity networks.</p>
+        </div>
+        <div class="project-meta">
+          <span class="lang-tag">Java</span>
+        </div>
+        <a href="https://github.com/NguyenDevs/FreesiaII" target="_blank" rel="noopener noreferrer" class="repo-btn">
+          View Repository <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+        </a>
+      </div>
+
+      <!-- EcoLens -->
+      <div class="project-card">
+        <div class="platform-badge badge-android">
+          <svg viewBox="0 0 24 24"><path d="M17.5 12a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm-11 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm1.5-5.5a2.5 2.5 0 0 0-2.5 2.5v4a2.5 2.5 0 0 0 2.5 2.5H16a2.5 2.5 0 0 0 2.5-2.5v-4a2.5 2.5 0 0 0-2.5-2.5h-8zM7.13 1.13c-.33-.33-.87-.33-1.2 0s-.33.87 0 1.2L7.6 4.01c-.4.44-.72.93-.95 1.49H17.35c-.23-.55-.55-1.05-.95-1.49l1.67-1.68c.33-.33.33-.87 0-1.2s-.87-.33-1.2 0L15.11 2.92a7.6 7.6 0 0 0-3.11-.64 7.6 7.6 0 0 0-3.11.64L7.13 1.13z"/></svg>
+          Android
+        </div>
+        <div class="project-icon">🌿</div>
+        <div class="project-content">
+          <h3>EcoLens</h3>
+          <p class="project-desc">A professional Android application that utilizes Gemini AI and biodiversity databases for instant identification of plants and animals.</p>
+        </div>
+        <div class="project-meta">
+          <span class="lang-tag">Kotlin</span>
+          <span class="lang-tag">JS</span>
+          <span class="lang-tag">C++</span>
+        </div>
+        <a href="https://github.com/NguyenDevs/EcoLens" target="_blank" rel="noopener noreferrer" class="repo-btn">
+          View Repository <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+        </a>
+      </div>
+
+      <!-- Sudden-Death -->
+      <div class="project-card">
+        <div class="platform-badge badge-plugin">
+          <svg viewBox="0 0 24 24"><path d="M4 2h16a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm2 2v2h2V4H6zm0 4v2h2V8H6zm0 4v2h2v-2H6zm0 4v2h2v-2H6zM10 4v2h4V4h-4zm0 4v2h4V8h-4zm0 4v2h4v-2h-4zm0 4v2h4v-2h-4zm6-12v2h2V4h-2zm0 4v2h2V8h-2zm0 4v2h2v-2h-2zm0 4v2h2v-2h-2z"/></svg>
+          Plugin
+        </div>
+        <div class="project-icon">💀</div>
+        <div class="project-content">
+          <h3>Sudden-Death</h3>
+          <p class="project-desc">A specialized Minecraft survival plugin that pushes game difficulty to the absolute limit by dynamically enhancing mob AI and attributes.</p>
+        </div>
+        <div class="project-meta">
+          <span class="lang-tag">Java</span>
+        </div>
+        <a href="https://github.com/NguyenDevs/Sudden-Death" target="_blank" rel="noopener noreferrer" class="repo-btn">
+          View Repository <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+        </a>
+      </div>
+
+      <!-- Orbitalstrike -->
+      <div class="project-card">
+        <div class="platform-badge badge-plugin">
+          <svg viewBox="0 0 24 24"><path d="M4 2h16a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm2 2v2h2V4H6zm0 4v2h2V8H6zm0 4v2h2v-2H6zm0 4v2h2v-2H6zM10 4v2h4V4h-4zm0 4v2h4V8h-4zm0 4v2h4v-2h-4zm0 4v2h4v-2h-4zm6-12v2h2V4h-2zm0 4v2h2V8h-2zm0 4v2h2v-2h-2zm0 4v2h2v-2h-2z"/></svg>
+          Plugin
+        </div>
+        <div class="project-icon">🛰️</div>
+        <div class="project-content">
+          <h3>Orbitalstrike</h3>
+          <p class="project-desc">A complex orbital artillery system for Minecraft servers, featuring advanced targeting mechanisms and highly destructive visual effects.</p>
+        </div>
+        <div class="project-meta">
+          <span class="lang-tag">Java</span>
+        </div>
+        <a href="https://github.com/NguyenDevs/Orbitalstrike" target="_blank" rel="noopener noreferrer" class="repo-btn">
+          View Repository <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Bottom Navigation ── -->
+  <nav class="bottom-nav" aria-label="Main Navigation">
+    <a href="index.html" class="nav-item">Overview</a>
+    <a href="projects.html" class="nav-item active">My Projects</a>
+    <a href="info.html" class="nav-item">Info</a>
+  </nav>
+
+  <script src="assets/js/main.js" defer></script>
+</body>
+</html>
