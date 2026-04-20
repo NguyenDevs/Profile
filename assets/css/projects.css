@@ -256,13 +256,13 @@
   .projects-grid::-webkit-scrollbar { display: none; }
 
   .project-card {
-    flex: 0 0 72vw; /* Reduced width */
-    margin: 0 14vw; /* Centering with side visibility */
+    flex: 0 0 68vw; /* Further reduced width */
+    margin: 0 16vw;
     scroll-snap-align: center;
-    min-height: 420px; /* More compact height */
-    max-height: 60vh;
-    padding: 32px 24px 24px;
-    border-radius: 32px;
+    min-height: 360px; /* Even shorter */
+    max-height: 50vh;
+    padding: 24px 20px 20px;
+    border-radius: 28px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -273,54 +273,55 @@
   }
 
   .project-icon {
-    width: 64px;
-    height: 64px;
-    font-size: 2.2rem;
-    margin-bottom: 16px;
+    width: 56px;
+    height: 56px;
+    font-size: 1.8rem;
+    margin-bottom: 12px;
   }
 
   .project-card h3 {
-    font-size: 1.3rem;
-    margin-bottom: 8px;
+    font-size: 1.2rem;
+    margin-bottom: 6px;
   }
 
   .project-desc {
-    font-size: 0.85rem;
-    margin-bottom: 16px;
-    -webkit-line-clamp: 4;
-    line-height: 1.5;
-    color: rgba(240, 237, 247, 0.5);
+    font-size: 0.82rem;
+    margin-bottom: 12px;
+    -webkit-line-clamp: 3;
+    line-height: 1.4;
+    color: rgba(240, 237, 247, 0.4);
   }
 
   .project-meta {
     justify-content: center;
-    margin-bottom: 20px;
-    gap: 8px;
+    margin-bottom: 16px;
+    gap: 6px;
   }
 
   .repo-btn {
     width: 100%;
-    padding: 14px;
-    font-size: 0.82rem;
-    border-radius: 16px;
+    padding: 12px;
+    font-size: 0.8rem;
+    border-radius: 12px;
   }
 
   .platform-badge {
-    top: 20px;
-    right: 20px;
-    font-size: 0.6rem;
-    padding: 5px 10px;
+    top: 16px;
+    right: 16px;
+    font-size: 0.55rem;
+    padding: 4px 10px;
   }
 }
 
 @media (max-width: 480px) {
-  .projects-header h1 { font-size: 2rem; }
+  .projects-header h1 { font-size: 1.8rem; }
   .project-card { 
-    flex: 0 0 75vw; 
-    margin: 0 12.5vw; 
-    padding: 28px 20px 20px;
-    min-height: 400px;
+    flex: 0 0 70vw; 
+    margin: 0 15vw; 
+    padding: 24px 16px 16px;
+    min-height: 340px;
   }
 }
+
 
 
