@@ -989,7 +989,12 @@ html { scroll-behavior: smooth; }
 }
 
 .nav-item:hover { color: #fff; background: rgba(255, 255, 255, 0.08); }
-.nav-item.active { color: #fff; background: rgba(178, 137, 239, 0.15); box-shadow: inset 0 0 0 1px rgba(178, 137, 239, 0.2); }
+.nav-item.active { 
+  color: #fff; 
+  background: rgba(178, 137, 239, 0.15); 
+  box-shadow: inset 0 0 0 1px rgba(178, 137, 239, 0.2); 
+  transform: scale(0.92);
+}
 
 /* Mobile: Vertical Expansion */
 @media (max-width: 1024px) {
