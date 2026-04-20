@@ -134,12 +134,37 @@
     }
 
     .project-icon {
-      font-size: 2.8rem;
-      margin-bottom: 24px;
       position: relative;
+      width: 90px;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.0rem;
+      margin-bottom: 30px;
       z-index: 1;
-      filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));
     }
+
+    .icon-glow {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      filter: blur(20px);
+      opacity: 0.2;
+      animation: morphGlow 8s linear infinite;
+    }
+
+    @keyframes morphGlow {
+      0%, 100% { border-radius: 40% 60% 70% 30% / 40% 40% 60% 50%; }
+      33% { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; }
+      66% { border-radius: 40% 60% 30% 70% / 60% 30% 70% 40%; }
+    }
+
+    /* Individual Glow Colors - Centered */
+    .glow-freesia { background: radial-gradient(circle, #fcd1d8, #ff69b4); }
+    .glow-ecolens { background: radial-gradient(circle, #d1ff98, #56ab2f); }
+    .glow-sudden  { background: radial-gradient(circle, #e0e0e0, #9370db); }
+    .glow-orbital { background: radial-gradient(circle, #b9f2ff, #3a7bd5); }
 
     .project-content {
       flex: 1;
@@ -257,7 +282,10 @@
           <svg viewBox="0 0 24 24"><path d="M4 2h16a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm2 2v2h2V4H6zm0 4v2h2V8H6zm0 4v2h2v-2H6zm0 4v2h2v-2H6zM10 4v2h4V4h-4zm0 4v2h4V8h-4zm0 4v2h4v-2h-4zm0 4v2h4v-2h-4zm6-12v2h2V4h-2zm0 4v2h2V8h-2zm0 4v2h2v-2h-2zm0 4v2h2v-2h-2z"/></svg>
           Plugin
         </div>
-        <div class="project-icon">🌸</div>
+        <div class="project-icon">
+          <div class="icon-glow glow-freesia"></div>
+          🌸
+        </div>
         <div class="project-content">
           <h3>FreesiaII</h3>
           <p class="project-desc">A high-performance server-side proxy plugin designed to synchronize YSM custom player models across Minecraft BungeeCord/Velocity networks.</p>
@@ -276,7 +304,10 @@
           <svg viewBox="0 0 24 24"><path d="M17.5 12a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm-11 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm1.5-5.5a2.5 2.5 0 0 0-2.5 2.5v4a2.5 2.5 0 0 0 2.5 2.5H16a2.5 2.5 0 0 0 2.5-2.5v-4a2.5 2.5 0 0 0-2.5-2.5h-8zM7.13 1.13c-.33-.33-.87-.33-1.2 0s-.33.87 0 1.2L7.6 4.01c-.4.44-.72.93-.95 1.49H17.35c-.23-.55-.55-1.05-.95-1.49l1.67-1.68c.33-.33.33-.87 0-1.2s-.87-.33-1.2 0L15.11 2.92a7.6 7.6 0 0 0-3.11-.64 7.6 7.6 0 0 0-3.11.64L7.13 1.13z"/></svg>
           Android
         </div>
-        <div class="project-icon">🌿</div>
+        <div class="project-icon">
+          <div class="icon-glow glow-ecolens"></div>
+          🌿
+        </div>
         <div class="project-content">
           <h3>EcoLens</h3>
           <p class="project-desc">A professional Android application that utilizes Gemini AI and biodiversity databases for instant identification of plants and animals.</p>
@@ -297,7 +328,10 @@
           <svg viewBox="0 0 24 24"><path d="M4 2h16a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm2 2v2h2V4H6zm0 4v2h2V8H6zm0 4v2h2v-2H6zm0 4v2h2v-2H6zM10 4v2h4V4h-4zm0 4v2h4V8h-4zm0 4v2h4v-2h-4zm0 4v2h4v-2h-4zm6-12v2h2V4h-2zm0 4v2h2V8h-2zm0 4v2h2v-2h-2zm0 4v2h2v-2h-2z"/></svg>
           Plugin
         </div>
-        <div class="project-icon">💀</div>
+        <div class="project-icon">
+          <div class="icon-glow glow-sudden"></div>
+          💀
+        </div>
         <div class="project-content">
           <h3>Sudden-Death</h3>
           <p class="project-desc">A specialized Minecraft survival plugin that pushes game difficulty to the absolute limit by dynamically enhancing mob AI and attributes.</p>
@@ -316,7 +350,10 @@
           <svg viewBox="0 0 24 24"><path d="M4 2h16a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm2 2v2h2V4H6zm0 4v2h2V8H6zm0 4v2h2v-2H6zm0 4v2h2v-2H6zM10 4v2h4V4h-4zm0 4v2h4V8h-4zm0 4v2h4v-2h-4zm0 4v2h4v-2h-4zm6-12v2h2V4h-2zm0 4v2h2V8h-2zm0 4v2h2v-2h-2zm0 4v2h2v-2h-2z"/></svg>
           Plugin
         </div>
-        <div class="project-icon">🛰️</div>
+        <div class="project-icon">
+          <div class="icon-glow glow-orbital"></div>
+          🛰️
+        </div>
         <div class="project-content">
           <h3>Orbitalstrike</h3>
           <p class="project-desc">A complex orbital artillery system for Minecraft servers, featuring advanced targeting mechanisms and highly destructive visual effects.</p>
