@@ -1,6 +1,18 @@
 {
   "version": 2,
   "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "projects.nguyendevs.io.vn" }],
+      "destination": "/projects"
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "info.nguyendevs.io.vn" }],
+      "destination": "/info"
+    }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",
