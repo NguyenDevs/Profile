@@ -1,5 +1,5 @@
 /* ============================================================
-   NguyenDevs · Linkbio — Main JavaScript
+   NguyenDevs · Profile — Main JavaScript
    ============================================================ */
 
 (function () {
