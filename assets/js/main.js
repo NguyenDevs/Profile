@@ -161,8 +161,39 @@
     }, 1000);
   }
 
+  /* ── Bottom Navigation ── */
+  function initNavigation() {
+    var nav = document.getElementById('bottom-nav');
+    var toggle = document.getElementById('nav-toggle');
+    if (!nav || !toggle) return;
+
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      nav.classList.toggle('expanded');
+    });
+
+    // Close when clicking anywhere outside
+    document.addEventListener('click', function () {
+      nav.classList.remove('expanded');
+    });
+
+    // Close when a nav item is clicked
+    var navItems = nav.querySelectorAll('.nav-item');
+    navItems.forEach(function (item) {
+      item.addEventListener('click', function () {
+        nav.classList.remove('expanded');
+      });
+    });
+
+    // Prevent closing when clicking inside the nav container (except items)
+    nav.addEventListener('click', function (e) {
+      e.stopPropagation();
+    });
+  }
+
   /* ── Initializations ── */
-  initMusicPlayer(); // Run immediately since script is at bottom
+  initMusicPlayer();
+  initNavigation();
 
   /* ── DOM Ready ── */
   document.addEventListener('DOMContentLoaded', function () {
