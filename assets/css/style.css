@@ -44,7 +44,7 @@ body {
 :root {
   --color-bg1: #050508; 
   --color-bg2: #0b0b0f;
-  --color-interactive: 107, 33, 168; /* Deeper Purple */
+  --color-interactive: 107, 33, 168;
   --blending: hard-light;
 }
 
@@ -112,7 +112,6 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-/* ── Mobile Optimization (Dynamic permitted) ── */
 @media (max-width: 1024px), screen and (max-width: 1024px) {
   .interactive { 
     display: none !important; 
@@ -135,7 +134,6 @@ html { scroll-behavior: smooth; }
   padding: 0 0 60px;
 }
 
-/* ── Desktop Layout Overrides ── */
 @media (min-width: 1025px) {
   .wrapper {
     max-width: 1000px;
@@ -802,7 +800,6 @@ html { scroll-behavior: smooth; }
   position: relative;
   padding: 0;
   outline: none;
-  /* Fix for square artifacts on circular backdrop-filters */
   mask-image: radial-gradient(circle, white 100%, transparent 100%);
   -webkit-mask-image: -webkit-radial-gradient(circle, white 100%, transparent 100%);
 }
@@ -823,9 +820,8 @@ html { scroll-behavior: smooth; }
   justify-content: center;
 }
 
-/* Equalizer waves inside button */
 .music-waves {
-  display: none; /* Only show when playing */
+  display: none;
   gap: 3.5px;
   height: 22px;
   align-items: center;
@@ -853,7 +849,7 @@ html { scroll-behavior: smooth; }
   width: 24px;
   height: 24px;
   stroke: currentColor;
-  display: none; /* Based on state */
+  display: none;
 }
 
 .icon-muted .slash-line {
@@ -861,7 +857,6 @@ html { scroll-behavior: smooth; }
   stroke-width: 2.5;
 }
 
-/* Logic for showing icons based on state */
 .music-toggle.playing {
   border-color: var(--accent);
   background: rgba(178, 137, 239, 0.12);

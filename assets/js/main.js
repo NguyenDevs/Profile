@@ -20,7 +20,6 @@
     fetch(TIKTOK_WORKER_URL)
       .then(function (res) { return res.json(); })
       .then(function (data) {
-        // Hàm rút gọn số (ví dụ: 110500 -> 110.5K)
         var formatNum = function (num) {
           if (!num || isNaN(num)) return '0';
           if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
@@ -54,7 +53,6 @@
     var container = document.querySelector('.gradients-container');
     if (!container) return;
 
-    // Use fewer orbs on mobile for performance
     var orbCount = isMobile ? 8 : 15;
     var orbColors = [
       'rgba(76, 29, 149, 0.3)',   // Deep violet
@@ -75,14 +73,13 @@
       
       orb.style.left = Math.random() * 95 + '%';
       
-      var duration = Math.random() * 15 + 25; // Uniform speed: 25s to 40s
+      var duration = Math.random() * 15 + 25;
       orb.style.setProperty('--dur', duration + 's');
       orb.style.setProperty('--delay', (Math.random() * -40) + 's');
       
       container.appendChild(orb);
     }
 
-    // Interactive mouse follow - DESKTOP ONLY
     if (!isMobile) {
       var interBubble = document.querySelector('.interactive');
       if (interBubble) {
@@ -109,7 +106,6 @@
     var btn = document.getElementById('music-btn');
     if (!music || !btn) return;
 
-    // Ensure it's not muted by default code
     music.muted = false;
     music.volume = 0.5;
 
@@ -128,9 +124,7 @@
     var toggleMusic = function (e) {
       if (e) e.stopPropagation();
       if (music.paused) {
-        music.play().then(function() {
-          updateState();
-        }).catch(function(err) {
+        music.play().then(updateState).catch(function(err) {
           console.warn('[Music] Playback blocked', err);
         });
       } else {
@@ -139,9 +133,27 @@
       }
     };
 
+    var startMusic = function() {
+      if (music.paused) {
+        music.play().then(function() {
+          updateState();
+        }).catch(function() {
+          var resume = function() {
+            music.play().then(function() {
+              updateState();
+              window.removeEventListener('click', resume);
+              window.removeEventListener('touchstart', resume);
+            });
+          };
+          window.addEventListener('click', resume);
+          window.addEventListener('touchstart', resume);
+        });
+      }
+    };
+
     btn.addEventListener('click', toggleMusic);
+    startMusic();
     
-    // Check state periodically
     setInterval(function() {
       if (!music.paused && btn.classList.contains('muted')) {
         updateState();
@@ -149,11 +161,13 @@
     }, 1000);
   }
 
+  /* ── Initializations ── */
+  initMusicPlayer(); // Run immediately since script is at bottom
+
   /* ── DOM Ready ── */
   document.addEventListener('DOMContentLoaded', function () {
     initDynamicBackground();
     fetchTikTokStats();
-    initMusicPlayer();
   });
 
 })();
