@@ -1002,6 +1002,12 @@ html { scroll-behavior: smooth; }
 }
 
 /* Custom scrollbar for playlist */
+.playlist-inner {
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
 .playlist-inner::-webkit-scrollbar {
   width: 4px;
 }
