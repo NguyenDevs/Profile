@@ -103,8 +103,15 @@
   /* ── Music Player ── */
   function initMusicPlayer() {
     var music = document.getElementById('bg-music');
-    var btn = document.getElementById('music-btn'); // Mobile button
+    var mobilePlayer = document.getElementById('mobile-music-player');
+    var btn = document.getElementById('music-btn'); // Main toggle
     
+    // Mobile controls
+    var mPlayPauseBtn = document.getElementById('mobile-play-pause');
+    var mPrevBtn = document.getElementById('mobile-prev');
+    var mNextBtn = document.getElementById('mobile-next');
+    var mPlaylistBtn = document.getElementById('mobile-playlist');
+
     // Desktop elements
     var dFullPlayer = document.querySelector('.player-container');
     var dPlayPauseBtn = document.getElementById('player-play-pause');
@@ -192,7 +199,7 @@
     function updateUI() {
       var isPaused = music.paused;
       
-      // Update Mobile Button
+      // Update Mobile Main Button
       if (btn) {
         if (isPaused) {
           btn.classList.add('muted');
@@ -200,6 +207,19 @@
         } else {
           btn.classList.add('playing');
           btn.classList.remove('muted');
+        }
+      }
+
+      // Update Mobile Arc Buttons icons
+      if (mPlayPauseBtn) {
+        var mPlayIcon = mPlayPauseBtn.querySelector('.icon-play');
+        var mPauseIcon = mPlayPauseBtn.querySelector('.icon-pause');
+        if (isPaused) {
+          if (mPlayIcon) mPlayIcon.style.display = 'block';
+          if (mPauseIcon) mPauseIcon.style.display = 'none';
+        } else {
+          if (mPlayIcon) mPlayIcon.style.display = 'none';
+          if (mPauseIcon) mPauseIcon.style.display = 'block';
         }
       }
 
@@ -240,6 +260,24 @@
       music.play().then(updateUI);
     }
 
+    // Menu logic
+    if (btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (mobilePlayer) mobilePlayer.classList.toggle('expanded');
+      });
+    }
+
+    document.addEventListener('click', function() {
+      if (mobilePlayer) mobilePlayer.classList.remove('expanded');
+    });
+
+    if (mobilePlayer) {
+      mobilePlayer.addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+    }
+
     // Progress bar update
     music.addEventListener('timeupdate', function() {
       var perc = (music.currentTime / music.duration) * 100;
@@ -265,8 +303,18 @@
       });
     }
 
-    // Event Listeners
-    if (btn) btn.addEventListener('click', playPause);
+    // Event Listeners (Mobile)
+    if (mPlayPauseBtn) mPlayPauseBtn.addEventListener('click', playPause);
+    if (mNextBtn) mNextBtn.addEventListener('click', nextTrack);
+    if (mPrevBtn) mPrevBtn.addEventListener('click', prevTrack);
+    if (mPlaylistBtn) {
+      mPlaylistBtn.addEventListener('click', function() {
+        // Toggle desktop playlist if possible, or just leave for now
+        if (dTogglePlaylist) dTogglePlaylist.click();
+      });
+    }
+
+    // Event Listeners (Desktop)
     if (dPlayPauseBtn) dPlayPauseBtn.addEventListener('click', playPause);
     if (dNextBtn) dNextBtn.addEventListener('click', nextTrack);
     if (dPrevBtn) dPrevBtn.addEventListener('click', prevTrack);

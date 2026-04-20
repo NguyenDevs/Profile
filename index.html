@@ -296,9 +296,26 @@
 </div>
 
 <!-- ── Music Player ── -->
-<div class="music-player" aria-label="Music Player">
+<div class="music-player" id="mobile-music-player" aria-label="Music Player">
   <audio id="bg-music" preload="auto"></audio>
-  <button class="music-toggle playing" id="music-btn" aria-label="Toggle Music" title="Music On/Off">
+  
+  <div class="mobile-controls" id="mobile-controls">
+    <button class="mobile-ctrl" id="mobile-playlist" title="Playlist">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+    </button>
+    <button class="mobile-ctrl" id="mobile-prev" title="Previous">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+    </button>
+    <button class="mobile-ctrl play-pause" id="mobile-play-pause" title="Play/Pause">
+      <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+    </button>
+    <button class="mobile-ctrl" id="mobile-next" title="Next">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+    </button>
+  </div>
+
+  <button class="music-toggle playing" id="music-btn" aria-label="Toggle Music" title="Music Menu">
     <div class="music-icon-wrap">
       <div class="music-waves" id="music-waves"><span></span><span></span><span></span></div>
       <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
