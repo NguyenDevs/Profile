@@ -40,6 +40,13 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+@media (min-width: 1025px) {
+  body {
+    overflow: hidden;
+    height: 100vh;
+  }
+}
+
 /* ── Dynamic Lava Mesh System (Desktop) ── */
 :root {
   --color-bg1: #050508; 
@@ -137,16 +144,17 @@ html { scroll-behavior: smooth; }
 @media (min-width: 1025px) {
   .wrapper {
     max-width: 1000px;
+    height: 100vh;
     display: grid;
     grid-template-columns: 360px 1fr;
     gap: 32px;
-    padding: 60px 24px;
+    padding: 30px 24px;
     align-items: start;
+    box-sizing: border-box;
   }
   
   .sidebar-section {
-    position: sticky;
-    top: 60px;
+    position: relative;
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -155,6 +163,16 @@ html { scroll-behavior: smooth; }
     padding-bottom: 20px;
     overflow: hidden;
     box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .playlist-is-expanded .sidebar-section .cover {
+    height: 240px !important;
+  }
+
+  .playlist-is-expanded .sidebar-section .avatar-wrap {
+    margin-top: 40px !important; /* Push down to hide it */
+    opacity: 0;
   }
 
   .main-content {
@@ -165,6 +183,23 @@ html { scroll-behavior: smooth; }
     border-radius: 24px;
     padding: 10px 0 30px;
     box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    
+    /* Internal scroll */
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  }
+
+  .main-content::-webkit-scrollbar {
+    width: 5px;
+  }
+  .main-content::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .main-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
   }
 
   .cover {
@@ -200,6 +235,7 @@ html { scroll-behavior: smooth; }
   margin: 12px 12px 0;
   border-radius: var(--radius);
   border: 1px solid var(--border);
+  transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .cover-img {
   width: 100%;
@@ -243,6 +279,7 @@ html { scroll-behavior: smooth; }
   width: 108px;
   height: 108px;
   margin-bottom: 16px;
+  transition: margin-top 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s;
 }
 .avatar-ring {
   position: absolute;
@@ -783,12 +820,18 @@ html { scroll-behavior: smooth; }
 
 @media (min-width: 1025px) {
   .sidebar-wrapper {
-    position: sticky;
-    top: 60px;
+    position: relative;
+    height: auto;
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+    scrollbar-width: none; /* Hide for Firefox */
+    -ms-overflow-style: none; /* Hide for Edge */
+  }
+  .sidebar-wrapper::-webkit-scrollbar {
+    display: none; /* Hide for Chrome/Safari */
   }
   .sidebar-section {
     position: relative !important;
-    top: 0 !important;
   }
 }
 

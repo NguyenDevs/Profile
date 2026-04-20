@@ -294,9 +294,13 @@
     }
 
     // Playlist Toggle logic
+    var sidebarWrapper = document.querySelector('.sidebar-wrapper');
     if (dTogglePlaylist && dPlaylistContainer) {
       dTogglePlaylist.addEventListener('click', function() {
         dPlaylistContainer.classList.toggle('expanded');
+        if (sidebarWrapper) {
+          sidebarWrapper.classList.toggle('playlist-is-expanded');
+        }
       });
     }
 
