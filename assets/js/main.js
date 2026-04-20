@@ -1,14 +1,9 @@
-/* ============================================================
-   NguyenDevs · Profile — Main JavaScript
-   ============================================================ */
-
 (function () {
   'use strict';
 
-  /* ── TikTok Worker endpoint ──────────────────────────────── */
   var TIKTOK_WORKER_URL = '/api/tiktok-stats';
 
-  /* ── Fetch live TikTok stats ── */
+  // Fetch live TikTok stats
   function fetchTikTokStats() {
     var followerEl = document.getElementById('tt-followers');
     var likesEl    = document.getElementById('tt-likes');
@@ -41,25 +36,24 @@
       });
   }
 
-  /* ── Enhanced device detection ── */
   var checkMobile = function() {
     return (window.innerWidth <= 1024) || (navigator.maxTouchPoints > 0);
   };
   var isMobile = checkMobile();
   if (isMobile) document.body.classList.add('is-mobile');
 
-  /* ── Dynamic background (Lava Mesh) ── */
+  // Initialize dynamic background (Lava Mesh)
   function initDynamicBackground() {
     var container = document.querySelector('.gradients-container');
     if (!container) return;
 
     var orbCount = isMobile ? 8 : 15;
     var orbColors = [
-      'rgba(76, 29, 149, 0.3)',   // Deep violet
-      'rgba(88, 28, 135, 0.35)',  // Deep purple
-      'rgba(59, 7, 100, 0.4)',    // Darkest purple
-      'rgba(107, 33, 168, 0.25)', // Muted purple 
-      'rgba(46, 16, 101, 0.3)'    // Deep indigo
+      'rgba(76, 29, 149, 0.3)',
+      'rgba(88, 28, 135, 0.35)',
+      'rgba(59, 7, 100, 0.4)',
+      'rgba(107, 33, 168, 0.25)',
+      'rgba(46, 16, 101, 0.3)'
     ];
 
     for (var i = 0; i < orbCount; i++) {
@@ -99,20 +93,17 @@
     }
   }
 
-
-  /* ── Music Player ── */
+  // Initialize music player
   function initMusicPlayer() {
     var music = document.getElementById('bg-music');
     var mobilePlayer = document.getElementById('mobile-music-player');
-    var btn = document.getElementById('music-btn'); // Main toggle
+    var btn = document.getElementById('music-btn');
     
-    // Mobile controls
     var mPlayPauseBtn = document.getElementById('mobile-play-pause');
     var mPrevBtn = document.getElementById('mobile-prev');
     var mNextBtn = document.getElementById('mobile-next');
     var mPlaylistBtn = document.getElementById('mobile-playlist');
 
-    // Desktop elements
     var dFullPlayer = document.querySelector('.player-container');
     var dPlayPauseBtn = document.getElementById('player-play-pause');
     var dPrevBtn = document.getElementById('player-prev');
@@ -128,7 +119,6 @@
     var dMuteBtn = document.getElementById('player-mute');
     var dTogglePlaylist = document.getElementById('player-toggle-playlist');
 
-    // Mobile Modal elements
     var mModal = document.getElementById('mobile-playlist-modal');
     var mModalList = document.getElementById('mobile-playlist-list');
     var mModalClose = document.getElementById('close-playlist-modal');
@@ -147,8 +137,8 @@
 
     var currentTrackIndex = 0;
 
+    // Build playlist UI for desktop and mobile
     function setupPlaylist() {
-      // Desktop Playlist UI Generation
       if (dPlaylistInner) {
         dPlaylistInner.innerHTML = ''; 
         playlist.forEach(function(track, index) {
@@ -163,7 +153,6 @@
         });
       }
 
-      // Mobile Playlist UI Generation
       if (mModalList) {
         mModalList.innerHTML = '';
         playlist.forEach(function(track, index) {
@@ -191,7 +180,6 @@
       loadTrack(0);
     }
 
-    // Fetch dynamic playlist from API
     fetch('/api/music')
       .then(function(res) { return res.json(); })
       .then(function(data) {
@@ -207,6 +195,7 @@
         setupPlaylist();
       });
 
+    // Format seconds to m:ss
     function formatTime(seconds) {
       if (isNaN(seconds)) return "0:00";
       var mins = Math.floor(seconds / 60);
@@ -214,20 +203,19 @@
       return mins + ":" + (secs < 10 ? "0" : "") + secs;
     }
 
+    // Load track by index
     function loadTrack(index) {
       currentTrackIndex = index;
       var track = playlist[index];
       music.src = 'assets/music/' + track.file;
       if (dTrackName) dTrackName.textContent = track.name + " — " + track.artist;
       
-      // Update active state in desktop playlist
       var items = document.querySelectorAll('.playlist-item');
       items.forEach(function(item, i) {
         if (i === index) item.classList.add('active');
         else item.classList.remove('active');
       });
 
-      // Update active state in mobile playlist
       var mItems = document.querySelectorAll('.m-playlist-item');
       mItems.forEach(function(item, i) {
         if (i === index) item.classList.add('active');
@@ -235,10 +223,10 @@
       });
     }
 
+    // Sync all play/pause UI elements
     function updateUI() {
       var isPaused = music.paused;
       
-      // Update Mobile Main Button
       if (btn) {
         if (isPaused) {
           btn.classList.add('muted');
@@ -249,7 +237,6 @@
         }
       }
 
-      // Update Mobile Arc Buttons icons
       if (mPlayPauseBtn) {
         var mPlayIcon = mPlayPauseBtn.querySelector('.icon-play');
         var mPauseIcon = mPlayPauseBtn.querySelector('.icon-pause');
@@ -262,7 +249,6 @@
         }
       }
 
-      // Update Desktop Button icons
       if (dPlayPauseBtn) {
         var playIcon = dPlayPauseBtn.querySelector('.icon-play');
         var pauseIcon = dPlayPauseBtn.querySelector('.icon-pause');
@@ -276,6 +262,7 @@
       }
     }
 
+    // Toggle play/pause
     function playPause() {
       if (music.paused) {
         music.play().then(updateUI).catch(function(err) {
@@ -287,19 +274,20 @@
       }
     }
 
+    // Advance to next track
     function nextTrack() {
       var next = (currentTrackIndex + 1) % playlist.length;
       loadTrack(next);
       music.play().then(updateUI);
     }
 
+    // Go to previous track
     function prevTrack() {
       var prev = (currentTrackIndex - 1 + playlist.length) % playlist.length;
       loadTrack(prev);
       music.play().then(updateUI);
     }
 
-    // Menu logic
     if (btn) {
       btn.addEventListener('click', function(e) {
         e.stopPropagation();
@@ -317,15 +305,16 @@
       });
     }
 
-    // Mobile Playlist Modal logic
+    // Open mobile playlist modal
     function openMobilePlaylist() {
       if (mModal) {
         mModal.classList.add('active');
         mModal.setAttribute('aria-hidden', 'false');
-        // Disable body scroll when modal is open
         document.body.style.overflow = 'hidden';
       }
     }
+
+    // Close mobile playlist modal
     function closeMobilePlaylist() {
       if (mModal) {
         mModal.classList.remove('active');
@@ -337,7 +326,6 @@
     if (mModalClose) mModalClose.addEventListener('click', closeMobilePlaylist);
     if (mModalOverlay) mModalOverlay.addEventListener('click', closeMobilePlaylist);
 
-    // Progress bar update
     music.addEventListener('timeupdate', function() {
       var perc = (music.currentTime / music.duration) * 100;
       if (dProgressBar) dProgressBar.style.width = perc + '%';
@@ -352,7 +340,6 @@
       nextTrack();
     });
 
-    // Click on progress bar to seek
     if (dProgressContainer) {
       dProgressContainer.addEventListener('click', function(e) {
         var scrollWidth = dProgressContainer.clientWidth;
@@ -362,7 +349,6 @@
       });
     }
 
-    // Event Listeners (Mobile)
     if (mPlayPauseBtn) {
       mPlayPauseBtn.addEventListener('click', function(e) {
         e.stopPropagation();
@@ -385,16 +371,14 @@
       mPlaylistBtn.addEventListener('click', function(e) {
         e.stopPropagation();
         openMobilePlaylist();
-        if (mobilePlayer) mobilePlayer.classList.remove('expanded'); // Close arc menu
+        if (mobilePlayer) mobilePlayer.classList.remove('expanded');
       });
     }
 
-    // Event Listeners (Desktop)
     if (dPlayPauseBtn) dPlayPauseBtn.addEventListener('click', playPause);
     if (dNextBtn) dNextBtn.addEventListener('click', nextTrack);
     if (dPrevBtn) dPrevBtn.addEventListener('click', prevTrack);
 
-    // Volume & Mute logic
     if (dVolumeSlider) {
       dVolumeSlider.addEventListener('input', function() {
         music.volume = this.value;
@@ -416,7 +400,6 @@
       });
     }
 
-    // Playlist Toggle logic
     var sidebarWrapper = document.querySelector('.sidebar-wrapper');
     if (dTogglePlaylist && dPlaylistContainer) {
       dTogglePlaylist.addEventListener('click', function() {
@@ -427,25 +410,23 @@
       });
     }
 
-    // Auto-start logic (user interaction)
+    // Attempt autoplay on first user interaction
     var tryAutoPlay = function() {
       music.play().then(function() {
         updateUI();
         window.removeEventListener('click', tryAutoPlay);
         window.removeEventListener('touchstart', tryAutoPlay);
       }).catch(function() {
-        // Keep waiting for interaction
       });
     };
     window.addEventListener('click', tryAutoPlay);
     window.addEventListener('touchstart', tryAutoPlay);
 
-    // Initial sync
     music.volume = 0.5;
     updateUI();
   }
 
-  /* ── Bottom Navigation ── */
+  // Initialize bottom navigation
   function initNavigation() {
     var nav = document.getElementById('bottom-nav');
     var toggle = document.getElementById('nav-toggle');
@@ -456,12 +437,10 @@
       nav.classList.toggle('expanded');
     });
 
-    // Close when clicking anywhere outside
     document.addEventListener('click', function () {
       nav.classList.remove('expanded');
     });
 
-    // Close when a nav item is clicked
     var navItems = nav.querySelectorAll('.nav-item');
     navItems.forEach(function (item) {
       item.addEventListener('click', function () {
@@ -469,13 +448,12 @@
       });
     });
 
-    // Prevent closing when clicking inside the nav container (except items)
     nav.addEventListener('click', function (e) {
       e.stopPropagation();
     });
   }
 
-  /* ── Project Slider (Mobile) ── */
+  // Initialize project slider for mobile
   function initProjectSlider() {
     var grid = document.querySelector('.projects-grid');
     var prevBtn = document.getElementById('project-prev');
@@ -488,19 +466,18 @@
     var dots = Array.from(dotsContainer.children);
     var currentIndex = 0;
 
+    // Scroll to card by index and update dots
     function updateSlider(index) {
       if (index < 0) index = 0;
       if (index >= cards.length) index = cards.length - 1;
 
       currentIndex = index;
 
-      // Scroll the grid
       grid.scrollTo({
         left: currentIndex * window.innerWidth,
         behavior: 'smooth'
       });
 
-      // Update dots
       dots.forEach(function(dot, i) {
         if (i === currentIndex) {
           dot.classList.add('active');
@@ -509,7 +486,6 @@
         }
       });
 
-      // Update button states (optional: disable/opacity)
       prevBtn.style.opacity = currentIndex === 0 ? '0.3' : '1';
       prevBtn.style.pointerEvents = currentIndex === 0 ? 'none' : 'auto';
       nextBtn.style.opacity = currentIndex === cards.length - 1 ? '0.3' : '1';
@@ -524,14 +500,12 @@
       updateSlider(currentIndex + 1);
     });
 
-    // Optional: click dots to jump
     dots.forEach(function(dot, i) {
       dot.addEventListener('click', function() {
         updateSlider(i);
       });
     });
 
-    // Handle resize to keep current card centered
     var resizeTimer;
     window.addEventListener('resize', function() {
       clearTimeout(resizeTimer);
@@ -542,20 +516,16 @@
       }, 250);
     });
 
-    // Initial state
     updateSlider(0);
   }
 
-  /* ── Initializations ── */
   initMusicPlayer();
   initNavigation();
 
-  /* ── DOM Ready ── */
   document.addEventListener('DOMContentLoaded', function () {
     initDynamicBackground();
     fetchTikTokStats();
     initProjectSlider();
   });
-
 
 })();
