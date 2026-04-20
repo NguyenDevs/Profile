@@ -191,6 +191,49 @@
     });
   }
 
+  /* ── Project Slider (Mobile) ── */
+  function initProjectSlider() {
+    var grid = document.querySelector('.projects-grid');
+    if (!grid || window.innerWidth > 768) return;
+
+    var cards = Array.from(grid.children);
+    if (cards.length < 2) return;
+
+    // Clone items for loop
+    var firstClone = cards[0].cloneNode(true);
+    var lastClone = cards[cards.length - 1].cloneNode(true);
+
+    grid.prepend(lastClone);
+    grid.appendChild(firstClone);
+
+    var cardWidth = 100; // 100vw total including margins in CSS? 
+    // Actually in my CSS: flex: 0 0 80vw; margin: 0 10vw;
+    // So one item's total width is 100vw. Perfect.
+
+    // Center the initial real first card
+    grid.scrollLeft = window.innerWidth;
+
+    grid.addEventListener('scroll', function() {
+      var scrollPos = grid.scrollLeft;
+      var maxScroll = grid.scrollWidth - grid.clientWidth;
+
+      if (scrollPos <= 0) {
+        grid.scrollLeft = maxScroll - grid.clientWidth;
+      } else if (scrollPos >= maxScroll) {
+        grid.scrollLeft = grid.clientWidth;
+      }
+    });
+
+    // Touch feedback
+    grid.addEventListener('touchstart', function() {
+      grid.style.scrollSnapType = 'none';
+    }, {passive: true});
+
+    grid.addEventListener('touchend', function() {
+      grid.style.scrollSnapType = 'x mandatory';
+    }, {passive: true});
+  }
+
   /* ── Initializations ── */
   initMusicPlayer();
   initNavigation();
@@ -199,6 +242,8 @@
   document.addEventListener('DOMContentLoaded', function () {
     initDynamicBackground();
     fetchTikTokStats();
+    initProjectSlider();
   });
+
 
 })();
