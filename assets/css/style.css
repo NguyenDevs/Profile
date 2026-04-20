@@ -894,7 +894,7 @@ html { scroll-behavior: smooth; }
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 18px;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); /* Smoother, no bounce */
+  transition: all 0.65s cubic-bezier(0.32, 0.72, 0, 1);
   overflow: hidden;
   max-width: 54px;
   max-height: 54px;
@@ -903,7 +903,7 @@ html { scroll-behavior: smooth; }
 .bottom-nav.expanded {
   padding: 0 12px 0 0;
   max-width: 500px;
-  max-height: 54px; /* Vertical constraint for desktop */
+  max-height: 54px;
   gap: 8px;
 }
 
@@ -1002,7 +1002,7 @@ html { scroll-behavior: smooth; }
   .bottom-nav.expanded {
     max-width: 54px;
     max-height: 400px;
-    padding: 0 0; /* Balanced padding */
+    padding: 0 0; 
     gap: 8px;
   }
 
@@ -1010,7 +1010,7 @@ html { scroll-behavior: smooth; }
     flex-direction: column;
     padding: 0;
     transform: translateY(20px);
-    transform: translateX(0); /* Reset horizontal transform */
+    transform: translateX(0);
     gap: 10px;
     opacity: 0;
     align-items: center; /* Center items horizontally */
