@@ -128,6 +128,12 @@
     var dMuteBtn = document.getElementById('player-mute');
     var dTogglePlaylist = document.getElementById('player-toggle-playlist');
 
+    // Mobile Modal elements
+    var mModal = document.getElementById('mobile-playlist-modal');
+    var mModalList = document.getElementById('mobile-playlist-list');
+    var mModalClose = document.getElementById('close-playlist-modal');
+    var mModalOverlay = document.getElementById('modal-overlay');
+
     if (!music) return;
 
     var playlist = [
@@ -142,9 +148,9 @@
     var currentTrackIndex = 0;
 
     function setupPlaylist() {
-      // Playlist UI Generation
+      // Desktop Playlist UI Generation
       if (dPlaylistInner) {
-        dPlaylistInner.innerHTML = ''; // Clear
+        dPlaylistInner.innerHTML = ''; 
         playlist.forEach(function(track, index) {
           var item = document.createElement('div');
           item.className = 'playlist-item';
@@ -156,6 +162,32 @@
           dPlaylistInner.appendChild(item);
         });
       }
+
+      // Mobile Playlist UI Generation
+      if (mModalList) {
+        mModalList.innerHTML = '';
+        playlist.forEach(function(track, index) {
+          var item = document.createElement('div');
+          item.className = 'm-playlist-item';
+          item.innerHTML = `
+            <div class="m-item-index">${(index + 1).toString().padStart(2, '0')}</div>
+            <div class="m-item-info">
+              <div class="m-item-name">${track.name}</div>
+              <div class="m-item-artist">${track.artist}</div>
+            </div>
+            <div class="m-item-playing">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+          `;
+          item.addEventListener('click', function() {
+            loadTrack(index);
+            music.play().then(updateUI);
+            closeMobilePlaylist();
+          });
+          mModalList.appendChild(item);
+        });
+      }
+
       loadTrack(0);
     }
 
@@ -188,9 +220,16 @@
       music.src = 'assets/music/' + track.file;
       if (dTrackName) dTrackName.textContent = track.name + " — " + track.artist;
       
-      // Update active state in playlist UI
+      // Update active state in desktop playlist
       var items = document.querySelectorAll('.playlist-item');
       items.forEach(function(item, i) {
+        if (i === index) item.classList.add('active');
+        else item.classList.remove('active');
+      });
+
+      // Update active state in mobile playlist
+      var mItems = document.querySelectorAll('.m-playlist-item');
+      mItems.forEach(function(item, i) {
         if (i === index) item.classList.add('active');
         else item.classList.remove('active');
       });
@@ -278,6 +317,26 @@
       });
     }
 
+    // Mobile Playlist Modal logic
+    function openMobilePlaylist() {
+      if (mModal) {
+        mModal.classList.add('active');
+        mModal.setAttribute('aria-hidden', 'false');
+        // Disable body scroll when modal is open
+        document.body.style.overflow = 'hidden';
+      }
+    }
+    function closeMobilePlaylist() {
+      if (mModal) {
+        mModal.classList.remove('active');
+        mModal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+    }
+
+    if (mModalClose) mModalClose.addEventListener('click', closeMobilePlaylist);
+    if (mModalOverlay) mModalOverlay.addEventListener('click', closeMobilePlaylist);
+
     // Progress bar update
     music.addEventListener('timeupdate', function() {
       var perc = (music.currentTime / music.duration) * 100;
@@ -304,13 +363,29 @@
     }
 
     // Event Listeners (Mobile)
-    if (mPlayPauseBtn) mPlayPauseBtn.addEventListener('click', playPause);
-    if (mNextBtn) mNextBtn.addEventListener('click', nextTrack);
-    if (mPrevBtn) mPrevBtn.addEventListener('click', prevTrack);
+    if (mPlayPauseBtn) {
+      mPlayPauseBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        playPause();
+      });
+    }
+    if (mNextBtn) {
+      mNextBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        nextTrack();
+      });
+    }
+    if (mPrevBtn) {
+      mPrevBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        prevTrack();
+      });
+    }
     if (mPlaylistBtn) {
-      mPlaylistBtn.addEventListener('click', function() {
-        // Toggle desktop playlist if possible, or just leave for now
-        if (dTogglePlaylist) dTogglePlaylist.click();
+      mPlaylistBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openMobilePlaylist();
+        if (mobilePlayer) mobilePlayer.classList.remove('expanded'); // Close arc menu
       });
     }
 
