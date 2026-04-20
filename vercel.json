@@ -12,6 +12,11 @@
       ]
     }
   ],
+  "functions": {
+    "api/music.js": {
+      "includeFiles": "assets/music/**"
+    }
+  },
   "crons": [
     {
       "path": "/api/tiktok-stats",

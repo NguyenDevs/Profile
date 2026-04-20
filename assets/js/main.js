@@ -103,62 +103,219 @@
   /* ── Music Player ── */
   function initMusicPlayer() {
     var music = document.getElementById('bg-music');
-    var btn = document.getElementById('music-btn');
-    if (!music || !btn) return;
+    var btn = document.getElementById('music-btn'); // Mobile button
+    
+    // Desktop elements
+    var dFullPlayer = document.querySelector('.player-container');
+    var dPlayPauseBtn = document.getElementById('player-play-pause');
+    var dPrevBtn = document.getElementById('player-prev');
+    var dNextBtn = document.getElementById('player-next');
+    var dTrackName = document.getElementById('player-track-name');
+    var dCurrentTime = document.getElementById('player-current-time');
+    var dDuration = document.getElementById('player-duration');
+    var dProgressBar = document.getElementById('player-progress-bar');
+    var dProgressContainer = document.getElementById('player-progress-container');
+    var dPlaylistContainer = document.getElementById('player-playlist');
+    var dPlaylistInner = document.getElementById('player-playlist-inner');
+    var dVolumeSlider = document.getElementById('player-volume');
+    var dMuteBtn = document.getElementById('player-mute');
+    var dTogglePlaylist = document.getElementById('player-toggle-playlist');
 
-    music.muted = false;
-    music.volume = 0.5;
+    if (!music) return;
 
-    var updateState = function() {
-      if (music.paused) {
-        btn.classList.add('muted');
-        btn.classList.remove('playing');
-        btn.title = "Click to Play";
-      } else {
-        btn.classList.add('playing');
-        btn.classList.remove('muted');
-        btn.title = "Click to Mute";
+    var playlist = [
+      { name: "Memory Reboot", artist: "VØJ x Narvent", file: "VØJ x Narvent - Memory Reboot.mp3" },
+      { name: "Lost Road", artist: "Aurenth x Knonzzz", file: "Aurenth x Knonzzz - Lost Road.mp3" },
+      { name: "Comfort Chain", artist: "Instupendo", file: "Instupendo - Comfort Chain.mp3" },
+      { name: "Skins 2", artist: "KREZUS, Surreal_dvd", file: "KREZUS, Surreal_dvd - Skins 2.mp3" },
+      { name: "Time To Pretend", artist: "Lazer Boomerang", file: "Lazer Boomerang - Time To Pretend.mp3" },
+      { name: "Interlinked", artist: "Lonely Lies, GOLDKID", file: "Lonely Lies, GOLDKID - Interlinked.mp3" }
+    ];
+
+    var currentTrackIndex = 0;
+
+    function setupPlaylist() {
+      // Playlist UI Generation
+      if (dPlaylistInner) {
+        dPlaylistInner.innerHTML = ''; // Clear
+        playlist.forEach(function(track, index) {
+          var item = document.createElement('div');
+          item.className = 'playlist-item';
+          item.textContent = track.name;
+          item.addEventListener('click', function() {
+            loadTrack(index);
+            music.play().then(updateUI);
+          });
+          dPlaylistInner.appendChild(item);
+        });
       }
-    };
+      loadTrack(0);
+    }
 
-    var toggleMusic = function (e) {
-      if (e) e.stopPropagation();
+    // Fetch dynamic playlist from API
+    fetch('/api/music')
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data && Array.isArray(data) && data.length > 0) {
+          playlist = data;
+          setupPlaylist();
+        } else {
+          setupPlaylist();
+        }
+      })
+      .catch(function(err) {
+        console.warn('[Music API] Using hardcoded fallback:', err);
+        setupPlaylist();
+      });
+
+    function formatTime(seconds) {
+      if (isNaN(seconds)) return "0:00";
+      var mins = Math.floor(seconds / 60);
+      var secs = Math.floor(seconds % 60);
+      return mins + ":" + (secs < 10 ? "0" : "") + secs;
+    }
+
+    function loadTrack(index) {
+      currentTrackIndex = index;
+      var track = playlist[index];
+      music.src = 'assets/music/' + track.file;
+      if (dTrackName) dTrackName.textContent = track.name + " — " + track.artist;
+      
+      // Update active state in playlist UI
+      var items = document.querySelectorAll('.playlist-item');
+      items.forEach(function(item, i) {
+        if (i === index) item.classList.add('active');
+        else item.classList.remove('active');
+      });
+    }
+
+    function updateUI() {
+      var isPaused = music.paused;
+      
+      // Update Mobile Button
+      if (btn) {
+        if (isPaused) {
+          btn.classList.add('muted');
+          btn.classList.remove('playing');
+        } else {
+          btn.classList.add('playing');
+          btn.classList.remove('muted');
+        }
+      }
+
+      // Update Desktop Button icons
+      if (dPlayPauseBtn) {
+        var playIcon = dPlayPauseBtn.querySelector('.icon-play');
+        var pauseIcon = dPlayPauseBtn.querySelector('.icon-pause');
+        if (isPaused) {
+          if (playIcon) playIcon.style.display = 'block';
+          if (pauseIcon) pauseIcon.style.display = 'none';
+        } else {
+          if (playIcon) playIcon.style.display = 'none';
+          if (pauseIcon) pauseIcon.style.display = 'block';
+        }
+      }
+    }
+
+    function playPause() {
       if (music.paused) {
-        music.play().then(updateState).catch(function(err) {
+        music.play().then(updateUI).catch(function(err) {
           console.warn('[Music] Playback blocked', err);
         });
       } else {
         music.pause();
-        updateState();
+        updateUI();
       }
-    };
+    }
 
-    var startMusic = function() {
-      if (music.paused) {
-        music.play().then(function() {
-          updateState();
-        }).catch(function() {
-          var resume = function() {
-            music.play().then(function() {
-              updateState();
-              window.removeEventListener('click', resume);
-              window.removeEventListener('touchstart', resume);
-            });
-          };
-          window.addEventListener('click', resume);
-          window.addEventListener('touchstart', resume);
-        });
-      }
-    };
+    function nextTrack() {
+      var next = (currentTrackIndex + 1) % playlist.length;
+      loadTrack(next);
+      music.play().then(updateUI);
+    }
 
-    btn.addEventListener('click', toggleMusic);
-    startMusic();
-    
-    setInterval(function() {
-      if (!music.paused && btn.classList.contains('muted')) {
-        updateState();
-      }
-    }, 1000);
+    function prevTrack() {
+      var prev = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+      loadTrack(prev);
+      music.play().then(updateUI);
+    }
+
+    // Progress bar update
+    music.addEventListener('timeupdate', function() {
+      var perc = (music.currentTime / music.duration) * 100;
+      if (dProgressBar) dProgressBar.style.width = perc + '%';
+      if (dCurrentTime) dCurrentTime.textContent = formatTime(music.currentTime);
+    });
+
+    music.addEventListener('loadedmetadata', function() {
+      if (dDuration) dDuration.textContent = formatTime(music.duration);
+    });
+
+    music.addEventListener('ended', function() {
+      nextTrack();
+    });
+
+    // Click on progress bar to seek
+    if (dProgressContainer) {
+      dProgressContainer.addEventListener('click', function(e) {
+        var scrollWidth = dProgressContainer.clientWidth;
+        var clickX = e.offsetX;
+        var duration = music.duration;
+        music.currentTime = (clickX / scrollWidth) * duration;
+      });
+    }
+
+    // Event Listeners
+    if (btn) btn.addEventListener('click', playPause);
+    if (dPlayPauseBtn) dPlayPauseBtn.addEventListener('click', playPause);
+    if (dNextBtn) dNextBtn.addEventListener('click', nextTrack);
+    if (dPrevBtn) dPrevBtn.addEventListener('click', prevTrack);
+
+    // Volume & Mute logic
+    if (dVolumeSlider) {
+      dVolumeSlider.addEventListener('input', function() {
+        music.volume = this.value;
+        if (music.volume > 0) music.muted = false;
+      });
+    }
+
+    if (dMuteBtn) {
+      var lastVolume = 0.5;
+      dMuteBtn.addEventListener('click', function() {
+        if (music.volume > 0) {
+          lastVolume = music.volume;
+          music.volume = 0;
+          if (dVolumeSlider) dVolumeSlider.value = 0;
+        } else {
+          music.volume = lastVolume;
+          if (dVolumeSlider) dVolumeSlider.value = lastVolume;
+        }
+      });
+    }
+
+    // Playlist Toggle logic
+    if (dTogglePlaylist && dPlaylistContainer) {
+      dTogglePlaylist.addEventListener('click', function() {
+        dPlaylistContainer.classList.toggle('expanded');
+      });
+    }
+
+    // Auto-start logic (user interaction)
+    var tryAutoPlay = function() {
+      music.play().then(function() {
+        updateUI();
+        window.removeEventListener('click', tryAutoPlay);
+        window.removeEventListener('touchstart', tryAutoPlay);
+      }).catch(function() {
+        // Keep waiting for interaction
+      });
+    };
+    window.addEventListener('click', tryAutoPlay);
+    window.addEventListener('touchstart', tryAutoPlay);
+
+    // Initial sync
+    music.volume = 0.5;
+    updateUI();
   }
 
   /* ── Bottom Navigation ── */
