@@ -271,6 +271,10 @@
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.5s ease;
+    /* Optimization: Disable backdrop blur on mobile */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(255, 255, 255, 0.06) !important;
   }
 
   .project-icon {
@@ -340,6 +344,13 @@
     -webkit-backdrop-filter: blur(10px);
   }
 
+  /* Optimization: Disable backdrop blur on mobile buttons */
+  body.is-mobile .slider-btn {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+  }
+
   .slider-btn:active {
     transform: scale(0.9);
     background: rgba(178, 137, 239, 0.2);
@@ -371,6 +382,12 @@
     transform: scale(1.4);
     box-shadow: 0 0 10px rgba(178, 137, 239, 0.5);
   }
+
+  .icon-glow {
+    animation: none !important;
+    border-radius: 50% !important;
+    opacity: 0.15;
+  }
 }
 
 /* Hide controls on desktop */
@@ -387,6 +404,3 @@
     min-height: 340px;
   }
 }
-
-
-

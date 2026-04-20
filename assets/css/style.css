@@ -888,16 +888,24 @@ html { scroll-behavior: smooth; }
   align-items: center;
   gap: 0;
   padding: 0;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(15, 15, 20, 0.85); /* Slightly more opaque background */
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 18px;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-  transition: all 0.65s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1); /* Faster transition */
   overflow: hidden;
   max-width: 54px;
   max-height: 54px;
+}
+
+/* Optimization: Disable heavy filters on mobile */
+body.is-mobile .bottom-nav,
+body.is-mobile .music-toggle {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(20, 20, 25, 0.92) !important;
 }
 
 .bottom-nav.expanded {
