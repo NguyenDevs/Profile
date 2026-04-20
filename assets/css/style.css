@@ -998,6 +998,22 @@ html { scroll-behavior: smooth; }
   filter: drop-shadow(0 0 8px rgba(178, 137, 239, 0.8));
 }
 
+@media (min-width: 1025px) {
+  .nav-item.active { position: relative; }
+  .nav-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 2px;
+    background: #e478ff;
+    border-radius: 10px;
+    box-shadow: 0 0 8px rgba(228, 120, 255, 0.6);
+  }
+}
+
 /* Mobile: Vertical Expansion */
 @media (max-width: 1024px) {
   .bottom-nav {
