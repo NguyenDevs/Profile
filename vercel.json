@@ -3,41 +3,20 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    {
-      "source": "/:path*",
-      "has": [
-        { "type": "host", "value": "projects.nguyendevs.io.vn" }
-      ],
-      "destination": "/projects.html"
-    },
-    {
-      "source": "/:path*",
-      "has": [
-        { "type": "host", "value": "info.nguyendevs.io.vn" }
-      ],
-      "destination": "/info.html"
-    }
+    { "source": "/(.*)", "destination": "/api/route" }
   ],
   "headers": [
     {
       "source": "/assets/(.*)",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
     }
   ],
   "functions": {
-    "api/music.js": {
-      "includeFiles": "assets/music/**"
-    }
+    "api/music.js": { "includeFiles": "assets/music/**" }
   },
   "crons": [
-    {
-      "path": "/api/tiktok-stats",
-      "schedule": "0 1 * * *"
-    }
+    { "path": "/api/tiktok-stats", "schedule": "0 1 * * *" }
   ]
 }
