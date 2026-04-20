@@ -244,24 +244,21 @@
 
   .projects-grid {
     display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
+    overflow-x: hidden;
+    scroll-snap-type: none;
     gap: 0;
     width: 100%;
-    padding: 60px 0; /* Significantly increased padding to allow space for hover shadows */
-    margin-top: -40px; /* Compensate for the extra padding to keep similar spacing */
-    -webkit-overflow-scrolling: touch;
+    padding: 60px 0;
+    margin-top: -40px;
+    -webkit-overflow-scrolling: auto;
     scrollbar-width: none;
+    transition: all 0.5s ease;
   }
-
-
-
-  .projects-grid::-webkit-scrollbar { display: none; }
 
   .project-card {
     flex: 0 0 68vw;
     margin: 0 16vw;
-    scroll-snap-align: center;
+    scroll-snap-align: none;
     min-height: 360px; 
     max-height: 50vh;
     padding: 24px 20px 20px;
@@ -273,6 +270,7 @@
     text-align: center;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.5s ease;
   }
 
   .project-icon {
@@ -314,6 +312,70 @@
     font-size: 0.55rem;
     padding: 4px 10px;
   }
+
+  /* ── Slider Controls ── */
+  .slider-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin-top: -20px;
+    z-index: 20;
+    animation: fadeIn 1s 0.4s ease both;
+  }
+
+  .slider-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .slider-btn:active {
+    transform: scale(0.9);
+    background: rgba(178, 137, 239, 0.2);
+    border-color: var(--accent);
+  }
+
+  .slider-btn svg {
+    width: 20px;
+    height: 20px;
+    opacity: 0.8;
+  }
+
+  .pagination-dots {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .dot.active {
+    background: var(--accent);
+    transform: scale(1.4);
+    box-shadow: 0 0 10px rgba(178, 137, 239, 0.5);
+  }
+}
+
+/* Hide controls on desktop */
+@media (min-width: 769px) {
+  .slider-controls { display: none; }
 }
 
 @media (max-width: 480px) {

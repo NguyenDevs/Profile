@@ -194,44 +194,72 @@
   /* ── Project Slider (Mobile) ── */
   function initProjectSlider() {
     var grid = document.querySelector('.projects-grid');
-    if (!grid || window.innerWidth > 768) return;
+    var prevBtn = document.getElementById('project-prev');
+    var nextBtn = document.getElementById('project-next');
+    var dotsContainer = document.getElementById('project-dots');
+
+    if (!grid || !prevBtn || !nextBtn || !dotsContainer || window.innerWidth > 768) return;
 
     var cards = Array.from(grid.children);
-    if (cards.length < 2) return;
+    var dots = Array.from(dotsContainer.children);
+    var currentIndex = 0;
 
-    // Clone items for loop
-    var firstClone = cards[0].cloneNode(true);
-    var lastClone = cards[cards.length - 1].cloneNode(true);
+    function updateSlider(index) {
+      if (index < 0) index = 0;
+      if (index >= cards.length) index = cards.length - 1;
 
-    grid.prepend(lastClone);
-    grid.appendChild(firstClone);
+      currentIndex = index;
 
-    var cardWidth = 100; // 100vw total including margins in CSS? 
-    // Actually in my CSS: flex: 0 0 80vw; margin: 0 10vw;
-    // So one item's total width is 100vw. Perfect.
+      // Scroll the grid
+      grid.scrollTo({
+        left: currentIndex * window.innerWidth,
+        behavior: 'smooth'
+      });
 
-    // Center the initial real first card
-    grid.scrollLeft = window.innerWidth;
+      // Update dots
+      dots.forEach(function(dot, i) {
+        if (i === currentIndex) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
 
-    grid.addEventListener('scroll', function() {
-      var scrollPos = grid.scrollLeft;
-      var maxScroll = grid.scrollWidth - grid.clientWidth;
+      // Update button states (optional: disable/opacity)
+      prevBtn.style.opacity = currentIndex === 0 ? '0.3' : '1';
+      prevBtn.style.pointerEvents = currentIndex === 0 ? 'none' : 'auto';
+      nextBtn.style.opacity = currentIndex === cards.length - 1 ? '0.3' : '1';
+      nextBtn.style.pointerEvents = currentIndex === cards.length - 1 ? 'none' : 'auto';
+    }
 
-      if (scrollPos <= 0) {
-        grid.scrollLeft = maxScroll - grid.clientWidth;
-      } else if (scrollPos >= maxScroll) {
-        grid.scrollLeft = grid.clientWidth;
-      }
+    prevBtn.addEventListener('click', function() {
+      updateSlider(currentIndex - 1);
     });
 
-    // Touch feedback
-    grid.addEventListener('touchstart', function() {
-      grid.style.scrollSnapType = 'none';
-    }, {passive: true});
+    nextBtn.addEventListener('click', function() {
+      updateSlider(currentIndex + 1);
+    });
 
-    grid.addEventListener('touchend', function() {
-      grid.style.scrollSnapType = 'x mandatory';
-    }, {passive: true});
+    // Optional: click dots to jump
+    dots.forEach(function(dot, i) {
+      dot.addEventListener('click', function() {
+        updateSlider(i);
+      });
+    });
+
+    // Handle resize to keep current card centered
+    var resizeTimer;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function() {
+        if (window.innerWidth <= 768) {
+          grid.scrollTo({ left: currentIndex * window.innerWidth });
+        }
+      }, 250);
+    });
+
+    // Initial state
+    updateSlider(0);
   }
 
   /* ── Initializations ── */
