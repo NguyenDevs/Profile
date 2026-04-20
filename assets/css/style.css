@@ -1036,7 +1036,7 @@ html { scroll-behavior: smooth; }
     transform: translateX(0);
     gap: 10px;
     opacity: 0;
-    align-items: center; /* Center items horizontally */
+    align-items: center;
     width: 100%;
   }
 
