@@ -5,12 +5,12 @@
     {
       "source": "/",
       "has": [{ "type": "host", "value": "projects.nguyendevs.io.vn" }],
-      "destination": "/projects"
+      "destination": "/projects.html"
     },
     {
       "source": "/",
       "has": [{ "type": "host", "value": "info.nguyendevs.io.vn" }],
-      "destination": "/info"
+      "destination": "/info.html"
     }
   ],
   "headers": [
