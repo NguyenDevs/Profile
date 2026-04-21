@@ -519,7 +519,10 @@
       if (e.target.closest('#music-btn')) {
         e.stopPropagation();
         stopAutoCollapse(); 
-        if (elements.mobilePlayer) elements.mobilePlayer.classList.toggle('expanded');
+        if (elements.mobilePlayer) {
+          elements.mobilePlayer.classList.toggle('expanded');
+          if (elements.mobilePlayer.classList.contains('expanded')) startAutoCollapse();
+        }
         return;
       }
       
@@ -550,7 +553,10 @@
           if (elements.dPlaylistContainer) {
             elements.dPlaylistContainer.classList.toggle('expanded');
             document.querySelector('.sidebar-wrapper')?.classList.toggle('playlist-is-expanded');
-            if (elements.dPlaylistContainer.classList.contains('expanded')) startAutoCollapse();
+            if (elements.dPlaylistContainer.classList.contains('expanded') || 
+                (elements.mobilePlayer && elements.mobilePlayer.classList.contains('expanded'))) {
+              startAutoCollapse();
+            }
           }
         }
         return;
