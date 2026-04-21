@@ -470,6 +470,7 @@
         var perc = (music.currentTime / music.duration) * 100;
         if (elements.dProgressBar) elements.dProgressBar.style.width = perc + '%';
         if (elements.dCurrentTime) elements.dCurrentTime.textContent = formatTime(music.currentTime);
+        if (elements.dDuration) elements.dDuration.textContent = formatTime(music.duration);
         if (elements.dTrackName && playlist[currentTrackIndex]) {
            elements.dTrackName.textContent = playlist[currentTrackIndex].name + " — " + playlist[currentTrackIndex].artist;
         }
@@ -568,7 +569,15 @@
       }
 
       if (elements.mobilePlayer && elements.mobilePlayer.classList.contains('expanded') && !e.target.closest('#mobile-music-player')) {
-        elements.mobilePlayer.classList.remove('expanded');
+        if (elements.dPlaylistContainer?.classList.contains('expanded')) {
+          elements.dPlaylistContainer.classList.remove('expanded');
+          document.querySelector('.sidebar-wrapper')?.classList.remove('playlist-is-expanded');
+          setTimeout(function() {
+            elements.mobilePlayer.classList.remove('expanded');
+          }, 800);
+        } else {
+          elements.mobilePlayer.classList.remove('expanded');
+        }
       }
     });
 
@@ -588,7 +597,7 @@
     var sidebarWrapper = document.querySelector('.sidebar-wrapper');
     var autoCollapseTimer = null;
 
-    function startAutoCollapse() {
+    function startAutoCollapse(delay = 2500) {
       if (autoCollapseTimer) clearTimeout(autoCollapseTimer);
       autoCollapseTimer = setTimeout(function() {
         var isHovering = (elements.mobilePlayer && elements.mobilePlayer.matches(':hover')) || 
@@ -602,11 +611,14 @@
         if (elements.dPlaylistContainer?.classList.contains('expanded')) {
           elements.dPlaylistContainer.classList.remove('expanded');
           document.querySelector('.sidebar-wrapper')?.classList.remove('playlist-is-expanded');
+          startAutoCollapse(800); 
+          return;
         }
+
         if (elements.mobilePlayer?.classList.contains('expanded')) {
           elements.mobilePlayer.classList.remove('expanded');
         }
-      }, 2500);
+      }, delay);
     }
 
     function stopAutoCollapse() {
