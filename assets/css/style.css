@@ -1631,3 +1631,27 @@ body.is-mobile .music-toggle {
   display: block;
   color: var(--accent);
 }
+
+/* Page Loading Progress Bar */
+.page-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent3));
+  z-index: 10000;
+  transition: width 0.4s cubic-bezier(0.1, 0.7, 1, 0.1);
+  box-shadow: 0 0 10px var(--accent);
+  pointer-events: none;
+  width: 0%;
+  opacity: 0;
+}
+.page-loader.loading {
+  opacity: 1;
+  width: 70%;
+}
+.page-loader.finished {
+  width: 100% !important;
+  transition: width 0.2s ease, opacity 0.3s 0.2s ease;
+  opacity: 0;
+}
