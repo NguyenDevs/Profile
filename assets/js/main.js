@@ -84,6 +84,12 @@
 
     var music = document.getElementById('bg-music');
     var wasPlaying = music ? !music.paused : false;
+    
+    // Save current state before transition
+    if (music) {
+      localStorage.setItem('music_current_time', music.currentTime);
+      localStorage.setItem('music_paused', music.paused);
+    }
 
     // Show Loader
     var loader = document.getElementById('page-loader');
@@ -155,7 +161,7 @@
 
         updateNavActiveState();
         
-        if (typeof syncPlayerElements === 'function') syncPlayerElements();
+        if (typeof syncPlayerElements === 'function') syncPlayerElements(false);
 
         // Finish Loader
         if (loader) {
@@ -296,7 +302,7 @@
     var lastVolume = parseFloat(localStorage.getItem('music_volume')) || 0.5; 
 
     var elements = {};
-    function syncPlayerElements() {
+    function syncPlayerElements(isInitialLoad) {
       elements.btn = document.getElementById('music-btn');
       elements.mobilePlayer = document.getElementById('mobile-music-player');
       elements.mPlayPauseBtn = document.getElementById('mobile-play-pause');
@@ -316,19 +322,20 @@
       elements.dPlaylistInner = document.getElementById('player-playlist-inner');
       elements.dVolumeSlider = document.getElementById('player-volume');
       elements.dMuteBtn = document.getElementById('player-mute');
+      elements.dMuteBtn = document.getElementById('player-mute');
       elements.dTogglePlaylist = document.getElementById('player-toggle-playlist');
       elements.mModal = document.getElementById('mobile-playlist-modal');
       elements.mModalList = document.getElementById('mobile-playlist-list');
       elements.mModalClose = document.getElementById('close-playlist-modal');
       elements.mModalOverlay = document.getElementById('modal-overlay');
 
-      setupPlaylist();
+      setupPlaylist(isInitialLoad);
       updateUI();
     }
     window.syncPlayerElements = syncPlayerElements;
 
     // Build playlist UI for desktop and mobile
-    function setupPlaylist() {
+    function setupPlaylist(isInitialLoad) {
       if (elements.dPlaylistInner) {
         elements.dPlaylistInner.innerHTML = ''; 
         playlist.forEach(function(track, index) {
@@ -367,17 +374,35 @@
         });
       }
 
-      var savedTrack = localStorage.getItem('music_track_index');
-      if (savedTrack !== null) {
-        currentTrackIndex = parseInt(savedTrack, 10);
-        if (currentTrackIndex >= playlist.length) currentTrackIndex = 0;
-      }
+      // ONLY set track and time if it's the initial page load or if music is currently empty
+      var hasSource = music.src && music.src !== '' && music.src !== window.location.href;
+      if (isInitialLoad || !hasSource) {
+        var savedTrack = localStorage.getItem('music_track_index');
+        if (savedTrack !== null) {
+          currentTrackIndex = parseInt(savedTrack, 10);
+          if (currentTrackIndex >= playlist.length) currentTrackIndex = 0;
+        }
+        loadTrack(currentTrackIndex);
 
-      loadTrack(currentTrackIndex);
-
-      var savedTime = localStorage.getItem('music_current_time');
-      if (savedTime !== null) {
-        music.currentTime = parseFloat(savedTime);
+        var savedTime = localStorage.getItem('music_current_time');
+        if (savedTime !== null) {
+          music.currentTime = parseFloat(savedTime);
+        }
+      } else {
+        // Just sync currentTrackIndex from existing src if possible
+        var currentFile = music.src.split('/').pop();
+        playlist.forEach(function(track, idx) {
+          if (decodeURIComponent(currentFile) === track.file) {
+            currentTrackIndex = idx;
+          }
+        });
+        // Still need to update display texts
+        var track = playlist[currentTrackIndex];
+        if (track && elements.dTrackName) {
+           elements.dTrackName.textContent = track.name + " — " + track.artist;
+        }
+        // Update active class in lists
+        updatePlaylistActiveStates();
       }
     }
 
@@ -405,6 +430,7 @@
       currentTrackIndex = index;
       localStorage.setItem('music_track_index', index);
       var track = playlist[index];
+      if (!track) return;
       
       // Only change src if it's different to avoid re-load flash
       var newSrc = 'assets/music/' + track.file;
@@ -414,16 +440,19 @@
       }
       
       if (elements.dTrackName) elements.dTrackName.textContent = track.name + " — " + track.artist;
-      
+      updatePlaylistActiveStates();
+    }
+
+    function updatePlaylistActiveStates() {
       var items = document.querySelectorAll('.playlist-item');
       items.forEach(function(item, i) {
-        if (i === index) item.classList.add('active');
+        if (i === currentTrackIndex) item.classList.add('active');
         else item.classList.remove('active');
       });
 
       var mItems = document.querySelectorAll('.m-playlist-item');
       mItems.forEach(function(item, i) {
-        if (i === index) item.classList.add('active');
+        if (i === currentTrackIndex) item.classList.add('active');
         else item.classList.remove('active');
       });
     }
@@ -469,11 +498,19 @@
       // Progress sync
       if (music.duration) {
         var perc = (music.currentTime / music.duration) * 100;
-        if (elements.dProgressBar) elements.dProgressBar.style.width = perc + '%';
-        if (elements.dCurrentTime) elements.dCurrentTime.textContent = formatTime(music.currentTime);
-        if (elements.dDuration) elements.dDuration.textContent = formatTime(music.duration);
-        if (elements.dTrackName && playlist[currentTrackIndex]) {
-           elements.dTrackName.textContent = playlist[currentTrackIndex].name + " — " + playlist[currentTrackIndex].artist;
+        var progressBars = document.querySelectorAll('#player-progress-bar');
+        progressBars.forEach(function(bar) { bar.style.width = perc + '%' });
+        
+        var currentTimes = document.querySelectorAll('#player-current-time');
+        currentTimes.forEach(function(el) { el.textContent = formatTime(music.currentTime) });
+        
+        var durations = document.querySelectorAll('#player-duration');
+        durations.forEach(function(el) { el.textContent = formatTime(music.duration) });
+        
+        var trackNames = document.querySelectorAll('#player-track-name');
+        var track = playlist[currentTrackIndex];
+        if (track) {
+          trackNames.forEach(function(el) { el.textContent = track.name + " — " + track.artist });
         }
       }
 
@@ -584,13 +621,6 @@
         return;
       }
 
-      if (e.target.closest('#player-progress-container')) {
-        var container = e.target.closest('#player-progress-container');
-        var clickX = e.offsetX;
-        music.currentTime = (clickX / container.clientWidth) * music.duration;
-        return;
-      }
-
       if (e.target.closest('#player-mute')) {
         e.stopPropagation();
         if (music.volume > 0) {
@@ -601,6 +631,14 @@
         }
         localStorage.setItem('music_volume', music.volume);
         updateUI();
+        return;
+      }
+
+      if (e.target.closest('.player-progress') || e.target.closest('#player-progress-container')) {
+        var container = e.target.closest('.player-progress');
+        var rect = container.getBoundingClientRect();
+        var clickX = e.clientX - rect.left;
+        music.currentTime = (clickX / container.clientWidth) * music.duration;
         return;
       }
 
@@ -637,7 +675,7 @@
 
     music.addEventListener('ended', nextTrack);
 
-    syncPlayerElements();
+    syncPlayerElements(true);
 
     var sidebarWrapper = document.querySelector('.sidebar-wrapper');
     var autoCollapseTimer = null;
