@@ -136,6 +136,7 @@
     ];
 
     var currentTrackIndex = 0;
+    var isManuallyPaused = localStorage.getItem('music_paused') === 'true';
 
     // Build playlist UI for desktop and mobile
     function setupPlaylist() {
@@ -177,7 +178,18 @@
         });
       }
 
-      loadTrack(0);
+      var savedTrack = localStorage.getItem('music_track_index');
+      if (savedTrack !== null) {
+        currentTrackIndex = parseInt(savedTrack, 10);
+        if (currentTrackIndex >= playlist.length) currentTrackIndex = 0;
+      }
+
+      loadTrack(currentTrackIndex);
+
+      var savedTime = localStorage.getItem('music_current_time');
+      if (savedTime !== null) {
+        music.currentTime = parseFloat(savedTime);
+      }
     }
 
     fetch('/api/music')
@@ -206,6 +218,7 @@
     // Load track by index
     function loadTrack(index) {
       currentTrackIndex = index;
+      localStorage.setItem('music_track_index', index);
       var track = playlist[index];
       music.src = 'assets/music/' + track.file;
       if (dTrackName) dTrackName.textContent = track.name + " — " + track.artist;
@@ -226,6 +239,7 @@
     // Sync all play/pause UI elements
     function updateUI() {
       var isPaused = music.paused;
+      localStorage.setItem('music_paused', isPaused);
       
       if (btn) {
         if (isPaused) {
@@ -291,7 +305,10 @@
     if (btn) {
       btn.addEventListener('click', function(e) {
         e.stopPropagation();
-        if (mobilePlayer) mobilePlayer.classList.toggle('expanded');
+        stopAutoCollapse(); 
+        if (mobilePlayer) {
+          mobilePlayer.classList.toggle('expanded');
+        }
       });
     }
 
@@ -330,6 +347,7 @@
       var perc = (music.currentTime / music.duration) * 100;
       if (dProgressBar) dProgressBar.style.width = perc + '%';
       if (dCurrentTime) dCurrentTime.textContent = formatTime(music.currentTime);
+      localStorage.setItem('music_current_time', music.currentTime);
     });
 
     music.addEventListener('loadedmetadata', function() {
@@ -401,17 +419,63 @@
     }
 
     var sidebarWrapper = document.querySelector('.sidebar-wrapper');
+    var autoCollapseTimer = null;
+
+    function startAutoCollapse() {
+      if (autoCollapseTimer) clearTimeout(autoCollapseTimer);
+      
+      autoCollapseTimer = setTimeout(function() {
+        // Step 1: Close playlist first if it's open
+        if (dPlaylistContainer && dPlaylistContainer.classList.contains('expanded')) {
+          dPlaylistContainer.classList.remove('expanded');
+          if (sidebarWrapper) sidebarWrapper.classList.remove('playlist-is-expanded');
+          
+          // IMPORTANT: Only start the next timer if we are NOT hovering
+          if (mobilePlayer && !mobilePlayer.matches(':hover')) {
+            startAutoCollapse();
+          }
+          return;
+        }
+        
+        // Step 2: Close expanded player back to button
+        if (mobilePlayer && mobilePlayer.classList.contains('expanded')) {
+          mobilePlayer.classList.remove('expanded');
+        }
+      }, 2500);
+    }
+
+    function stopAutoCollapse() {
+      if (autoCollapseTimer) clearTimeout(autoCollapseTimer);
+    }
+
     if (dTogglePlaylist && dPlaylistContainer) {
-      dTogglePlaylist.addEventListener('click', function() {
+      dTogglePlaylist.addEventListener('click', function(e) {
+        e.stopPropagation();
         dPlaylistContainer.classList.toggle('expanded');
         if (sidebarWrapper) {
           sidebarWrapper.classList.toggle('playlist-is-expanded');
         }
+        
+        // If we just expanded it, start the timer if not hovering
+        if (dPlaylistContainer.classList.contains('expanded')) {
+          startAutoCollapse();
+        }
       });
+    }
+
+    if (mobilePlayer) {
+      mobilePlayer.addEventListener('mouseenter', stopAutoCollapse);
+      mobilePlayer.addEventListener('mousemove', stopAutoCollapse);
+      mobilePlayer.addEventListener('mouseleave', startAutoCollapse);
     }
 
     // Attempt autoplay on first user interaction
     var tryAutoPlay = function() {
+      if (isManuallyPaused) {
+        window.removeEventListener('click', tryAutoPlay);
+        window.removeEventListener('touchstart', tryAutoPlay);
+        return;
+      }
       music.play().then(function() {
         updateUI();
         window.removeEventListener('click', tryAutoPlay);
