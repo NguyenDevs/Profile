@@ -142,10 +142,10 @@ html { scroll-behavior: smooth; }
     max-width: 1000px;
     height: 100vh;
     display: grid;
-    grid-template-columns: 360px 1fr;
+    grid-template-columns: 358.4px 1fr;
     gap: 32px;
     padding: 30px 24px;
-    align-items: start;
+    align-items: stretch;
     box-sizing: border-box;
   }
   
@@ -158,6 +158,9 @@ html { scroll-behavior: smooth; }
     border-radius: 24px;
     padding-bottom: 20px;
     overflow: hidden;
+    width: 358.4px;
+    height: 452.6px;
+    flex: 1;
     box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -179,7 +182,7 @@ html { scroll-behavior: smooth; }
     border-radius: 24px;
     padding: 10px 0 30px;
     box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-    max-height: calc(100vh - 60px);
+    height: calc(100vh - 60px);
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
@@ -798,9 +801,8 @@ html { scroll-behavior: smooth; }
 @media (min-width: 1025px) {
   .sidebar-wrapper {
     position: relative;
-    height: auto;
+    height: 100%;
     max-height: calc(100vh - 60px);
-    overflow-y: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
