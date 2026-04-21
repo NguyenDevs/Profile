@@ -848,7 +848,7 @@ html { scroll-behavior: smooth; }
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-    transition: all 0.75s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: all 1.0s cubic-bezier(0.19, 1, 0.22, 1);
     overflow: visible;
     padding: 0;
     flex-direction: column;
