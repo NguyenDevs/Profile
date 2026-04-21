@@ -162,7 +162,7 @@ html { scroll-behavior: smooth; }
     height: 452.6px;
     flex: 1;
     box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .playlist-is-expanded .sidebar-section .cover {
@@ -217,7 +217,7 @@ html { scroll-behavior: smooth; }
   margin: 12px 12px 0;
   border-radius: var(--radius);
   border: 1px solid var(--border);
-  transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .cover-img {
   width: 100%;
@@ -225,6 +225,14 @@ html { scroll-behavior: smooth; }
   object-fit: cover;
   object-position: center;
   filter: brightness(0.5) saturate(1.4);
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), filter 0.5s ease;
+  transform-origin: left center;
+  will-change: transform;
+}
+.playlist-is-expanded .cover-img {
+  transform: scale(1.58) translateY(30px);
+  transform-origin: left center;
+  filter: brightness(0.9) saturate(1.6);
 }
 .cover-overlay {
   position: absolute;
