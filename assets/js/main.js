@@ -425,20 +425,17 @@
       if (autoCollapseTimer) clearTimeout(autoCollapseTimer);
       
       autoCollapseTimer = setTimeout(function() {
-        // Step 1: Close playlist first if it's open
         if (dPlaylistContainer && dPlaylistContainer.classList.contains('expanded')) {
           dPlaylistContainer.classList.remove('expanded');
           if (sidebarWrapper) sidebarWrapper.classList.remove('playlist-is-expanded');
           
-          // IMPORTANT: Only start the next timer if we are NOT hovering either player
           var isHovering = (mobilePlayer && mobilePlayer.matches(':hover')) || (dFullPlayer && dFullPlayer.matches(':hover'));
           if (!isHovering) {
             startAutoCollapse();
           }
           return;
         }
-        
-        // Step 2: Close expanded player back to button
+      
         if (mobilePlayer && mobilePlayer.classList.contains('expanded')) {
           mobilePlayer.classList.remove('expanded');
         }
@@ -456,8 +453,7 @@
         if (sidebarWrapper) {
           sidebarWrapper.classList.toggle('playlist-is-expanded');
         }
-        
-        // If we just expanded it, start the timer if not hovering
+      
         if (dPlaylistContainer.classList.contains('expanded')) {
           startAutoCollapse();
         }
