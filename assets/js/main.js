@@ -12,7 +12,7 @@
 
     if (!followerEl || !likesEl) return;
 
-    fetch(TIKTOK_WORKER_URL)
+  fetch(TIKTOK_WORKER_URL)
       .then(function (res) { return res.json(); })
       .then(function (data) {
         var formatNum = function (num) {
@@ -25,8 +25,8 @@
         var displayFollowers = data.followers_raw ? formatNum(data.followers_raw) : (data.followers_fmt || '0');
         var displayLikes     = data.likes_raw ? formatNum(data.likes_raw) : (data.likes_fmt || '0');
 
-        if (displayFollowers) followerEl.textContent = displayFollowers;
-        if (displayLikes)     likesEl.textContent    = displayLikes;
+        if (displayFollowers && followerEl) followerEl.textContent = displayFollowers;
+        if (displayLikes && likesEl)         likesEl.textContent    = displayLikes;
         
         if (data.display_name && nameEl) nameEl.textContent = data.display_name;
         if (data.avatar_url && avatarEl) avatarEl.src = data.avatar_url;
@@ -34,6 +34,136 @@
       .catch(function (e) {
         console.warn('[TikTok stats] Service temporarily unavailable');
       });
+  }
+
+  // --- SPA ROUTER & MUSIC PERSISTENCE ---
+  var isTransitioning = false;
+
+  function initRouting() {
+    window.addEventListener('popstate', function() {
+      loadPage(window.location.pathname, false);
+    });
+
+    // Use capture phase (true) to intercept clicks even if stopPropagation is called on nav items
+    document.addEventListener('click', function(e) {
+      var link = e.target.closest('a');
+      if (!link) return;
+
+      var href = link.getAttribute('href');
+      if (!href) return;
+
+      // Check if it's an internal link (.html or relative path)
+      var isInternal = !href.includes('://') && !href.startsWith('mailto:') && !href.startsWith('tel:');
+      var isLocalFile = href.endsWith('.html') || href.startsWith('./') || href.startsWith('/') || !href.includes('.');
+
+      if (isInternal && isLocalFile && !link.target && !link.hasAttribute('download') && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+        e.preventDefault();
+        e.stopPropagation(); // Stop others from handling it as a normal link
+        
+        var targetUrl = link.href;
+        if (targetUrl === window.location.href) return;
+        
+        console.log('[SPA] Navigating to:', targetUrl);
+        loadPage(targetUrl, true);
+      }
+    }, true); 
+
+    // Event to force music play if it was playing before transition
+    document.addEventListener('forceMusicPlay', function(e) {
+      var music = document.getElementById('bg-music');
+      if (music && e.detail.wasPlaying && music.paused) {
+        music.play().catch(function(err) {
+          console.warn('[SPA] Autoplay resume failed:', err);
+        });
+      }
+    });
+  }
+
+  function loadPage(url, push) {
+    if (isTransitioning) return;
+    isTransitioning = true;
+
+    var music = document.getElementById('bg-music');
+    var wasPlaying = music ? !music.paused : false;
+
+    // Fade out current content
+    var content = document.querySelector('.wrapper') || document.querySelector('.projects-container') || document.querySelector('.coming-soon');
+    if (content) content.style.opacity = '0';
+
+    fetch(url)
+      .then(function(res) { return res.text(); })
+      .then(function(html) {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(html, 'text/html');
+        
+        // Update Title
+        document.title = doc.title;
+
+        // Sync Stylesheets
+        var newLinks = doc.querySelectorAll('link[rel="stylesheet"]');
+        newLinks.forEach(function(link) {
+          var href = link.getAttribute('href');
+          if (!document.querySelector('link[href="' + href + '"]')) {
+            var l = document.createElement('link');
+            l.rel = 'stylesheet';
+            l.href = href;
+            document.head.appendChild(l);
+          }
+        });
+
+        // Find the new content part
+        var newContent = doc.querySelector('.wrapper') || doc.querySelector('.projects-container') || doc.querySelector('.coming-soon');
+        if (!newContent) {
+           window.location.href = url; // Fallback to normal load
+           return;
+        }
+
+        if (push) history.pushState(null, '', url);
+
+        // Replace content
+        if (content) {
+          content.parentElement.replaceChild(newContent, content);
+          newContent.style.opacity = '0';
+          // Force reflow
+          newContent.offsetHeight;
+          newContent.style.transition = 'opacity 0.4s ease';
+          newContent.style.opacity = '1';
+          window.scrollTo(0, 0);
+        }
+
+        // Re-initialize specific components based on the new page
+        if (newContent.classList.contains('projects-grid') || newContent.querySelector('.projects-grid')) {
+          initProjectSlider();
+        }
+        
+        // Sync Bottom Nav Active State
+        updateNavActiveState();
+
+        // Dispatch the requested event
+        var event = new CustomEvent('forceMusicPlay', { detail: { wasPlaying: wasPlaying, url: url } });
+        document.dispatchEvent(event);
+
+        isTransitioning = false;
+      })
+      .catch(function(err) {
+        console.error('[SPA] Navigation Error:', err);
+        window.location.href = url;
+      });
+  }
+
+  function updateNavActiveState() {
+    var path = window.location.pathname;
+    var filename = path.split('/').pop() || 'index.html';
+    
+    var navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(function(item) {
+       var href = item.getAttribute('href');
+       if (href === filename || (filename === 'index.html' && href === './')) {
+         item.classList.add('active');
+       } else {
+         item.classList.remove('active');
+       }
+    });
   }
 
   var checkMobile = function() {
@@ -590,9 +720,11 @@
   initNavigation();
 
   document.addEventListener('DOMContentLoaded', function () {
+    initRouting();
     initDynamicBackground();
     fetchTikTokStats();
     initProjectSlider();
+    updateNavActiveState();
   });
 
 })();
