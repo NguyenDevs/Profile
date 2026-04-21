@@ -144,6 +144,15 @@
           initProjectSlider();
         }
         
+        var mPlayer = document.getElementById('mobile-music-player');
+        if (mPlayer) {
+          if (newContent.classList.contains('projects-container') || newContent.classList.contains('coming-soon')) {
+            mPlayer.classList.add('mini-player-mode');
+          } else {
+            mPlayer.classList.remove('mini-player-mode');
+          }
+        }
+
         updateNavActiveState();
         
         if (typeof syncPlayerElements === 'function') syncPlayerElements();
@@ -242,7 +251,6 @@
     }
   }
 
-  // Initialize music player
   function initMusicPlayer() {
     var music = document.getElementById('bg-music');
     var mobilePlayer = document.getElementById('mobile-music-player');
@@ -275,7 +283,6 @@
 
     if (!music) return;
 
-    // Player State
     var playlist = [
       { name: "Memory Reboot", artist: "VØJ x Narvent", file: "VØJ x Narvent - Memory Reboot.mp3" },
       { name: "Lost Road", artist: "Aurenth x Knonzzz", file: "Aurenth x Knonzzz - Lost Road.mp3" },
@@ -287,7 +294,6 @@
     var currentTrackIndex = 0;
     var isManuallyPaused = localStorage.getItem('music_paused') === 'true';
 
-    // UI Elements (Dynamic sync)
     var elements = {};
     function syncPlayerElements() {
       elements.btn = document.getElementById('music-btn');
@@ -315,8 +321,7 @@
       elements.mModalClose = document.getElementById('close-playlist-modal');
       elements.mModalOverlay = document.getElementById('modal-overlay');
 
-      // Update static info right away
-      if (music.duration && elements.dDuration) elements.dDuration.textContent = formatTime(music.duration);
+      setupPlaylist();
       updateUI();
     }
     window.syncPlayerElements = syncPlayerElements;
@@ -509,7 +514,6 @@
       }
     }
 
-    // Event Delegation for persistent player controls
     document.addEventListener('click', function(e) {
       if (e.target.closest('#music-btn')) {
         e.stopPropagation();
@@ -579,7 +583,6 @@
 
     music.addEventListener('ended', nextTrack);
 
-    // Initial sync
     syncPlayerElements();
 
     var sidebarWrapper = document.querySelector('.sidebar-wrapper');
@@ -588,6 +591,14 @@
     function startAutoCollapse() {
       if (autoCollapseTimer) clearTimeout(autoCollapseTimer);
       autoCollapseTimer = setTimeout(function() {
+        var isHovering = (elements.mobilePlayer && elements.mobilePlayer.matches(':hover')) || 
+                         (elements.dFullPlayer && elements.dFullPlayer.matches(':hover'));
+        
+        if (isHovering) {
+           startAutoCollapse();
+           return;
+        }
+
         if (elements.dPlaylistContainer?.classList.contains('expanded')) {
           elements.dPlaylistContainer.classList.remove('expanded');
           document.querySelector('.sidebar-wrapper')?.classList.remove('playlist-is-expanded');
