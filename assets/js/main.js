@@ -430,8 +430,9 @@
           dPlaylistContainer.classList.remove('expanded');
           if (sidebarWrapper) sidebarWrapper.classList.remove('playlist-is-expanded');
           
-          // IMPORTANT: Only start the next timer if we are NOT hovering
-          if (mobilePlayer && !mobilePlayer.matches(':hover')) {
+          // IMPORTANT: Only start the next timer if we are NOT hovering either player
+          var isHovering = (mobilePlayer && mobilePlayer.matches(':hover')) || (dFullPlayer && dFullPlayer.matches(':hover'));
+          if (!isHovering) {
             startAutoCollapse();
           }
           return;
@@ -467,6 +468,12 @@
       mobilePlayer.addEventListener('mouseenter', stopAutoCollapse);
       mobilePlayer.addEventListener('mousemove', stopAutoCollapse);
       mobilePlayer.addEventListener('mouseleave', startAutoCollapse);
+    }
+
+    if (dFullPlayer) {
+      dFullPlayer.addEventListener('mouseenter', stopAutoCollapse);
+      dFullPlayer.addEventListener('mousemove', stopAutoCollapse);
+      dFullPlayer.addEventListener('mouseleave', startAutoCollapse);
     }
 
     // Attempt autoplay on first user interaction
