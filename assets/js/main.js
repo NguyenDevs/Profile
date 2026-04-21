@@ -14,8 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchTikTokStats();
   initProjectSlider();
   updateNavActiveState();
-  
-  // Hiển thị nội dung sau khi load xong
+
   document.body.classList.add('loaded');
 });
 
