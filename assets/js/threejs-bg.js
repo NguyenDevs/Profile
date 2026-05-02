@@ -75,60 +75,7 @@
     scene.add(fillLight);
 
     // ── Procedural Textures ─────────────────────────────────────────────────
-    // 1. Sparse Lightning Cracks Emissive Map
-    function genTechTexture() { // Kept name for compatibility
-      const size = 512;
-      const cvs = document.createElement('canvas');
-      cvs.width = size; cvs.height = size;
-      const ctx = cvs.getContext('2d');
-      ctx.fillStyle = '#000'; 
-      ctx.fillRect(0,0,size,size);
-      
-      ctx.strokeStyle = '#fff'; 
-      ctx.shadowBlur = 12;
-      ctx.shadowColor = '#fff';
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      
-      function drawLightning(startX, startY, endX, endY, branches, thickness) {
-          ctx.beginPath();
-          ctx.moveTo(startX, startY);
-          let cx = startX, cy = startY;
-          const steps = 15;
-          for(let i=1; i<=steps; i++) {
-              const tx = startX + (endX - startX) * (i/steps);
-              const ty = startY + (endY - startY) * (i/steps);
-              cx = tx + (Math.random() - 0.5) * 50;
-              cy = ty + (Math.random() - 0.5) * 50;
-              ctx.lineTo(cx, cy);
-              
-              if(branches > 0 && Math.random() < 0.25) {
-                  const bx = cx + (Math.random() - 0.5) * 150;
-                  const by = cy + (Math.random() - 0.5) * 150;
-                  ctx.save();
-                  ctx.beginPath();
-                  ctx.moveTo(cx, cy);
-                  drawLightning(cx, cy, bx, by, branches - 1, thickness * 0.6);
-                  ctx.restore();
-                  ctx.moveTo(cx, cy); // Resume from main branch
-              }
-          }
-          ctx.lineWidth = thickness;
-          ctx.stroke();
-      }
-
-      // Draw a few continuous lightning cracks crossing the texture
-      for(let i=0; i<3; i++) { 
-          drawLightning(Math.random()*size, 0, Math.random()*size, size, 2, 4);
-          drawLightning(0, Math.random()*size, size, Math.random()*size, 2, 4);
-      }
-
-      const tex = new THREE.CanvasTexture(cvs);
-      tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
-      return tex;
-    }
-
-    // 2. Stone Bump Map for rough surface
+    // 1. Stone Bump Map for rough surface
     function genStoneBump() {
       const size = 256;
       const cvs = document.createElement('canvas');
@@ -145,7 +92,7 @@
       return tex;
     }
 
-    const techTex = genTechTexture();
+    const bumpTex = genStoneBump();
     const bumpTex = genStoneBump();
 
     // ── Morphing Core Element ───────────────────────────────────────────────
@@ -153,7 +100,8 @@
     mainGroup.add(coreGroup);
 
     const CORE_RADIUS = 1.4;
-    const coreGeo = new THREE.SphereGeometry(CORE_RADIUS, 64, 32);
+    // Icosahedron has an evenly distributed mesh without poles
+    const coreGeo = new THREE.IcosahedronGeometry(CORE_RADIUS, 5); // High detail for smooth morphing
     const basePos = new Float32Array(coreGeo.attributes.position.array);
     const N = basePos.length / 3;
     const thetaArr = new Float32Array(N);
@@ -162,7 +110,7 @@
     for (let i = 0; i < N; i++) {
         const x = basePos[i*3] / CORE_RADIUS, y = basePos[i*3+1] / CORE_RADIUS, z = basePos[i*3+2] / CORE_RADIUS;
         thetaArr[i] = Math.atan2(y, x);
-        phiArr[i] = Math.acos(z);
+        phiArr[i] = Math.acos(Math.max(-1, Math.min(1, z))); // Clamped to avoid NaN
     }
 
     const coreMat = new THREE.MeshStandardMaterial({
@@ -196,16 +144,15 @@
     coreGroup.add(glowOrb);
 
     // ── Fragmented Rings ────────────────────────────────────────────────────
-    function createFragmentedRing(innerR, outerR, depth, fragmentsCount, rotSpeed, axis) {
+    function createFragmentedRing(innerR, outerR, depth, fragmentsCount, rotSpeed, axis, hiddenIndices = null) {
       const group = new THREE.Group();
       
       const stoneMat = new THREE.MeshStandardMaterial({
-        color: 0x3a304a,
+        color: 0x3a304a, // Darker stone to let emissive pop
         metalness: 0.3,
         roughness: 0.8,
         bumpMap: bumpTex,
-        bumpScale: 0.015,
-        emissiveMap: techTex,
+        bumpScale: 0.015, // Rough stone feel
         emissive: 0x9900ff,
         emissiveIntensity: 1.5,
       });
@@ -214,71 +161,51 @@
         color: 0x2a203a,
         metalness: 0.6,
         roughness: 0.4,
-        emissiveMap: techTex,
-        emissive: 0x7700dd, // Slightly dimmer glow on the inner/outer walls
-        emissiveIntensity: 1.2,
+        emissive: 0x9900ff,
+        emissiveIntensity: 1.5,
       });
 
       const materials = [stoneMat, bevelMat];
+      const gap = 0.3; 
+      const totalArc = Math.PI * 2;
+      const arcLength = (totalArc / fragmentsCount) - gap;
       
-      let currentAngle = 0;
-      while (currentAngle < Math.PI * 2) {
-          // Random contiguous chunk length
-          let chunkLength = 0.5 + Math.random() * 1.5; 
-          if (currentAngle + chunkLength > Math.PI * 2) chunkLength = Math.PI * 2 - currentAngle;
-          
-          let gap = 0.1 + Math.random() * 0.25;
-          if (Math.random() > 0.85) gap += 0.4; // Occasional large missing chunk
-          
-          // Decide if this chunk should be cracked into floating sub-fragments
-          const isBroken = Math.random() > 0.6;
-          const pieces = isBroken ? (2 + Math.floor(Math.random() * 3)) : 1;
-          const pieceLength = Math.max(0, (chunkLength - gap) / pieces);
-          
-          for(let p=0; p<pieces; p++) {
-              if (pieceLength <= 0.05) continue; // Too small
-              
-              const start = currentAngle + p * pieceLength + (p > 0 ? 0.02 : 0); // tiny crack gap
-              const actualLength = pieceLength - (p < pieces-1 ? 0.02 : 0);
-              
-              const shape = new THREE.Shape();
-              shape.absarc(0, 0, outerR, start, start + actualLength, false);
-              shape.lineTo(Math.cos(start + actualLength) * innerR, Math.sin(start + actualLength) * innerR);
-              shape.absarc(0, 0, innerR, start + actualLength, start, true);
-              shape.lineTo(Math.cos(start) * outerR, Math.sin(start) * outerR);
-              
-              const extrudeSettings = {
-                depth: depth, bevelEnabled: true, bevelSegments: 3, steps: 1, bevelSize: 0.05, bevelThickness: 0.05, curveSegments: 32
-              };
-              
-              const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-              geo.translate(0, 0, -depth / 2);
-              
-              const mesh = new THREE.Mesh(geo, materials);
-              
-              // If it's a broken sub-fragment, randomly displace it slightly
-              if (isBroken && pieces > 1) {
-                  const midAngle = start + actualLength/2;
-                  const offsetR = (Math.random() - 0.5) * 0.15;
-                  const offsetZ = (Math.random() - 0.5) * 0.15;
-                  mesh.position.set(Math.cos(midAngle) * offsetR, Math.sin(midAngle) * offsetR, offsetZ);
-                  mesh.rotation.set((Math.random() - 0.5) * 0.05, (Math.random() - 0.5) * 0.05, 0);
-              }
+      for (let i = 0; i < fragmentsCount; i++) {
+        if (hiddenIndices && hiddenIndices.includes(i)) continue;
+        if (!hiddenIndices && fragmentsCount > 3 && Math.random() > 0.85) continue;
+        const start = i * (totalArc / fragmentsCount);
+        
+        const shape = new THREE.Shape();
+        shape.absarc(0, 0, outerR, start, start + arcLength, false);
+        shape.lineTo(Math.cos(start + arcLength) * innerR, Math.sin(start + arcLength) * innerR);
+        shape.absarc(0, 0, innerR, start + arcLength, start, true);
+        shape.lineTo(Math.cos(start) * outerR, Math.sin(start) * outerR);
+        
+        const extrudeSettings = {
+          depth: depth, bevelEnabled: true, bevelSegments: 3, steps: 1, bevelSize: 0.05, bevelThickness: 0.05, curveSegments: 48
+        };
+        
+        const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
 
-              mesh.castShadow = true;
-              mesh.receiveShadow = true;
-              group.add(mesh);
-          }
-          currentAngle += chunkLength;
+        geo.translate(0, 0, -depth / 2);
+        
+        const mesh = new THREE.Mesh(geo, materials);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true; // Enables self-shadowing and deep shadows
+        group.add(mesh);
       }
 
       return { obj: group, axis: axis.normalize(), speed: rotSpeed };
     }
 
+    const validPairs = [[0,2], [0,3], [0,4], [1,3], [1,4], [1,5], [2,4], [2,5], [3,5]];
+    const ring4Skip = validPairs[Math.floor(Math.random() * validPairs.length)];
+
     const rings = [
       createFragmentedRing(3.0, 3.6, 0.6, 3, 0.007, new THREE.Vector3(1, 0.5, 0.2)),
       createFragmentedRing(4.2, 5.0, 0.8, 4, -0.004, new THREE.Vector3(-0.5, 1, 0.5)),
       createFragmentedRing(5.6, 6.6, 1.2, 5, 0.003, new THREE.Vector3(0.2, -0.5, 1)),
+      createFragmentedRing(7.2, 8.4, 1.4, 6, -0.002, new THREE.Vector3(0.5, 0.8, -0.3), ring4Skip),
     ];
     rings.forEach(r => mainGroup.add(r.obj));
 
@@ -287,7 +214,7 @@
     mainGroup.add(debrisGroup);
     const debrisMat = new THREE.MeshStandardMaterial({ 
         color: 0x3a304a, roughness: 0.9, metalness: 0.2, bumpMap: bumpTex, bumpScale: 0.02,
-        emissiveMap: techTex, emissive: 0x6600aa, emissiveIntensity: 0.8
+        emissive: 0x6600aa, emissiveIntensity: 0.8
     });
 
     for(let i=0; i<50; i++) {
@@ -375,26 +302,39 @@
       mainGroup.quaternion.copy(rotQ);
 
       // Morphing Core
-      const morphCycle = (t * 0.8) % 3;
+      const morphCycle = (t * 0.6) % 4;
       const positions = coreGeo.attributes.position.array;
       for (let i = 0; i < N; i++) {
           const idx = i * 3, bx = basePos[idx], by = basePos[idx+1], bz = basePos[idx+2];
-          const max = Math.max(Math.abs(bx), Math.abs(by), Math.abs(bz));
-          const cx = bx / max * 0.85, cy = by / max * 0.85, cz = bz / max * 0.85;
           const theta = thetaArr[i], phi = phiArr[i];
-          const r = 1.0 + 0.3 * Math.sin(4 * theta + t * 2) * Math.sin(3 * phi - t);
-          const blx = bx * r * 0.9, bly = by * r * 0.9, blz = bz * r * 0.9;
+          
+          // Target 0: Base Sphere (bx, by, bz)
+          
+          // Target 1: Spiky Energy Core
+          const r1 = 1.0 + 0.3 * Math.sin(6 * theta + t * 3) * Math.sin(5 * phi - t * 2);
+          const tx1 = bx * r1, ty1 = by * r1, tz1 = bz * r1;
+          
+          // Target 2: Organic Blob
+          const r2 = 1.0 + 0.25 * Math.sin(3 * theta - t * 1.5) + 0.2 * Math.cos(4 * phi + t);
+          const tx2 = bx * r2, ty2 = by * r2, tz2 = bz * r2;
+          
+          // Target 3: Pulsing Ripple
+          const r3 = 1.0 + 0.15 * Math.sin(10 * phi - t * 6) + 0.1 * Math.sin(8 * theta + t * 4);
+          const tx3 = bx * r3, ty3 = by * r3, tz3 = bz * r3;
 
           let tx, ty, tz;
           if (morphCycle < 1) {
               const lerp = smoothstep(morphCycle);
-              tx = bx + (cx - bx) * lerp; ty = by + (cy - by) * lerp; tz = bz + (cz - bz) * lerp;
+              tx = bx + (tx1 - bx) * lerp; ty = by + (ty1 - by) * lerp; tz = bz + (tz1 - bz) * lerp;
           } else if (morphCycle < 2) {
               const lerp = smoothstep(morphCycle - 1);
-              tx = cx + (blx - cx) * lerp; ty = cy + (bly - cy) * lerp; tz = cz + (blz - cz) * lerp;
-          } else {
+              tx = tx1 + (tx2 - tx1) * lerp; ty = ty1 + (ty2 - ty1) * lerp; tz = tz1 + (tz2 - tz1) * lerp;
+          } else if (morphCycle < 3) {
               const lerp = smoothstep(morphCycle - 2);
-              tx = blx + (bx - blx) * lerp; ty = bly + (by - bly) * lerp; tz = blz + (bz - blz) * lerp;
+              tx = tx2 + (tx3 - tx2) * lerp; ty = ty2 + (ty3 - ty2) * lerp; tz = tz2 + (tz3 - tz2) * lerp;
+          } else {
+              const lerp = smoothstep(morphCycle - 3);
+              tx = tx3 + (bx - tx3) * lerp; ty = ty3 + (by - ty3) * lerp; tz = tz3 + (bz - tz3) * lerp;
           }
           positions[idx] = tx; positions[idx+1] = ty; positions[idx+2] = tz;
       }
