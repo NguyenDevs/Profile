@@ -147,16 +147,16 @@
         roughness: 0.8,
         bumpMap: bumpTex,
         bumpScale: 0.015, 
-        emissive: 0x9900ff,
-        emissiveIntensity: 1.5,
+        emissive: 0x220055,
+        emissiveIntensity: 0.5,
       });
 
       const bevelMat = new THREE.MeshStandardMaterial({
         color: 0x2a203a,
         metalness: 0.6,
         roughness: 0.4,
-        emissive: 0x9900ff,
-        emissiveIntensity: 1.5,
+        emissive: 0x220044,
+        emissiveIntensity: 0.6,
       });
 
       const materials = [stoneMat, bevelMat];
@@ -219,7 +219,7 @@
     mainGroup.add(debrisGroup);
     const debrisMat = new THREE.MeshStandardMaterial({ 
         color: 0x3a304a, roughness: 0.9, metalness: 0.2, bumpMap: bumpTex, bumpScale: 0.02,
-        emissive: 0x6600aa, emissiveIntensity: 0.8
+        emissive: 0x110033, emissiveIntensity: 0.4
     });
 
     for(let i=0; i<20; i++) {
