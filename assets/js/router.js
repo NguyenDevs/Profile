@@ -108,6 +108,9 @@ export function loadPage(url, push) {
         newContent.style.transition = 'opacity 0.4s ease';
         newContent.style.opacity = '1';
         window.scrollTo(0, 0);
+      } else {
+        window.location.href = url;
+        return;
       }
 
       if (newContent.classList.contains('projects-grid') || newContent.querySelector('.projects-grid')) {
