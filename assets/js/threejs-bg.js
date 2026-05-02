@@ -75,53 +75,52 @@
     scene.add(fillLight);
 
     // ── Procedural Textures ─────────────────────────────────────────────────
-    // 1. Organic Stone Cracks Emissive Map
+    // 1. Sparse Lightning Cracks Emissive Map
     function genTechTexture() { // Kept name for compatibility
       const size = 512;
       const cvs = document.createElement('canvas');
       cvs.width = size; cvs.height = size;
       const ctx = cvs.getContext('2d');
-      ctx.fillStyle = '#000'; // Black background (no emission)
+      ctx.fillStyle = '#000'; 
       ctx.fillRect(0,0,size,size);
       
-      ctx.strokeStyle = '#fff'; // White cracks (multiplied by emissive color)
-      ctx.shadowBlur = 15;
+      ctx.strokeStyle = '#fff'; 
+      ctx.shadowBlur = 12;
       ctx.shadowColor = '#fff';
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       
-      // Draw organic branching cracks
-      for(let i=0; i<60; i++) { 
-          let x = Math.random() * size;
-          let y = Math.random() * size;
+      function drawLightning(startX, startY, endX, endY, branches, thickness) {
           ctx.beginPath();
-          ctx.moveTo(x, y);
-          let angle = Math.random() * Math.PI * 2;
-          ctx.lineWidth = 1 + Math.random() * 2;
-          for(let j=0; j<8; j++) {
-              x += Math.cos(angle) * (15 + Math.random()*25);
-              y += Math.sin(angle) * (15 + Math.random()*25);
-              angle += (Math.random() - 0.5) * 1.5; // Organic turns
-              ctx.lineTo(x, y);
+          ctx.moveTo(startX, startY);
+          let cx = startX, cy = startY;
+          const steps = 15;
+          for(let i=1; i<=steps; i++) {
+              const tx = startX + (endX - startX) * (i/steps);
+              const ty = startY + (endY - startY) * (i/steps);
+              cx = tx + (Math.random() - 0.5) * 50;
+              cy = ty + (Math.random() - 0.5) * 50;
+              ctx.lineTo(cx, cy);
+              
+              if(branches > 0 && Math.random() < 0.25) {
+                  const bx = cx + (Math.random() - 0.5) * 150;
+                  const by = cy + (Math.random() - 0.5) * 150;
+                  ctx.save();
+                  ctx.beginPath();
+                  ctx.moveTo(cx, cy);
+                  drawLightning(cx, cy, bx, by, branches - 1, thickness * 0.6);
+                  ctx.restore();
+                  ctx.moveTo(cx, cy); // Resume from main branch
+              }
           }
+          ctx.lineWidth = thickness;
           ctx.stroke();
       }
 
-      // Thicker main energy veins
-      for(let i=0; i<15; i++) { 
-          let x = Math.random() * size;
-          let y = Math.random() * size;
-          ctx.beginPath();
-          ctx.moveTo(x, y);
-          let angle = Math.random() * Math.PI * 2;
-          ctx.lineWidth = 3 + Math.random() * 3;
-          for(let j=0; j<10; j++) {
-              x += Math.cos(angle) * (20 + Math.random()*40);
-              y += Math.sin(angle) * (20 + Math.random()*40);
-              angle += (Math.random() - 0.5) * 1.0;
-              ctx.lineTo(x, y);
-          }
-          ctx.stroke();
+      // Draw a few continuous lightning cracks crossing the texture
+      for(let i=0; i<3; i++) { 
+          drawLightning(Math.random()*size, 0, Math.random()*size, size, 2, 4);
+          drawLightning(0, Math.random()*size, size, Math.random()*size, 2, 4);
       }
 
       const tex = new THREE.CanvasTexture(cvs);
@@ -201,13 +200,13 @@
       const group = new THREE.Group();
       
       const stoneMat = new THREE.MeshStandardMaterial({
-        color: 0x3a304a, // Darker stone to let emissive pop
+        color: 0x3a304a,
         metalness: 0.3,
         roughness: 0.8,
         bumpMap: bumpTex,
-        bumpScale: 0.015, // Rough stone feel
+        bumpScale: 0.015,
         emissiveMap: techTex,
-        emissive: 0x9900ff, // Purple glowing cracks
+        emissive: 0x9900ff,
         emissiveIntensity: 1.5,
       });
 
@@ -215,26 +214,12 @@
         color: 0x2a203a,
         metalness: 0.6,
         roughness: 0.4,
+        emissiveMap: techTex,
+        emissive: 0x7700dd,
+        emissiveIntensity: 1.2,
       });
 
       const materials = [stoneMat, bevelMat];
-      const gap = 0.3; 
-      const totalArc = Math.PI * 2;
-      const arcLength = (totalArc / fragmentsCount) - gap;
-      
-      for (let i = 0; i < fragmentsCount; i++) {
-        if (fragmentsCount > 3 && Math.random() > 0.85) continue;
-        const start = i * (totalArc / fragmentsCount);
-        
-        const shape = new THREE.Shape();
-        shape.absarc(0, 0, outerR, start, start + arcLength, false);
-        shape.lineTo(Math.cos(start + arcLength) * innerR, Math.sin(start + arcLength) * innerR);
-        shape.absarc(0, 0, innerR, start + arcLength, start, true);
-        shape.lineTo(Math.cos(start) * outerR, Math.sin(start) * outerR);
-        
-        const extrudeSettings = {
-          depth: depth, bevelEnabled: true, bevelSegments: 3, steps: 1, bevelSize: 0.05, bevelThickness: 0.05, curveSegments: 48
-        };
         
         const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
 
