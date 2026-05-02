@@ -74,16 +74,38 @@
     
     
     function genStoneBump() {
-      const size = 256;
+      const size = 512;
       const cvs = document.createElement('canvas');
       cvs.width = size; cvs.height = size;
       const ctx = cvs.getContext('2d');
-      const imgData = ctx.createImageData(size, size);
+      ctx.fillStyle = '#888';
+      ctx.fillRect(0, 0, size, size);
+      
+      ctx.globalCompositeOperation = 'overlay';
+      for(let i=0; i<150; i++) {
+          const r = 10 + Math.random() * 50;
+          const x = Math.random() * size;
+          const y = Math.random() * size;
+          const val = Math.random() > 0.5 ? 255 : 0;
+          const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+          grad.addColorStop(0, `rgba(${val},${val},${val},0.8)`);
+          grad.addColorStop(1, `rgba(${val},${val},${val},0)`);
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.fill();
+      }
+      
+      ctx.globalCompositeOperation = 'source-over';
+      const imgData = ctx.getImageData(0,0,size,size);
       for(let i=0; i<imgData.data.length; i+=4) {
-          let val = Math.random() * 255;
-          imgData.data[i] = val; imgData.data[i+1] = val; imgData.data[i+2] = val; imgData.data[i+3] = 255;
+          const noise = (Math.random() - 0.5) * 50;
+          imgData.data[i] = Math.max(0, Math.min(255, imgData.data[i] + noise));
+          imgData.data[i+1] = imgData.data[i];
+          imgData.data[i+2] = imgData.data[i];
       }
       ctx.putImageData(imgData, 0, 0);
+
       const tex = new THREE.CanvasTexture(cvs);
       tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
       return tex;
@@ -146,7 +168,7 @@
         metalness: 0.3,
         roughness: 0.8,
         bumpMap: bumpTex,
-        bumpScale: 0.015, 
+        bumpScale: 0.08, // Increased for deep parallax feel
         emissive: 0x220055,
         emissiveIntensity: 0.5,
       });
@@ -155,6 +177,8 @@
         color: 0x2a203a,
         metalness: 0.6,
         roughness: 0.4,
+        bumpMap: bumpTex,
+        bumpScale: 0.08, // Added bump map to inner/outer faces
         emissive: 0x220044,
         emissiveIntensity: 0.6,
       });
