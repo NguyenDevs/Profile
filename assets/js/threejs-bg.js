@@ -170,9 +170,20 @@
       const totalArc = Math.PI * 2;
       const arcLength = (totalArc / fragmentsCount) - gap;
       
+      let skipArr = hiddenIndices;
+      if (!skipArr) {
+          skipArr = [];
+          const maxSkip = fragmentsCount <= 3 ? 1 : 2;
+          const numSkip = 1 + Math.floor(Math.random() * maxSkip);
+          for (let i = 0; i < numSkip; i++) {
+              let idx;
+              do { idx = Math.floor(Math.random() * fragmentsCount); } while (skipArr.includes(idx));
+              skipArr.push(idx);
+          }
+      }
+      
       for (let i = 0; i < fragmentsCount; i++) {
-        if (hiddenIndices && hiddenIndices.includes(i)) continue;
-        if (!hiddenIndices && fragmentsCount > 3 && Math.random() > 0.85) continue;
+        if (skipArr.includes(i)) continue;
         const start = i * (totalArc / fragmentsCount);
         
         const shape = new THREE.Shape();
