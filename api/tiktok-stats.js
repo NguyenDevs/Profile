@@ -12,8 +12,8 @@ const CORS_HEADERS = {
 
 // Fallback khi scrape thất bại
 const FALLBACK = {
-  followers_raw: 110600,
-  likes_raw: 3800000,
+  followers_raw: 111111,
+  likes_raw: 3900000,
   source: 'fallback',
 };
 
