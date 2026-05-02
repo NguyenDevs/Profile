@@ -228,7 +228,7 @@
         emissive: 0x6600aa, emissiveIntensity: 0.8
     });
 
-    for(let i=0; i<50; i++) {
+    for(let i=0; i<20; i++) {
         const size = 0.15 + Math.random()*0.35;
         const randGeo = Math.floor(Math.random() * 5);
         let geo;
