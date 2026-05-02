@@ -2,12 +2,7 @@ export const config = {
   runtime: 'edge',
 };
 
-const LINKBIO_URL = 'https://linkbio.co/NguyenDevs';
-
-// Cache trong memory cho Edge runtime (mỗi instance ~1 phút)
-let memCache = null;
-let memCacheTime = 0;
-const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
+const TIKTOK_PROFILE_URL = 'https://www.tiktok.com/@nguyendevs';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -15,113 +10,129 @@ const CORS_HEADERS = {
   'Content-Type': 'application/json',
 };
 
+// Fallback khi scrape thất bại
+const FALLBACK = {
+  followers_raw: 110600,
+  likes_raw: 3800000,
+  source: 'fallback',
+};
+
 export default async function handler(request) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: CORS_HEADERS });
   }
 
-  // Trả về cache nếu còn hạn
-  const now = Date.now();
-  if (memCache && (now - memCacheTime) < CACHE_TTL_MS) {
-    return new Response(JSON.stringify(memCache), {
-      status: 200,
-      headers: { ...CORS_HEADERS, 'Cache-Control': 's-maxage=21600, stale-while-revalidate' },
-    });
-  }
-
   try {
-    const res = await fetch(LINKBIO_URL, {
+    // TikTok server-side renders user stats vào thẻ
+    // <script id="__UNIVERSAL_DATA_FOR_REHYDRATION__" type="application/json">
+    const res = await fetch(TIKTOK_PROFILE_URL, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ' +
+          'AppleWebKit/537.36 (KHTML, like Gecko) ' +
+          'Chrome/124.0.0.0 Safari/537.36',
+        Accept:
+          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.9',
+        'Cache-Control': 'no-cache',
       },
+      cf: { cacheEverything: false },
     });
 
     const html = await res.text();
 
-    // Lấy follower_count và likes_count từ template data trong HTML
-    // Pattern: "follower_count":12345 hoặc "followerCount":12345
+    // ── Phương pháp 1: parse JSON từ script rehydration ──────────────────
     let followersRaw = 0;
     let likesRaw = 0;
 
-    // Thử parse từ window.__data hoặc inline script JSON
-    const followerPatterns = [
-      /"follower_count"\s*:\s*(\d+)/,
-      /"followerCount"\s*:\s*(\d+)/,
-      /"fans_count"\s*:\s*(\d+)/,
-    ];
-    const likesPatterns = [
-      /"likes_count"\s*:\s*(\d+)/,
-      /"heartCount"\s*:\s*(\d+)/,
-      /"heart_count"\s*:\s*(\d+)/,
-      /"digg_count"\s*:\s*(\d+)/,
-    ];
+    const scriptMatch = html.match(
+      /<script\s+id="__UNIVERSAL_DATA_FOR_REHYDRATION__"[^>]*>([\s\S]*?)<\/script>/
+    );
 
-    for (const p of followerPatterns) {
-      const m = html.match(p);
-      if (m) { followersRaw = parseInt(m[1], 10); break; }
-    }
-    for (const p of likesPatterns) {
-      const m = html.match(p);
-      if (m) { likesRaw = parseInt(m[1], 10); break; }
-    }
+    if (scriptMatch) {
+      try {
+        const json = JSON.parse(scriptMatch[1]);
 
-    // Fallback: lấy từ rendered text trong embed-tiktok--data-item nếu có
-    // Pattern: <strong>110.6K</strong> ... <span>Followers</span>
-    if (!followersRaw) {
-      const followersTextMatch = html.match(/<strong>([\d.,]+[KkMmBb]?)<\/strong>\s*<span>Followers<\/span>/i);
-      if (followersTextMatch) {
-        followersRaw = parseShortNum(followersTextMatch[1]);
+        // Duyệt đệ quy để tìm stats
+        const stats = deepFind(json, (obj) =>
+          obj && typeof obj === 'object' &&
+          ('followerCount' in obj || 'fans' in obj)
+        );
+
+        if (stats) {
+          followersRaw = stats.followerCount ?? stats.fans ?? 0;
+          likesRaw     = stats.heartCount ?? stats.heart ?? stats.diggCount ?? 0;
+        }
+      } catch (_) {
+        // JSON parse lỗi → thử regex fallback
       }
     }
+
+    // ── Phương pháp 2: regex trực tiếp trên HTML nếu P1 thất bại ─────────
+    if (!followersRaw) {
+      const fMatch = html.match(/"followerCount"\s*:\s*(\d+)/);
+      if (fMatch) followersRaw = parseInt(fMatch[1], 10);
+    }
     if (!likesRaw) {
-      const likesTextMatch = html.match(/<strong>([\d.,]+[KkMmBb]?)<\/strong>\s*<span>Likes<\/span>/i);
-      if (likesTextMatch) {
-        likesRaw = parseShortNum(likesTextMatch[1]);
+      const lMatch = html.match(/"heartCount"\s*:\s*(\d+)/);
+      if (lMatch) likesRaw = parseInt(lMatch[1], 10);
+    }
+
+    // ── Phương pháp 3: parse từ SIGI_STATE (cấu trúc cũ hơn) ────────────
+    if (!followersRaw) {
+      const sigiMatch = html.match(/window\['SIGI_STATE'\]\s*=\s*({[\s\S]*?});\s*window/);
+      if (sigiMatch) {
+        try {
+          const sigi = JSON.parse(sigiMatch[1]);
+          const stats = deepFind(sigi, (obj) =>
+            obj && typeof obj === 'object' && 'followerCount' in obj
+          );
+          if (stats) {
+            followersRaw = stats.followerCount ?? 0;
+            likesRaw     = stats.heartCount ?? 0;
+          }
+        } catch (_) {}
       }
     }
 
     const data = {
-      followers_raw: followersRaw || 110600,
-      likes_raw: likesRaw || 3800000,
-      source: 'linkbio',
-      updated_at: new Date().toISOString(),
+      followers_raw: followersRaw || FALLBACK.followers_raw,
+      likes_raw:     likesRaw     || FALLBACK.likes_raw,
+      source:        followersRaw ? 'tiktok' : 'fallback',
+      updated_at:    new Date().toISOString(),
     };
-
-    memCache = data;
-    memCacheTime = now;
 
     return new Response(JSON.stringify(data), {
       status: 200,
-      headers: { ...CORS_HEADERS, 'Cache-Control': 's-maxage=21600, stale-while-revalidate' },
+      headers: {
+        ...CORS_HEADERS,
+        'Cache-Control': 's-maxage=21600, stale-while-revalidate=86400',
+      },
     });
 
   } catch (e) {
-    // Fallback data nếu scrape lỗi
-    const fallback = {
-      followers_raw: 110600,
-      likes_raw: 3800000,
-      source: 'fallback',
-      error: e.message,
-      updated_at: new Date().toISOString(),
-    };
-    return new Response(JSON.stringify(fallback), {
-      status: 200,
-      headers: { ...CORS_HEADERS, 'Cache-Control': 's-maxage=3600' },
-    });
+    return new Response(
+      JSON.stringify({ ...FALLBACK, error: e.message, updated_at: new Date().toISOString() }),
+      { status: 200, headers: { ...CORS_HEADERS, 'Cache-Control': 's-maxage=3600' } }
+    );
   }
 }
 
 /**
- * Convert "110.6K" → 110600, "3.8M" → 3800000
+ * Tìm kiếm đệ quy trong object/array,
+ * trả về node đầu tiên mà predicate(node) === true.
+ * @param {*} obj
+ * @param {Function} predicate
+ * @param {number} depth giới hạn độ sâu để tránh vô hạn
+ * @returns {*|null}
  */
-function parseShortNum(str) {
-  if (!str) return 0;
-  str = str.replace(/,/g, '').trim();
-  const lower = str.toLowerCase();
-  if (lower.endsWith('b')) return Math.round(parseFloat(lower) * 1_000_000_000);
-  if (lower.endsWith('m')) return Math.round(parseFloat(lower) * 1_000_000);
-  if (lower.endsWith('k')) return Math.round(parseFloat(lower) * 1_000);
-  return parseInt(str, 10) || 0;
+function deepFind(obj, predicate, depth = 0) {
+  if (depth > 12 || obj === null || typeof obj !== 'object') return null;
+  if (predicate(obj)) return obj;
+
+  for (const key of Object.keys(obj)) {
+    const result = deepFind(obj[key], predicate, depth + 1);
+    if (result) return result;
+  }
+  return null;
 }
