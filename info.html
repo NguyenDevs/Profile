@@ -216,7 +216,7 @@
 
   <!-- Minimal floating label -->
   <div class="info-label" aria-label="Info page">
-    <div class="info-label__eyebrow">NguyenDevs · 4D</div>
+    <div class="info-label__eyebrow" id="time-lived-display" style="letter-spacing: 0.1em; font-size: 9px;">NguyenDevs &middot; calculating...</div>
     <h1 class="info-label__title">INFO</h1>
   </div>
 
@@ -348,6 +348,49 @@
   <!-- Three.js + particle background (info.html only) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="assets/js/threejs-bg.js"></script>
+
+  <script>
+    function updateLivedTime() {
+      const birthDate = new Date("2004-07-04T09:00:00+07:00");
+      const now = new Date();
+
+      let years = now.getFullYear() - birthDate.getFullYear();
+      let months = now.getMonth() - birthDate.getMonth();
+      let days = now.getDate() - birthDate.getDate();
+      let hours = now.getHours() - birthDate.getHours();
+      let minutes = now.getMinutes() - birthDate.getMinutes();
+      let seconds = now.getSeconds() - birthDate.getSeconds();
+
+      if (seconds < 0) {
+          seconds += 60;
+          minutes--;
+      }
+      if (minutes < 0) {
+          minutes += 60;
+          hours--;
+      }
+      if (hours < 0) {
+          hours += 24;
+          days--;
+      }
+      if (days < 0) {
+          const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+          days += prevMonth.getDate();
+          months--;
+      }
+      if (months < 0) {
+          months += 12;
+          years--;
+      }
+
+      const display = document.getElementById("time-lived-display");
+      if (display) {
+          display.innerHTML = `NguyenDevs &middot; lived for ${years} years, ${months} months, ${days} days, ${hours} hours, ${minutes} minutes and ${seconds} seconds.`;
+      }
+    }
+    setInterval(updateLivedTime, 1000);
+    updateLivedTime();
+  </script>
 
 </body>
 </html>
