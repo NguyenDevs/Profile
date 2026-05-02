@@ -75,8 +75,8 @@
     scene.add(fillLight);
 
     // ── Procedural Textures ─────────────────────────────────────────────────
-    // 1. Electric Board / Runes Emissive Map
-    function genTechTexture() {
+    // 1. Organic Stone Cracks Emissive Map
+    function genTechTexture() { // Kept name for compatibility
       const size = 512;
       const cvs = document.createElement('canvas');
       cvs.width = size; cvs.height = size;
@@ -84,32 +84,46 @@
       ctx.fillStyle = '#000'; // Black background (no emission)
       ctx.fillRect(0,0,size,size);
       
-      ctx.strokeStyle = '#fff'; // White lines (will multiply with emissive color)
-      ctx.lineWidth = 3;
-      ctx.shadowBlur = 10;
+      ctx.strokeStyle = '#fff'; // White cracks (multiplied by emissive color)
+      ctx.shadowBlur = 15;
       ctx.shadowColor = '#fff';
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
       
-      ctx.beginPath();
-      // Generate techy circuit lines
-      for(let i=0; i<120; i++) { 
+      // Draw organic branching cracks
+      for(let i=0; i<60; i++) { 
           let x = Math.random() * size;
           let y = Math.random() * size;
+          ctx.beginPath();
           ctx.moveTo(x, y);
-          for(let j=0; j<4; j++) {
-              if (Math.random() > 0.5) x += (Math.random() > 0.5 ? 1 : -1) * (15 + Math.random()*40);
-              else y += (Math.random() > 0.5 ? 1 : -1) * (15 + Math.random()*40);
+          let angle = Math.random() * Math.PI * 2;
+          ctx.lineWidth = 1 + Math.random() * 2;
+          for(let j=0; j<8; j++) {
+              x += Math.cos(angle) * (15 + Math.random()*25);
+              y += Math.sin(angle) * (15 + Math.random()*25);
+              angle += (Math.random() - 0.5) * 1.5; // Organic turns
               ctx.lineTo(x, y);
           }
+          ctx.stroke();
       }
-      ctx.stroke();
 
-      // Nodes
-      ctx.fillStyle = '#fff';
-      for(let i=0; i<60; i++) {
+      // Thicker main energy veins
+      for(let i=0; i<15; i++) { 
+          let x = Math.random() * size;
+          let y = Math.random() * size;
           ctx.beginPath();
-          ctx.arc(Math.random() * size, Math.random() * size, 2+Math.random()*3, 0, Math.PI*2);
-          ctx.fill();
+          ctx.moveTo(x, y);
+          let angle = Math.random() * Math.PI * 2;
+          ctx.lineWidth = 3 + Math.random() * 3;
+          for(let j=0; j<10; j++) {
+              x += Math.cos(angle) * (20 + Math.random()*40);
+              y += Math.sin(angle) * (20 + Math.random()*40);
+              angle += (Math.random() - 0.5) * 1.0;
+              ctx.lineTo(x, y);
+          }
+          ctx.stroke();
       }
+
       const tex = new THREE.CanvasTexture(cvs);
       tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
       return tex;
@@ -223,17 +237,6 @@
         };
         
         const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-        
-        // Map UVs for the tech texture so it wraps nicely on the front/back faces
-        const posAttr = geo.attributes.position;
-        const uvs = new Float32Array(posAttr.count * 2);
-        for (let j = 0; j < posAttr.count; j++) {
-            const px = posAttr.getX(j);
-            const py = posAttr.getY(j);
-            uvs[j*2] = px * 0.2; 
-            uvs[j*2+1] = py * 0.2;
-        }
-        geo.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
 
         geo.translate(0, 0, -depth / 2);
         
@@ -272,14 +275,7 @@
             case 3: geo = new THREE.DodecahedronGeometry(size, 0); break;
             case 4: geo = new THREE.IcosahedronGeometry(size, 0); break;
         }
-        
-        // Fix UVs for dodecahedron to show emissive map
-        const uvs = new Float32Array(geo.attributes.position.count * 2);
-        for(let j=0; j<uvs.length/2; j++) {
-            uvs[j*2] = geo.attributes.position.getX(j) * 2;
-            uvs[j*2+1] = geo.attributes.position.getY(j) * 2;
-        }
-        geo.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+
 
         const rock = new THREE.Mesh(geo, debrisMat);
         rock.castShadow = true; rock.receiveShadow = true;
