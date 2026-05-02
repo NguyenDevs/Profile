@@ -229,7 +229,7 @@
     });
 
     for(let i=0; i<20; i++) {
-        const size = 0.15 + Math.random()*0.35;
+        const size = 0.10 + Math.random()*0.20; // Reduced debris size
         const randGeo = Math.floor(Math.random() * 5);
         let geo;
         switch(randGeo) {
@@ -274,7 +274,7 @@
     // ── Controls ────────────────────────────────────────────────────────────
     const rotQ = new THREE.Quaternion();
     const drag = { active: false, px: 0, py: 0 };
-    let zoom = 18.0, autoRotate = true;
+    let zoom = 22.0, autoRotate = true; // Increased zoom out to reduce overall size
 
     canvas.addEventListener('mousedown', e => { drag.active = true; drag.px = e.clientX; drag.py = e.clientY; canvas.style.cursor = 'grabbing'; });
     window.addEventListener('mouseup', () => { drag.active = false; canvas.style.cursor = 'grab'; setTimeout(() => autoRotate = true, 3000); });
