@@ -45,25 +45,39 @@
   <link rel="stylesheet" href="assets/css/style.css">
 
   <style>
-    /* Dark base so Three.js canvas is the only background */
     body {
       background: #08080e !important;
       overflow: hidden;
     }
 
-    /* ── Info page centred layout ── */
-    .info-stage {
+    /* Floating minimal label */
+    .info-label {
       position: fixed;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 2;
-      padding: 24px;
+      top: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 5;
+      text-align: center;
+      pointer-events: none;
     }
-
-    /* Glassmorphism card */
+    .info-label__eyebrow {
+      font-family: 'Syne', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(255,136,0,0.7);
+      margin-bottom: 4px;
+    }
+    .info-label__title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.1rem,3vw,1.6rem);
+      font-weight: 800;
+      color: rgba(255,255,255,0.15);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+    }
+    /* Hide the card and related blocks */
     .info-card {
       background: rgba(12, 10, 22, 0.55);
       border: 1px solid rgba(220, 20, 60, 0.22);
@@ -181,31 +195,24 @@
 </head>
 <body>
 
-  <!-- Grain noise overlay -->
-  <div class="info-noise" aria-hidden="true"></div>
+  <!-- Gradient background (same as index) -->
+  <div class="gradient-bg">
+    <svg xmlns="http://www.w3.org/2000/svg" style="display:none;">
+      <defs>
+        <filter id="goo">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo" />
+          <feBlend in="SourceGraphic" in2="goo" />
+        </filter>
+      </defs>
+    </svg>
+    <div class="gradients-container"></div>
+  </div>
 
-  <!-- ── Centred card stage ── -->
-  <div class="info-stage">
-    <div class="info-card">
-      <div class="info-card__eyebrow">NguyenDevs · Profile</div>
-      <h1 class="info-card__title">Coming<br><span>Soon</span></h1>
-      <p class="info-card__sub">
-        This page is being crafted.<br>Check back shortly.
-      </p>
-
-      <div class="info-card__progress-wrap" aria-hidden="true">
-        <div class="info-card__progress-bar"></div>
-      </div>
-
-      <a href="index.html" class="info-card__back">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2.5"
-             stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="15 18 9 12 15 6"/>
-        </svg>
-        Back to Profile
-      </a>
-    </div>
+  <!-- Minimal floating label -->
+  <div class="info-label" aria-label="Info page">
+    <div class="info-label__eyebrow">NguyenDevs · 4D</div>
+    <h1 class="info-label__title">INFO</h1>
   </div>
 
   <!-- ── Music Player ── -->
