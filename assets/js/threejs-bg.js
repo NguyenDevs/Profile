@@ -134,7 +134,7 @@
     });
     
     const solidCoreMat = new THREE.MeshPhysicalMaterial({
-      color: 0x110022, emissive: 0x220044, metalness: 0.6, roughness: 0.2, clearcoat: 1.0, transparent: true, opacity: 0.7
+      color: 0x110022, emissive: 0x110022, metalness: 0.6, roughness: 0.2, clearcoat: 1.0, transparent: true, opacity: 0.25
     });
 
     const coreMeshSolid = new THREE.Mesh(coreGeo, solidCoreMat);
@@ -144,6 +144,11 @@
     coreGroup.add(coreMeshSolid);
     coreGroup.add(coreMeshWire);
 
+    const bhGeo = new THREE.SphereGeometry(0.35, 32, 32);
+    const bhMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    const blackHole = new THREE.Mesh(bhGeo, bhMat);
+    coreGroup.add(blackHole);
+
     function getGlowTex(color = 'rgba(170,0,255,1)', r = 128) {
         const c = document.createElement('canvas'); c.width = c.height = r * 2;
         const ctx = c.getContext('2d');
@@ -152,7 +157,25 @@
         ctx.fillStyle = g; ctx.fillRect(0, 0, r * 2, r * 2);
         return new THREE.CanvasTexture(c);
     }
-    
+
+    const diskCount = 800;
+    const diskGeo = new THREE.BufferGeometry();
+    const diskPos = new Float32Array(diskCount * 3);
+    for(let i=0; i<diskCount; i++) {
+        const r = 0.4 + Math.pow(Math.random(), 2) * 0.7;
+        const th = Math.random() * Math.PI * 2;
+        diskPos[i*3] = r * Math.cos(th);
+        diskPos[i*3+1] = (Math.random() - 0.5) * 0.05;
+        diskPos[i*3+2] = r * Math.sin(th);
+    }
+    diskGeo.setAttribute('position', new THREE.BufferAttribute(diskPos, 3));
+    const diskMat = new THREE.PointsMaterial({
+        size: 0.04, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, map: getGlowTex('rgba(150,50,255,1)', 16)
+    });
+    const diskSystem = new THREE.Points(diskGeo, diskMat);
+    diskSystem.rotation.x = Math.PI / 2 - 0.2;
+    coreGroup.add(diskSystem);
+
     const glowOrb = new THREE.Sprite(new THREE.SpriteMaterial({
       map: getGlowTex('rgba(180,50,255,0.8)', 128), blending: THREE.AdditiveBlending, transparent: true, depthWrite: false
     }));
@@ -165,21 +188,21 @@
       
       const stoneMat = new THREE.MeshStandardMaterial({
         color: 0x3a304a, 
-        metalness: 0.3,
-        roughness: 0.8,
+        metalness: 0.5,
+        roughness: 0.7,
         bumpMap: bumpTex,
-        bumpScale: 0.08, // Increased for deep parallax feel
-        emissive: 0x220055,
-        emissiveIntensity: 0.5,
+        bumpScale: 0.06, 
+        emissive: 0x1a0533,
+        emissiveIntensity: 0.8,
       });
 
       const bevelMat = new THREE.MeshStandardMaterial({
         color: 0x2a203a,
-        metalness: 0.6,
-        roughness: 0.4,
+        metalness: 0.7,
+        roughness: 0.5,
         bumpMap: bumpTex,
-        bumpScale: 0.08, // Added bump map to inner/outer faces
-        emissive: 0x220044,
+        bumpScale: 0.06, 
+        emissive: 0x110022,
         emissiveIntensity: 0.6,
       });
 
@@ -372,6 +395,7 @@
 
       coreGroup.rotation.y = t * 0.4;
       coreGroup.rotation.z = Math.sin(t * 0.5) * 0.2;
+      diskSystem.rotation.z -= 0.02;
       coreLight.intensity = 4 + Math.sin(t * 2) * 2;
       glowOrb.scale.setScalar(5.5 + Math.sin(t * 3) * 0.8);
 
