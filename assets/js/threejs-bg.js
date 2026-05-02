@@ -146,7 +146,7 @@
         size: 0.04, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, map: getGlowTex('rgba(150,50,255,1)', 16)
     });
     const diskSystem = new THREE.Points(diskGeo, diskMat);
-    diskSystem.rotation.x = 0.2; // Almost horizontal for standard accretion disk look
+    diskSystem.rotation.x = 0.2;
     coreGroup.add(diskSystem);
 
     const bhGlow = new THREE.Sprite(new THREE.SpriteMaterial({
@@ -323,6 +323,8 @@
       requestAnimationFrame(animate);
       t += 0.01;
       camera.position.z += (zoom - camera.position.z) * 0.05;
+      const currentZf = Math.max(0, Math.min(1, (35 - camera.position.z) / 27));
+      camera.position.y = 2.0 - currentZf * 2.0;
 
       if (autoRotate) { _q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0.0015); rotQ.premultiply(_q); }
       mainGroup.quaternion.copy(rotQ);
@@ -369,15 +371,14 @@
 
       coreGroup.rotation.y = t * 0.4;
       coreGroup.rotation.z = Math.sin(t * 0.5) * 0.2;
-      // Calculate zoom factor: 1 (closest, zoom=8) to 0 (furthest, zoom=35)
       const zf = Math.max(0, Math.min(1, (35 - zoom) / 27));
       
-      coreGroup.scale.setScalar(1 + zf * 0.2); // Core expands slightly when close
+      coreGroup.scale.setScalar(1 + zf * 0.2);
 
       const dPos = diskSystem.geometry.attributes.position.array;
       for(let i=0; i<diskCount; i++) {
           let p = diskParams[i];
-          p.th -= p.speed * (1 + zf * 2); // Spin much faster when zoomed in
+          p.th -= p.speed * (1 + zf * 2);
           p.r -= 0.005; 
           if (p.r < 0.35) { 
               p.r = 1.1; 
@@ -387,12 +388,10 @@
           let bx = p.r * Math.cos(p.th);
           let bz = p.r * Math.sin(p.th);
           let by = p.y;
-          
-          // Fake Gravitational Lensing: bend particles behind the black hole (bz < 0) upward/downward
           if (bz < 0) {
               const bendAmount = Math.pow((1.3 - p.r), 2) * 1.8;
               let bendY = bendAmount * Math.exp(-Math.pow(bx * 2, 2)); 
-              if (i % 2 === 0) bendY = -bendY; // Half bends down, half bends up
+              if (i % 2 === 0) bendY = -bendY;
               by += bendY;
           }
 
@@ -405,8 +404,8 @@
       glowOrb.scale.setScalar(5.5 + Math.sin(t * 3) * 0.8);
 
       rings.forEach((r, i) => {
-          r.obj.rotateOnAxis(r.axis, r.speed * (1 + zf * 3.0)); // Rotate faster
-          r.obj.scale.setScalar(1 + zf * (0.15 + i * 0.08)); // Space out rings
+          r.obj.rotateOnAxis(r.axis, r.speed * (1 + zf * 3.0));
+          r.obj.scale.setScalar(1 + zf * (0.15 + i * 0.08));
       });
       debrisGroup.children.forEach((rock, i) => {
         rock.rotateOnAxis(rock.userData.rotAxis, rock.userData.rotSpeed);
