@@ -261,9 +261,17 @@
         emissiveMap: techTex, emissive: 0x6600aa, emissiveIntensity: 0.8
     });
 
-    for(let i=0; i<30; i++) {
+    for(let i=0; i<50; i++) {
         const size = 0.15 + Math.random()*0.35;
-        const geo = new THREE.DodecahedronGeometry(size, 0);
+        const randGeo = Math.floor(Math.random() * 5);
+        let geo;
+        switch(randGeo) {
+            case 0: geo = new THREE.TetrahedronGeometry(size, 0); break;
+            case 1: geo = new THREE.BoxGeometry(size*1.3, size*1.3, size*1.3); break;
+            case 2: geo = new THREE.OctahedronGeometry(size, 0); break;
+            case 3: geo = new THREE.DodecahedronGeometry(size, 0); break;
+            case 4: geo = new THREE.IcosahedronGeometry(size, 0); break;
+        }
         
         // Fix UVs for dodecahedron to show emissive map
         const uvs = new Float32Array(geo.attributes.position.count * 2);
