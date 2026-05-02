@@ -207,14 +207,22 @@
     }
 
     // ── Magical Particles ───────────────────────────────────────────────────
-    const pCount = 1000;
+    const pCount = 4500;
     const pGeo = new THREE.BufferGeometry();
     const pPos = new Float32Array(pCount * 3);
-    for(let i=0; i<pCount*3; i++) pPos[i] = (Math.random()-0.5) * 35;
+    for(let i=0; i<pCount; i++) {
+        // Spherical distribution, clustering near the center
+        const r = 2.0 + Math.pow(Math.random(), 1.5) * 20.0;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        pPos[i*3] = r * Math.sin(phi) * Math.cos(theta);
+        pPos[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+        pPos[i*3+2] = r * Math.cos(phi);
+    }
     pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
     const pMat = new THREE.PointsMaterial({
-        size: 0.07, map: getGlowTex('rgba(190,100,255,1)', 16),
-        transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending, depthWrite: false
+        size: 0.06, map: getGlowTex('rgba(190,100,255,1)', 16),
+        transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false
     });
     const pSystem = new THREE.Points(pGeo, pMat);
     scene.add(pSystem);
