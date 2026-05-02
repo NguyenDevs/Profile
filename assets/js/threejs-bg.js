@@ -73,45 +73,7 @@
 
     
     
-    function genStoneBump() {
-      const size = 512;
-      const cvs = document.createElement('canvas');
-      cvs.width = size; cvs.height = size;
-      const ctx = cvs.getContext('2d');
-      ctx.fillStyle = '#888';
-      ctx.fillRect(0, 0, size, size);
-      
-      ctx.globalCompositeOperation = 'overlay';
-      for(let i=0; i<150; i++) {
-          const r = 10 + Math.random() * 50;
-          const x = Math.random() * size;
-          const y = Math.random() * size;
-          const val = Math.random() > 0.5 ? 255 : 0;
-          const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
-          grad.addColorStop(0, `rgba(${val},${val},${val},0.8)`);
-          grad.addColorStop(1, `rgba(${val},${val},${val},0)`);
-          ctx.fillStyle = grad;
-          ctx.beginPath();
-          ctx.arc(x, y, r, 0, Math.PI * 2);
-          ctx.fill();
-      }
-      
-      ctx.globalCompositeOperation = 'source-over';
-      const imgData = ctx.getImageData(0,0,size,size);
-      for(let i=0; i<imgData.data.length; i+=4) {
-          const noise = (Math.random() - 0.5) * 50;
-          imgData.data[i] = Math.max(0, Math.min(255, imgData.data[i] + noise));
-          imgData.data[i+1] = imgData.data[i];
-          imgData.data[i+2] = imgData.data[i];
-      }
-      ctx.putImageData(imgData, 0, 0);
 
-      const tex = new THREE.CanvasTexture(cvs);
-      tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
-      return tex;
-    }
-
-    const bumpTex = genStoneBump();
 
     const coreGroup = new THREE.Group();
     mainGroup.add(coreGroup);
@@ -129,26 +91,6 @@
         phiArr[i] = Math.acos(Math.max(-1, Math.min(1, z))); 
     }
 
-    const coreMat = new THREE.MeshStandardMaterial({
-      color: 0xaa00ff, emissive: 0x5500aa, emissiveIntensity: 1.5, wireframe: true, transparent: true, opacity: 0.9
-    });
-    
-    const solidCoreMat = new THREE.MeshPhysicalMaterial({
-      color: 0x110022, emissive: 0x110022, metalness: 0.6, roughness: 0.2, clearcoat: 1.0, transparent: true, opacity: 0.25
-    });
-
-    const coreMeshSolid = new THREE.Mesh(coreGeo, solidCoreMat);
-    const coreMeshWire = new THREE.Mesh(coreGeo, coreMat);
-    coreMeshSolid.scale.setScalar(0.98); 
-    coreMeshSolid.castShadow = true;
-    coreGroup.add(coreMeshSolid);
-    coreGroup.add(coreMeshWire);
-
-    const bhGeo = new THREE.SphereGeometry(0.35, 32, 32);
-    const bhMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
-    const blackHole = new THREE.Mesh(bhGeo, bhMat);
-    coreGroup.add(blackHole);
-
     function getGlowTex(color = 'rgba(170,0,255,1)', r = 128) {
         const c = document.createElement('canvas'); c.width = c.height = r * 2;
         const ctx = c.getContext('2d');
@@ -158,14 +100,45 @@
         return new THREE.CanvasTexture(c);
     }
 
+    const coreMat = new THREE.MeshStandardMaterial({
+      color: 0x8800ff, emissive: 0x4400aa, emissiveIntensity: 0.8, wireframe: true, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending
+    });
+    
+    const solidCoreMat = new THREE.MeshPhysicalMaterial({
+      color: 0x110022, emissive: 0x110022, metalness: 0.6, roughness: 0.2, clearcoat: 1.0, transparent: true, opacity: 0.25
+    });
+
+    const coreMeshSolid = new THREE.Mesh(coreGeo, solidCoreMat);
+    const coreMeshWire = new THREE.Mesh(coreGeo, coreMat);
+    
+    const corePointsMat = new THREE.PointsMaterial({
+        size: 0.05, color: 0xdd88ff, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, map: getGlowTex('rgba(200,100,255,1)', 16), depthWrite: false
+    });
+    const corePoints = new THREE.Points(coreGeo, corePointsMat);
+
+    coreMeshSolid.scale.setScalar(0.98); 
+    coreMeshSolid.castShadow = true;
+    coreGroup.add(coreMeshSolid);
+    coreGroup.add(coreMeshWire);
+    coreGroup.add(corePoints);
+
+    const bhGeo = new THREE.SphereGeometry(0.35, 32, 32);
+    const bhMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    const blackHole = new THREE.Mesh(bhGeo, bhMat);
+    coreGroup.add(blackHole);
+
     const diskCount = 800;
     const diskGeo = new THREE.BufferGeometry();
     const diskPos = new Float32Array(diskCount * 3);
+    const diskParams = [];
     for(let i=0; i<diskCount; i++) {
-        const r = 0.4 + Math.pow(Math.random(), 2) * 0.7;
+        const r = 0.35 + Math.pow(Math.random(), 2) * 0.75;
         const th = Math.random() * Math.PI * 2;
+        const y = (Math.random() - 0.5) * 0.05;
+        const speed = 0.02 + Math.random() * 0.04;
+        diskParams.push({ r, th, y, speed });
         diskPos[i*3] = r * Math.cos(th);
-        diskPos[i*3+1] = (Math.random() - 0.5) * 0.05;
+        diskPos[i*3+1] = y;
         diskPos[i*3+2] = r * Math.sin(th);
     }
     diskGeo.setAttribute('position', new THREE.BufferAttribute(diskPos, 3));
@@ -186,24 +159,20 @@
     function createFragmentedRing(innerR, outerR, depth, fragmentsCount, rotSpeed, axis, hiddenIndices = null) {
       const group = new THREE.Group();
       
-      const stoneMat = new THREE.MeshStandardMaterial({
-        color: 0x3a304a, 
-        metalness: 0.5,
-        roughness: 0.7,
-        bumpMap: bumpTex,
-        bumpScale: 0.06, 
-        emissive: 0x1a0533,
-        emissiveIntensity: 0.8,
+      const stoneMat = new THREE.MeshPhysicalMaterial({
+        color: 0x110522, 
+        metalness: 0.9,
+        roughness: 0.1,
+        clearcoat: 1.0,
+        flatShading: true
       });
 
-      const bevelMat = new THREE.MeshStandardMaterial({
-        color: 0x2a203a,
-        metalness: 0.7,
-        roughness: 0.5,
-        bumpMap: bumpTex,
-        bumpScale: 0.06, 
-        emissive: 0x110022,
-        emissiveIntensity: 0.6,
+      const bevelMat = new THREE.MeshPhysicalMaterial({
+        color: 0x0a0011,
+        metalness: 0.8,
+        roughness: 0.3,
+        clearcoat: 0.5,
+        flatShading: true
       });
 
       const materials = [stoneMat, bevelMat];
@@ -264,9 +233,8 @@
     
     const debrisGroup = new THREE.Group();
     mainGroup.add(debrisGroup);
-    const debrisMat = new THREE.MeshStandardMaterial({ 
-        color: 0x3a304a, roughness: 0.9, metalness: 0.2, bumpMap: bumpTex, bumpScale: 0.02,
-        emissive: 0x110033, emissiveIntensity: 0.4
+    const debrisMat = new THREE.MeshPhysicalMaterial({ 
+        color: 0x110522, roughness: 0.2, metalness: 0.9, clearcoat: 0.8, flatShading: true
     });
 
     for(let i=0; i<20; i++) {
@@ -395,7 +363,19 @@
 
       coreGroup.rotation.y = t * 0.4;
       coreGroup.rotation.z = Math.sin(t * 0.5) * 0.2;
-      diskSystem.rotation.z -= 0.02;
+      const dPos = diskSystem.geometry.attributes.position.array;
+      for(let i=0; i<diskCount; i++) {
+          let p = diskParams[i];
+          p.th -= p.speed; 
+          p.r -= 0.005; 
+          if (p.r < 0.35) { 
+              p.r = 1.1; 
+              p.th = Math.random() * Math.PI * 2;
+          }
+          dPos[i*3] = p.r * Math.cos(p.th);
+          dPos[i*3+2] = p.r * Math.sin(p.th);
+      }
+      diskSystem.geometry.attributes.position.needsUpdate = true;
       coreLight.intensity = 4 + Math.sin(t * 2) * 2;
       glowOrb.scale.setScalar(5.5 + Math.sin(t * 3) * 0.8);
 
