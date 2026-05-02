@@ -754,25 +754,6 @@ html { scroll-behavior: smooth; }
   align-self: center;
 }
 
-/* TikTok stat flip animation (rút gọn ↔ đầy đủ) */
-@keyframes ttFlipOut {
-  0%   { opacity: 1; transform: translateY(0) scaleY(1); }
-  100% { opacity: 0; transform: translateY(-6px) scaleY(0.7); }
-}
-@keyframes ttFlipIn {
-  0%   { opacity: 0; transform: translateY(6px) scaleY(0.7); }
-  100% { opacity: 1; transform: translateY(0) scaleY(1); }
-}
-.tt-stat-flip-out {
-  animation: ttFlipOut 0.25s cubic-bezier(0.4, 0, 0.6, 1) forwards;
-  display: inline-block;
-  transform-origin: center bottom;
-}
-.tt-stat-flip-in {
-  animation: ttFlipIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  display: inline-block;
-  transform-origin: center bottom;
-}
 
 .tiktok-card__follow {
   display: flex;
