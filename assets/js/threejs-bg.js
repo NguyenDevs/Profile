@@ -1,6 +1,6 @@
 /**
- * Premium Armillary Sphere — High-Fidelity 3D
- * Theme: Mystical Purple / Ancient Mechanism
+ * Authentic Armillary Sphere
+ * Theme: Grey-Purple Carved Stone with Morphing Runic Core
  */
 (function () {
   'use strict';
@@ -8,6 +8,11 @@
   function boot() {
     if (typeof THREE === 'undefined') { setTimeout(boot, 50); return; }
     init();
+  }
+
+  function smoothstep(x) {
+    x = Math.max(0, Math.min(1, x));
+    return x * x * (3 - 2 * x);
   }
 
   function init() {
@@ -37,95 +42,114 @@
     scene.add(mainGroup);
 
     // ── Lighting ────────────────────────────────────────────────────────────
-    scene.add(new THREE.AmbientLight(0x110822, 1.5));
+    scene.add(new THREE.AmbientLight(0x2a1a4a, 1.5)); // Soft ambient purple
     
-    // Core glow
-    const coreLight = new THREE.PointLight(0xd400ff, 4, 30);
+    // Core glow (illuminates the stone from inside)
+    const coreLight = new THREE.PointLight(0xaa00ff, 4, 30);
     mainGroup.add(coreLight);
 
     // Edge highlight (Top-Right-Front)
-    const dirLight = new THREE.DirectionalLight(0xcba4ff, 1.2);
+    const dirLight = new THREE.DirectionalLight(0xdab3ff, 1.0);
     dirLight.position.set(10, 15, 10);
     scene.add(dirLight);
 
-    // Fill light (Bottom-Left-Back)
-    const fillLight = new THREE.DirectionalLight(0x5500aa, 0.8);
-    fillLight.position.set(-10, -10, -10);
-    scene.add(fillLight);
-
-    // ── Helpers ─────────────────────────────────────────────────────────────
-    function getGlowTex(color = 'rgba(160,60,255,1)', r = 128) {
-      const c = document.createElement('canvas');
-      c.width = c.height = r * 2;
-      const ctx = c.getContext('2d');
-      const g = ctx.createRadialGradient(r, r, 0, r, r, r);
-      g.addColorStop(0, color); g.addColorStop(0.2, color); g.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = g; ctx.fillRect(0, 0, r * 2, r * 2);
-      return new THREE.CanvasTexture(c);
-    }
-
-    // ── Core Element ────────────────────────────────────────────────────────
+    // ── Morphing Core Element ───────────────────────────────────────────────
     const coreGroup = new THREE.Group();
     mainGroup.add(coreGroup);
 
-    // Floating Crystal (Octahedron)
-    const crystalGeo = new THREE.OctahedronGeometry(1.2, 0);
-    const crystalMat = new THREE.MeshPhysicalMaterial({
-      color: 0x220044,
+    // Create a high-res sphere for morphing
+    const CORE_RADIUS = 1.4;
+    const coreGeo = new THREE.SphereGeometry(CORE_RADIUS, 64, 32);
+    
+    // Save original sphere positions for calculations
+    const basePos = new Float32Array(coreGeo.attributes.position.array);
+    const N = basePos.length / 3;
+    const thetaArr = new Float32Array(N);
+    const phiArr = new Float32Array(N);
+    
+    for (let i = 0; i < N; i++) {
+        const x = basePos[i*3] / CORE_RADIUS;
+        const y = basePos[i*3+1] / CORE_RADIUS;
+        const z = basePos[i*3+2] / CORE_RADIUS;
+        thetaArr[i] = Math.atan2(y, x);
+        phiArr[i] = Math.acos(z); // Normalized z is between -1 and 1
+    }
+
+    const coreMat = new THREE.MeshStandardMaterial({
+      color: 0xaa00ff,
       emissive: 0x5500aa,
-      emissiveIntensity: 0.5,
-      metalness: 0.8,
-      roughness: 0.1,
-      clearcoat: 1.0,
-      clearcoatRoughness: 0.1,
+      emissiveIntensity: 0.8,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.8
     });
-    const crystal = new THREE.Mesh(crystalGeo, crystalMat);
-    coreGroup.add(crystal);
+    
+    const solidCoreMat = new THREE.MeshPhysicalMaterial({
+      color: 0x220044,
+      emissive: 0x330088,
+      emissiveIntensity: 0.2,
+      metalness: 0.5,
+      roughness: 0.2,
+      clearcoat: 1.0,
+      transparent: true,
+      opacity: 0.6
+    });
 
-    // Crystal Wireframe
-    const crystalWire = new THREE.Mesh(
-      crystalGeo,
-      new THREE.MeshBasicMaterial({ color: 0xeebbff, wireframe: true, transparent: true, opacity: 0.3 })
-    );
-    crystalWire.scale.setScalar(1.05);
-    coreGroup.add(crystalWire);
+    // We render two layers: a solid inner layer and a glowing wireframe
+    const coreMeshSolid = new THREE.Mesh(coreGeo, solidCoreMat);
+    const coreMeshWire = new THREE.Mesh(coreGeo, coreMat);
+    coreMeshSolid.scale.setScalar(0.98); // Slightly smaller to prevent Z-fighting
+    coreGroup.add(coreMeshSolid);
+    coreGroup.add(coreMeshWire);
 
-    // Glowing energy orb inside crystal
+    // Center Glow Sprite
+    function getGlowTex(color = 'rgba(170,0,255,1)', r = 128) {
+        const c = document.createElement('canvas');
+        c.width = c.height = r * 2;
+        const ctx = c.getContext('2d');
+        const g = ctx.createRadialGradient(r, r, 0, r, r, r);
+        g.addColorStop(0, color); g.addColorStop(0.2, color); g.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = g; ctx.fillRect(0, 0, r * 2, r * 2);
+        return new THREE.CanvasTexture(c);
+    }
+    
     const glowOrb = new THREE.Sprite(new THREE.SpriteMaterial({
-      map: getGlowTex('rgba(210,0,255,0.8)', 128),
+      map: getGlowTex('rgba(180,50,255,0.9)', 128),
       blending: THREE.AdditiveBlending, transparent: true, depthWrite: false
     }));
-    glowOrb.scale.setScalar(5);
+    glowOrb.scale.setScalar(6);
     coreGroup.add(glowOrb);
 
     // ── Fragmented Rings ────────────────────────────────────────────────────
     function createFragmentedRing(innerR, outerR, depth, fragmentsCount, rotSpeed, axis) {
       const group = new THREE.Group();
       
+      // Light grey-purple stone material
       const stoneMat = new THREE.MeshStandardMaterial({
-        color: 0x1f1930, // Dark slate purple
+        color: 0x5a506a, 
+        metalness: 0.1,
+        roughness: 0.85,
+        flatShading: false
+      });
+
+      // Slightly darker/smoother bevel
+      const bevelMat = new THREE.MeshStandardMaterial({
+        color: 0x4a405a,
         metalness: 0.3,
-        roughness: 0.7,
+        roughness: 0.6,
       });
 
-      const goldMat = new THREE.MeshStandardMaterial({
-        color: 0xffd700, // Gold/Brass accent for bevels
-        metalness: 0.9,
-        roughness: 0.3,
-      });
+      const materials = [stoneMat, bevelMat];
 
-      // We use materials array: [side/face material, bevel/extrusion material]
-      const materials = [stoneMat, goldMat];
-
-      const gap = 0.25; // radians
+      const gap = 0.3; // radians gap between fragments
       const totalArc = Math.PI * 2;
       const arcLength = (totalArc / fragmentsCount) - gap;
       
       for (let i = 0; i < fragmentsCount; i++) {
-        // Skip occasional fragments to make it look ancient/broken
-        if (fragmentsCount > 3 && Math.random() > 0.8) continue;
+        // Randomly skip fragments to look ruined/ancient
+        if (fragmentsCount > 3 && Math.random() > 0.85) continue;
 
-        const start = i * (totalArc / fragmentsCount) + (Math.random() * 0.1); // slight irregularity
+        const start = i * (totalArc / fragmentsCount);
         
         const shape = new THREE.Shape();
         shape.absarc(0, 0, outerR, start, start + arcLength, false);
@@ -136,11 +160,11 @@
         const extrudeSettings = {
           depth: depth,
           bevelEnabled: true,
-          bevelSegments: 3,
+          bevelSegments: 2,
           steps: 1,
-          bevelSize: 0.08,
-          bevelThickness: 0.08,
-          curveSegments: 48 // Very smooth curves
+          bevelSize: 0.06,
+          bevelThickness: 0.06,
+          curveSegments: 32
         };
         
         const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
@@ -150,65 +174,46 @@
         group.add(mesh);
       }
 
-      // Inner glowing energy ring
-      const innerGlowGeo = new THREE.CylinderGeometry(innerR - 0.1, innerR - 0.1, depth * 0.5, 64, 1, true);
-      const innerGlowMat = new THREE.MeshBasicMaterial({
-        color: 0xbb00ff,
-        transparent: true,
-        opacity: 0.2,
-        blending: THREE.AdditiveBlending,
-        side: THREE.DoubleSide,
-        depthWrite: false
-      });
-      const innerGlow = new THREE.Mesh(innerGlowGeo, innerGlowMat);
-      innerGlow.rotation.x = Math.PI / 2;
-      group.add(innerGlow);
-
       return { obj: group, axis: axis.normalize(), speed: rotSpeed };
     }
 
     const rings = [
-      createFragmentedRing(2.8, 3.4, 0.6, 3, 0.008, new THREE.Vector3(1, 0.5, 0.2)),
-      createFragmentedRing(4.0, 4.8, 0.8, 4, -0.005, new THREE.Vector3(-0.5, 1, 0.5)),
-      createFragmentedRing(5.4, 6.4, 1.2, 5, 0.003, new THREE.Vector3(0.2, -0.5, 1)),
+      createFragmentedRing(3.0, 3.6, 0.6, 3, 0.007, new THREE.Vector3(1, 0.5, 0.2)),
+      createFragmentedRing(4.2, 5.0, 0.8, 4, -0.004, new THREE.Vector3(-0.5, 1, 0.5)),
+      createFragmentedRing(5.6, 6.6, 1.2, 5, 0.003, new THREE.Vector3(0.2, -0.5, 1)),
     ];
 
     rings.forEach(r => mainGroup.add(r.obj));
 
-    // ── Floating Debris (Polyhedrons) ───────────────────────────────────────
+    // ── Floating Debris ─────────────────────────────────────────────────────
     const debrisGroup = new THREE.Group();
     mainGroup.add(debrisGroup);
-    const debrisMats = [
-      new THREE.MeshStandardMaterial({ color: 0x1f1930, roughness: 0.8, metalness: 0.2 }),
-      new THREE.MeshStandardMaterial({ color: 0x2a1540, roughness: 0.6, metalness: 0.4 })
-    ];
+    const debrisMat = new THREE.MeshStandardMaterial({ color: 0x4a405a, roughness: 0.9, metalness: 0.1 });
 
-    for(let i=0; i<35; i++) {
-        const size = 0.15 + Math.random()*0.35;
+    for(let i=0; i<30; i++) {
+        const size = 0.1 + Math.random()*0.3;
         const geo = new THREE.DodecahedronGeometry(size, 0);
-        const rock = new THREE.Mesh(geo, debrisMats[i % 2]);
+        const rock = new THREE.Mesh(geo, debrisMat);
         const r = 7 + Math.random() * 8;
         const th = Math.random() * Math.PI * 2;
-        const ph = Math.acos(2 * Math.random() - 1); // uniform spherical distribution
+        const ph = Math.acos(2 * Math.random() - 1);
         rock.position.set(r*Math.sin(ph)*Math.cos(th), r*Math.sin(ph)*Math.sin(th), r*Math.cos(ph));
         
-        // Random rotation axis and speed
         rock.userData.rotAxis = new THREE.Vector3(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5).normalize();
         rock.userData.rotSpeed = 0.01 + Math.random() * 0.02;
-        // Orbit speed
         rock.userData.orbitSpeed = (Math.random() - 0.5) * 0.005;
         
         debrisGroup.add(rock);
     }
 
     // ── Magical Particles ───────────────────────────────────────────────────
-    const pCount = 800;
+    const pCount = 1000;
     const pGeo = new THREE.BufferGeometry();
     const pPos = new Float32Array(pCount * 3);
     for(let i=0; i<pCount*3; i++) pPos[i] = (Math.random()-0.5) * 35;
     pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
     const pMat = new THREE.PointsMaterial({
-        size: 0.08, map: getGlowTex('rgba(210,100,255,1)', 16),
+        size: 0.07, map: getGlowTex('rgba(190,100,255,1)', 16),
         transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending, depthWrite: false
     });
     const pSystem = new THREE.Points(pGeo, pMat);
@@ -266,35 +271,81 @@
       }
       mainGroup.quaternion.copy(rotQ);
 
-      // Core animation
-      crystal.rotation.x = Math.sin(t * 0.5) * 0.2;
-      crystal.rotation.y = t * 0.5;
-      crystalWire.rotation.copy(crystal.rotation);
+      // ── Morphing Core Logic ───────────────────────────────────────────────
+      const morphCycle = (t * 0.8) % 3; // 3 phases: Sphere -> Cube -> Blob -> Sphere
+      const positions = coreGeo.attributes.position.array;
+
+      for (let i = 0; i < N; i++) {
+          const idx = i * 3;
+          // Base sphere coordinates
+          const bx = basePos[idx], by = basePos[idx+1], bz = basePos[idx+2];
+          
+          // 1. Target: Cube (project sphere onto cube)
+          const max = Math.max(Math.abs(bx), Math.abs(by), Math.abs(bz));
+          const cx = bx / max * 0.85; 
+          const cy = by / max * 0.85;
+          const cz = bz / max * 0.85;
+
+          // 2. Target: Blob (spherical harmonics noise)
+          const theta = thetaArr[i];
+          const phi = phiArr[i];
+          const r = 1.0 + 0.3 * Math.sin(4 * theta + t * 2) * Math.sin(3 * phi - t);
+          const blx = bx * r * 0.9;
+          const bly = by * r * 0.9;
+          const blz = bz * r * 0.9;
+
+          let tx, ty, tz;
+          
+          if (morphCycle < 1) {
+              // Sphere -> Cube
+              const lerp = smoothstep(morphCycle);
+              tx = bx + (cx - bx) * lerp;
+              ty = by + (cy - by) * lerp;
+              tz = bz + (cz - bz) * lerp;
+          } else if (morphCycle < 2) {
+              // Cube -> Blob
+              const lerp = smoothstep(morphCycle - 1);
+              tx = cx + (blx - cx) * lerp;
+              ty = cy + (bly - cy) * lerp;
+              tz = cz + (blz - cz) * lerp;
+          } else {
+              // Blob -> Sphere
+              const lerp = smoothstep(morphCycle - 2);
+              tx = blx + (bx - blx) * lerp;
+              ty = bly + (by - bly) * lerp;
+              tz = blz + (bz - blz) * lerp;
+          }
+
+          positions[idx]   = tx;
+          positions[idx+1] = ty;
+          positions[idx+2] = tz;
+      }
+      
+      coreGeo.attributes.position.needsUpdate = true;
+      coreGeo.computeVertexNormals();
+
+      coreGroup.rotation.y = t * 0.4;
+      coreGroup.rotation.z = Math.sin(t * 0.5) * 0.2;
       
       coreLight.intensity = 3 + Math.sin(t * 2) * 1.5;
-      glowOrb.scale.setScalar(4 + Math.sin(t * 3) * 0.5);
+      glowOrb.scale.setScalar(4.5 + Math.sin(t * 3) * 0.8);
 
-      // Rings rotation
+      // ── Rings rotation ────────────────────────────────────────────────────
       rings.forEach(r => {
         r.obj.rotateOnAxis(r.axis, r.speed);
       });
 
-      // Debris animation
+      // ── Debris animation ──────────────────────────────────────────────────
       debrisGroup.children.forEach((rock, i) => {
         rock.rotateOnAxis(rock.userData.rotAxis, rock.userData.rotSpeed);
-        // Orbit around center
         rock.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), rock.userData.orbitSpeed);
-        // Slight bobbing
         rock.position.y += Math.sin(t * 2 + i) * 0.005;
       });
 
-      // Particles swirl
+      // ── Particles swirl ───────────────────────────────────────────────────
       pSystem.rotation.y = t * 0.05;
       pSystem.rotation.z = Math.sin(t * 0.1) * 0.1;
-      
-      // Twinkle particles
-      const pMatOpacity = 0.4 + Math.sin(t * 4) * 0.2;
-      pSystem.material.opacity = pMatOpacity;
+      pSystem.material.opacity = 0.4 + Math.sin(t * 4) * 0.2;
 
       renderer.render(scene, camera);
     }
