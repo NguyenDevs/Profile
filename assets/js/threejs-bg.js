@@ -146,8 +146,14 @@
         size: 0.04, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, map: getGlowTex('rgba(150,50,255,1)', 16)
     });
     const diskSystem = new THREE.Points(diskGeo, diskMat);
-    diskSystem.rotation.x = Math.PI / 2 - 0.2;
+    diskSystem.rotation.x = 0.2; // Almost horizontal for standard accretion disk look
     coreGroup.add(diskSystem);
+
+    const bhGlow = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: getGlowTex('rgba(200,150,255,0.9)', 64), blending: THREE.AdditiveBlending, transparent: true, depthWrite: false
+    }));
+    bhGlow.scale.setScalar(1.2);
+    coreGroup.add(bhGlow);
 
     const glowOrb = new THREE.Sprite(new THREE.SpriteMaterial({
       map: getGlowTex('rgba(180,50,255,0.8)', 128), blending: THREE.AdditiveBlending, transparent: true, depthWrite: false
@@ -363,23 +369,45 @@
 
       coreGroup.rotation.y = t * 0.4;
       coreGroup.rotation.z = Math.sin(t * 0.5) * 0.2;
+      // Calculate zoom factor: 1 (closest, zoom=8) to 0 (furthest, zoom=35)
+      const zf = Math.max(0, Math.min(1, (35 - zoom) / 27));
+      
+      coreGroup.scale.setScalar(1 + zf * 0.2); // Core expands slightly when close
+
       const dPos = diskSystem.geometry.attributes.position.array;
       for(let i=0; i<diskCount; i++) {
           let p = diskParams[i];
-          p.th -= p.speed; 
+          p.th -= p.speed * (1 + zf * 2); // Spin much faster when zoomed in
           p.r -= 0.005; 
           if (p.r < 0.35) { 
               p.r = 1.1; 
               p.th = Math.random() * Math.PI * 2;
           }
-          dPos[i*3] = p.r * Math.cos(p.th);
-          dPos[i*3+2] = p.r * Math.sin(p.th);
+          
+          let bx = p.r * Math.cos(p.th);
+          let bz = p.r * Math.sin(p.th);
+          let by = p.y;
+          
+          // Fake Gravitational Lensing: bend particles behind the black hole (bz < 0) upward/downward
+          if (bz < 0) {
+              const bendAmount = Math.pow((1.3 - p.r), 2) * 1.8;
+              let bendY = bendAmount * Math.exp(-Math.pow(bx * 2, 2)); 
+              if (i % 2 === 0) bendY = -bendY; // Half bends down, half bends up
+              by += bendY;
+          }
+
+          dPos[i*3] = bx;
+          dPos[i*3+1] = by;
+          dPos[i*3+2] = bz;
       }
       diskSystem.geometry.attributes.position.needsUpdate = true;
       coreLight.intensity = 4 + Math.sin(t * 2) * 2;
       glowOrb.scale.setScalar(5.5 + Math.sin(t * 3) * 0.8);
 
-      rings.forEach(r => r.obj.rotateOnAxis(r.axis, r.speed));
+      rings.forEach((r, i) => {
+          r.obj.rotateOnAxis(r.axis, r.speed * (1 + zf * 3.0)); // Rotate faster
+          r.obj.scale.setScalar(1 + zf * (0.15 + i * 0.08)); // Space out rings
+      });
       debrisGroup.children.forEach((rock, i) => {
         rock.rotateOnAxis(rock.userData.rotAxis, rock.userData.rotSpeed);
         rock.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), rock.userData.orbitSpeed);
