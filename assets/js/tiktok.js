@@ -1,33 +1,76 @@
-export const TIKTOK_WORKER_URL = '/api/tiktok-stats';
+/**
+ * tiktok.js — fetch TikTok stats từ linkbio scraper,
+ * hiển thị 2 dạng: rút gọn (110.6K / 3.8M) và đầy đủ (110,600 / 3,800,000),
+ * tự động luân phiên sau mỗi 5 giây với hiệu ứng flip.
+ */
+
+const STATS_URL = '/api/tiktok-stats';
+
+/** Format rút gọn: 110600 → "110.6K", 3800000 → "3.8M" */
+function formatShort(num) {
+  if (!num || isNaN(num)) return '0';
+  if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B';
+  if (num >= 1_000_000)     return (num / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (num >= 1_000)         return (num / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+  return num.toLocaleString('en-US');
+}
+
+/** Format đầy đủ: 110600 → "110,600" */
+function formatFull(num) {
+  if (!num || isNaN(num)) return '0';
+  return num.toLocaleString('en-US');
+}
+
+/**
+ * Animate flip trên một element: fade out → đổi text → fade in
+ * @param {HTMLElement} el
+ * @param {string} newText
+ */
+function flipText(el, newText) {
+  el.classList.add('tt-stat-flip-out');
+  setTimeout(() => {
+    el.textContent = newText;
+    el.classList.remove('tt-stat-flip-out');
+    el.classList.add('tt-stat-flip-in');
+    setTimeout(() => el.classList.remove('tt-stat-flip-in'), 400);
+  }, 250);
+}
 
 export function fetchTikTokStats() {
   const followerEl = document.getElementById('tt-followers');
-  const likesEl = document.getElementById('tt-likes');
-  const avatarEl = document.querySelector('.tiktok-card__avatar');
-  const nameEl = document.querySelector('.tiktok-card__name');
+  const likesEl    = document.getElementById('tt-likes');
 
   if (!followerEl || !likesEl) return;
 
-  fetch(TIKTOK_WORKER_URL)
+  fetch(STATS_URL)
     .then(res => res.json())
     .then(data => {
-      const formatNum = (num) => {
-        if (!num || isNaN(num)) return '0';
-        if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
-        if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
-        return num.toString();
-      };
+      const followersRaw = data.followers_raw || 0;
+      const likesRaw     = data.likes_raw     || 0;
 
-      const displayFollowers = data.followers_raw ? formatNum(data.followers_raw) : (data.followers_fmt || '0');
-      const displayLikes = data.likes_raw ? formatNum(data.likes_raw) : (data.likes_fmt || '0');
+      // State: true = rút gọn, false = đầy đủ
+      let isShort = true;
 
-      if (displayFollowers && followerEl) followerEl.textContent = displayFollowers;
-      if (displayLikes && likesEl) likesEl.textContent = displayLikes;
+      // Hiển thị ban đầu (dạng rút gọn)
+      followerEl.textContent = formatShort(followersRaw);
+      likesEl.textContent    = formatShort(likesRaw);
 
-      if (data.display_name && nameEl) nameEl.textContent = data.display_name;
-      if (data.avatar_url && avatarEl) avatarEl.src = data.avatar_url;
+      // Toggle mỗi 5 giây
+      setInterval(() => {
+        isShort = !isShort;
+
+        if (isShort) {
+          flipText(followerEl, formatShort(followersRaw));
+          flipText(likesEl,    formatShort(likesRaw));
+        } else {
+          flipText(followerEl, formatFull(followersRaw));
+          flipText(likesEl,    formatFull(likesRaw));
+        }
+      }, 5000);
     })
     .catch(() => {
-      console.warn('[TikTok stats] Service temporarily unavailable');
+      // Fallback tĩnh nếu API không response
+      followerEl.textContent = '110.6K';
+      likesEl.textContent    = '3.8M';
     });
 }
