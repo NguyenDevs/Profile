@@ -215,20 +215,61 @@
         metalness: 0.6,
         roughness: 0.4,
         emissiveMap: techTex,
-        emissive: 0x7700dd,
+        emissive: 0x7700dd, // Slightly dimmer glow on the inner/outer walls
         emissiveIntensity: 1.2,
       });
 
       const materials = [stoneMat, bevelMat];
-        
-        const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+      
+      let currentAngle = 0;
+      while (currentAngle < Math.PI * 2) {
+          // Random contiguous chunk length
+          let chunkLength = 0.5 + Math.random() * 1.5; 
+          if (currentAngle + chunkLength > Math.PI * 2) chunkLength = Math.PI * 2 - currentAngle;
+          
+          let gap = 0.1 + Math.random() * 0.25;
+          if (Math.random() > 0.85) gap += 0.4; // Occasional large missing chunk
+          
+          // Decide if this chunk should be cracked into floating sub-fragments
+          const isBroken = Math.random() > 0.6;
+          const pieces = isBroken ? (2 + Math.floor(Math.random() * 3)) : 1;
+          const pieceLength = Math.max(0, (chunkLength - gap) / pieces);
+          
+          for(let p=0; p<pieces; p++) {
+              if (pieceLength <= 0.05) continue; // Too small
+              
+              const start = currentAngle + p * pieceLength + (p > 0 ? 0.02 : 0); // tiny crack gap
+              const actualLength = pieceLength - (p < pieces-1 ? 0.02 : 0);
+              
+              const shape = new THREE.Shape();
+              shape.absarc(0, 0, outerR, start, start + actualLength, false);
+              shape.lineTo(Math.cos(start + actualLength) * innerR, Math.sin(start + actualLength) * innerR);
+              shape.absarc(0, 0, innerR, start + actualLength, start, true);
+              shape.lineTo(Math.cos(start) * outerR, Math.sin(start) * outerR);
+              
+              const extrudeSettings = {
+                depth: depth, bevelEnabled: true, bevelSegments: 3, steps: 1, bevelSize: 0.05, bevelThickness: 0.05, curveSegments: 32
+              };
+              
+              const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+              geo.translate(0, 0, -depth / 2);
+              
+              const mesh = new THREE.Mesh(geo, materials);
+              
+              // If it's a broken sub-fragment, randomly displace it slightly
+              if (isBroken && pieces > 1) {
+                  const midAngle = start + actualLength/2;
+                  const offsetR = (Math.random() - 0.5) * 0.15;
+                  const offsetZ = (Math.random() - 0.5) * 0.15;
+                  mesh.position.set(Math.cos(midAngle) * offsetR, Math.sin(midAngle) * offsetR, offsetZ);
+                  mesh.rotation.set((Math.random() - 0.5) * 0.05, (Math.random() - 0.5) * 0.05, 0);
+              }
 
-        geo.translate(0, 0, -depth / 2);
-        
-        const mesh = new THREE.Mesh(geo, materials);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true; // Enables self-shadowing and deep shadows
-        group.add(mesh);
+              mesh.castShadow = true;
+              mesh.receiveShadow = true;
+              group.add(mesh);
+          }
+          currentAngle += chunkLength;
       }
 
       return { obj: group, axis: axis.normalize(), speed: rotSpeed };
