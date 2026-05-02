@@ -50,8 +50,8 @@
       overflow: hidden;
     }
 
-    /* Ensure Three.js canvas is on top of everything else in background */
-    #threejs-canvas {
+    /* gradient-bg sits BELOW Three.js canvas (z-index:2) */
+    .gradient-bg {
       z-index: 1 !important;
     }
 
@@ -200,7 +200,19 @@
 </head>
 <body>
 
-  <!-- Three.js canvas injected by threejs-bg.js fills the background -->
+  <!-- Gradient background (same as index) -->
+  <div class="gradient-bg">
+    <svg xmlns="http://www.w3.org/2000/svg" style="display:none;">
+      <defs>
+        <filter id="goo">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo" />
+          <feBlend in="SourceGraphic" in2="goo" />
+        </filter>
+      </defs>
+    </svg>
+    <div class="gradients-container"></div>
+  </div>
 
   <!-- Minimal floating label -->
   <div class="info-label" aria-label="Info page">
