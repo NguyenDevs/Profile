@@ -1,7 +1,4 @@
-/**
- * Ultimate Armillary Sphere
- * Theme: Tech-Stone, Shadows, Electric Board / Cracks, Morphing Core
- */
+
 (function () {
   'use strict';
 
@@ -16,7 +13,7 @@
   }
 
   function init() {
-    // ── Canvas Setup ───────────────────────────────────────────────────────
+    
     const canvas = document.createElement('canvas');
     canvas.id = 'threejs-canvas';
     Object.assign(canvas.style, {
@@ -27,13 +24,13 @@
     document.body.insertBefore(canvas, document.body.firstChild);
     requestAnimationFrame(() => canvas.style.opacity = '1');
 
-    // ── Renderer ────────────────────────────────────────────────────────────
+    
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x000000, 0); 
     
-    // Enable shadows for realistic depth
+    
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -44,17 +41,17 @@
     const mainGroup = new THREE.Group();
     scene.add(mainGroup);
 
-    // ── Lighting ────────────────────────────────────────────────────────────
-    // Very dim ambient to force strong shadows
+    
+    
     scene.add(new THREE.AmbientLight(0x150b24, 0.6)); 
     
-    // Core glow (illuminates the stone from inside)
+    
     const coreLight = new THREE.PointLight(0xcc00ff, 5, 25);
     coreLight.castShadow = true;
     coreLight.shadow.bias = -0.001;
     mainGroup.add(coreLight);
 
-    // Key Light (Top-Right-Front)
+    
     const dirLight = new THREE.DirectionalLight(0xdab3ff, 1.5);
     dirLight.position.set(10, 20, 15);
     dirLight.castShadow = true;
@@ -69,13 +66,13 @@
     dirLight.shadow.mapSize.height = 2048;
     scene.add(dirLight);
 
-    // Fill light (Bottom-Left-Back)
+    
     const fillLight = new THREE.DirectionalLight(0x4400aa, 1.0);
     fillLight.position.set(-15, -10, -15);
     scene.add(fillLight);
 
-    // ── Procedural Textures ─────────────────────────────────────────────────
-    // 1. Stone Bump Map for rough surface
+    
+    
     function genStoneBump() {
       const size = 256;
       const cvs = document.createElement('canvas');
@@ -93,15 +90,12 @@
     }
 
     const bumpTex = genStoneBump();
-    const bumpTex = genStoneBump();
 
-    // ── Morphing Core Element ───────────────────────────────────────────────
     const coreGroup = new THREE.Group();
     mainGroup.add(coreGroup);
 
     const CORE_RADIUS = 1.4;
-    // Icosahedron has an evenly distributed mesh without poles
-    const coreGeo = new THREE.IcosahedronGeometry(CORE_RADIUS, 5); // High detail for smooth morphing
+    const coreGeo = new THREE.IcosahedronGeometry(CORE_RADIUS, 5);
     const basePos = new Float32Array(coreGeo.attributes.position.array);
     const N = basePos.length / 3;
     const thetaArr = new Float32Array(N);
@@ -110,7 +104,7 @@
     for (let i = 0; i < N; i++) {
         const x = basePos[i*3] / CORE_RADIUS, y = basePos[i*3+1] / CORE_RADIUS, z = basePos[i*3+2] / CORE_RADIUS;
         thetaArr[i] = Math.atan2(y, x);
-        phiArr[i] = Math.acos(Math.max(-1, Math.min(1, z))); // Clamped to avoid NaN
+        phiArr[i] = Math.acos(Math.max(-1, Math.min(1, z))); 
     }
 
     const coreMat = new THREE.MeshStandardMaterial({
@@ -143,16 +137,16 @@
     glowOrb.scale.setScalar(6.5);
     coreGroup.add(glowOrb);
 
-    // ── Fragmented Rings ────────────────────────────────────────────────────
+    
     function createFragmentedRing(innerR, outerR, depth, fragmentsCount, rotSpeed, axis, hiddenIndices = null) {
       const group = new THREE.Group();
       
       const stoneMat = new THREE.MeshStandardMaterial({
-        color: 0x3a304a, // Darker stone to let emissive pop
+        color: 0x3a304a, 
         metalness: 0.3,
         roughness: 0.8,
         bumpMap: bumpTex,
-        bumpScale: 0.015, // Rough stone feel
+        bumpScale: 0.015, 
         emissive: 0x9900ff,
         emissiveIntensity: 1.5,
       });
@@ -202,7 +196,7 @@
         
         const mesh = new THREE.Mesh(geo, materials);
         mesh.castShadow = true;
-        mesh.receiveShadow = true; // Enables self-shadowing and deep shadows
+        mesh.receiveShadow = true; 
         group.add(mesh);
       }
 
@@ -220,7 +214,7 @@
     ];
     rings.forEach(r => mainGroup.add(r.obj));
 
-    // ── Floating Debris ─────────────────────────────────────────────────────
+    
     const debrisGroup = new THREE.Group();
     mainGroup.add(debrisGroup);
     const debrisMat = new THREE.MeshStandardMaterial({ 
@@ -229,7 +223,7 @@
     });
 
     for(let i=0; i<20; i++) {
-        const size = 0.10 + Math.random()*0.20; // Reduced debris size
+        const size = 0.10 + Math.random()*0.20; 
         const randGeo = Math.floor(Math.random() * 5);
         let geo;
         switch(randGeo) {
@@ -252,7 +246,7 @@
         debrisGroup.add(rock);
     }
 
-    // ── Magical Particles ───────────────────────────────────────────────────
+    
     const pCount = 4500;
     const pGeo = new THREE.BufferGeometry();
     const pPos = new Float32Array(pCount * 3);
@@ -271,10 +265,10 @@
     const pSystem = new THREE.Points(pGeo, pMat);
     scene.add(pSystem);
 
-    // ── Controls ────────────────────────────────────────────────────────────
+    
     const rotQ = new THREE.Quaternion();
     const drag = { active: false, px: 0, py: 0 };
-    let zoom = 22.0, autoRotate = true; // Increased zoom out to reduce overall size
+    let zoom = 22.0, autoRotate = true; 
 
     canvas.addEventListener('mousedown', e => { drag.active = true; drag.px = e.clientX; drag.py = e.clientY; canvas.style.cursor = 'grabbing'; });
     window.addEventListener('mouseup', () => { drag.active = false; canvas.style.cursor = 'grab'; setTimeout(() => autoRotate = true, 3000); });
@@ -287,7 +281,7 @@
     });
     window.addEventListener('wheel', e => zoom = Math.max(8, Math.min(35, zoom + e.deltaY*0.015)), {passive:true});
 
-    // Touch support
+    
     let lastT = null;
     canvas.addEventListener('touchstart', e => { lastT = e.touches[0]; drag.active = true; autoRotate = false; }, { passive: true });
     canvas.addEventListener('touchmove', e => {
@@ -301,7 +295,7 @@
     }, { passive: false });
     canvas.addEventListener('touchend', () => { drag.active = false; lastT = null; setTimeout(() => autoRotate = true, 3000); });
 
-    // ── Animation Loop ──────────────────────────────────────────────────────
+    
     let t = 0; const _q = new THREE.Quaternion();
 
     function animate() {
@@ -312,24 +306,24 @@
       if (autoRotate) { _q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0.0015); rotQ.premultiply(_q); }
       mainGroup.quaternion.copy(rotQ);
 
-      // Morphing Core
+      
       const morphCycle = (t * 0.6) % 4;
       const positions = coreGeo.attributes.position.array;
       for (let i = 0; i < N; i++) {
           const idx = i * 3, bx = basePos[idx], by = basePos[idx+1], bz = basePos[idx+2];
           const theta = thetaArr[i], phi = phiArr[i];
           
-          // Target 0: Base Sphere (bx, by, bz)
           
-          // Target 1: Spiky Energy Core
+          
+          
           const r1 = 1.0 + 0.3 * Math.sin(6 * theta + t * 3) * Math.sin(5 * phi - t * 2);
           const tx1 = bx * r1, ty1 = by * r1, tz1 = bz * r1;
           
-          // Target 2: Organic Blob
+          
           const r2 = 1.0 + 0.25 * Math.sin(3 * theta - t * 1.5) + 0.2 * Math.cos(4 * phi + t);
           const tx2 = bx * r2, ty2 = by * r2, tz2 = bz * r2;
           
-          // Target 3: Pulsing Ripple
+          
           const r3 = 1.0 + 0.15 * Math.sin(10 * phi - t * 6) + 0.1 * Math.sin(8 * theta + t * 4);
           const tx3 = bx * r3, ty3 = by * r3, tz3 = bz * r3;
 
