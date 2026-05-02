@@ -1,7 +1,6 @@
 /**
- * High-Fidelity Mystical Armillary Sphere (Dainichi Mikoshi / Enkanomiya style)
- * Theme: Deep Purple / Void Energy
- * Techniques: Thick carved stone fragments, Energy pillar, God rays, Runic core
+ * Premium Armillary Sphere — High-Fidelity 3D
+ * Theme: Mystical Purple / Ancient Mechanism
  */
 (function () {
   'use strict';
@@ -12,13 +11,13 @@
   }
 
   function init() {
-    // ── Canvas ─────────────────────────────────────────────────────────────
+    // ── Canvas Setup ───────────────────────────────────────────────────────
     const canvas = document.createElement('canvas');
     canvas.id = 'threejs-canvas';
     Object.assign(canvas.style, {
       position: 'fixed', inset: '0', width: '100%', height: '100%',
       pointerEvents: 'auto', zIndex: '2', opacity: '0',
-      transition: 'opacity 2.5s ease', cursor: 'grab', background: 'transparent',
+      transition: 'opacity 2s ease', cursor: 'grab', background: 'transparent',
     });
     document.body.insertBefore(canvas, document.body.firstChild);
     requestAnimationFrame(() => canvas.style.opacity = '1');
@@ -31,21 +30,28 @@
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 3, 12);
+    camera.position.set(0, 2, 18);
 
-    // ── Main Pivot ──────────────────────────────────────────────────────────
+    // ── Main Group ──────────────────────────────────────────────────────────
     const mainGroup = new THREE.Group();
     scene.add(mainGroup);
 
-    // ── Lighting ──────────────────────────────────────────────────────────────
-    scene.add(new THREE.AmbientLight(0x1a0033, 1.2));
+    // ── Lighting ────────────────────────────────────────────────────────────
+    scene.add(new THREE.AmbientLight(0x110822, 1.5));
     
-    const coreLight = new THREE.PointLight(0xaa00ff, 5, 25);
-    scene.add(coreLight);
+    // Core glow
+    const coreLight = new THREE.PointLight(0xd400ff, 4, 30);
+    mainGroup.add(coreLight);
 
-    const topLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    topLight.position.set(0, 20, 0);
-    scene.add(topLight);
+    // Edge highlight (Top-Right-Front)
+    const dirLight = new THREE.DirectionalLight(0xcba4ff, 1.2);
+    dirLight.position.set(10, 15, 10);
+    scene.add(dirLight);
+
+    // Fill light (Bottom-Left-Back)
+    const fillLight = new THREE.DirectionalLight(0x5500aa, 0.8);
+    fillLight.position.set(-10, -10, -10);
+    scene.add(fillLight);
 
     // ── Helpers ─────────────────────────────────────────────────────────────
     function getGlowTex(color = 'rgba(160,60,255,1)', r = 128) {
@@ -58,129 +64,160 @@
       return new THREE.CanvasTexture(c);
     }
 
-    // ── Energy Pillar (Vertical God Ray) ────────────────────────────────────
-    const pillarGeo = new THREE.CylinderGeometry(1.5, 2.5, 80, 32, 1, true);
-    const pillarMat = new THREE.MeshBasicMaterial({
-      color: 0x6600ff,
-      transparent: true,
-      opacity: 0.15,
-      side: THREE.DoubleSide,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-    });
-    const pillar = new THREE.Mesh(pillarGeo, pillarMat);
-    scene.add(pillar);
-
-    const pillarCore = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.5, 0.8, 80, 16, 1, true),
-        new THREE.MeshBasicMaterial({ color: 0xaa55ff, transparent: true, opacity: 0.1, blending: THREE.AdditiveBlending, depthWrite: false })
-    );
-    scene.add(pillarCore);
-
-    // ── Central Runic Core ──────────────────────────────────────────────────
+    // ── Core Element ────────────────────────────────────────────────────────
     const coreGroup = new THREE.Group();
     mainGroup.add(coreGroup);
 
-    // Internal Glowing Cube
-    const cubeInner = new THREE.Mesh(
-        new THREE.BoxGeometry(1.0, 1.0, 1.0),
-        new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0xaa00ff, emissiveIntensity: 4 })
+    // Floating Crystal (Octahedron)
+    const crystalGeo = new THREE.OctahedronGeometry(1.2, 0);
+    const crystalMat = new THREE.MeshPhysicalMaterial({
+      color: 0x220044,
+      emissive: 0x5500aa,
+      emissiveIntensity: 0.5,
+      metalness: 0.8,
+      roughness: 0.1,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.1,
+    });
+    const crystal = new THREE.Mesh(crystalGeo, crystalMat);
+    coreGroup.add(crystal);
+
+    // Crystal Wireframe
+    const crystalWire = new THREE.Mesh(
+      crystalGeo,
+      new THREE.MeshBasicMaterial({ color: 0xeebbff, wireframe: true, transparent: true, opacity: 0.3 })
     );
-    coreGroup.add(cubeInner);
+    crystalWire.scale.setScalar(1.05);
+    coreGroup.add(crystalWire);
 
-    // Floating Frame Fragments for the Cube
-    for(let i=0; i<8; i++) {
-        const frame = new THREE.Mesh(
-            new THREE.BoxGeometry(0.4, 0.4, 0.4),
-            new THREE.MeshStandardMaterial({ color: 0x110022, roughness: 0.9 })
-        );
-        frame.position.set((i&1?1:-1)*0.6, (i&2?1:-1)*0.6, (i&4?1:-1)*0.6);
-        coreGroup.add(frame);
-    }
-
-    // Core Glow Sphere
-    const coreGlow = new THREE.Sprite(new THREE.SpriteMaterial({
-        map: getGlowTex('rgba(160,60,255,0.4)', 256),
-        blending: THREE.AdditiveBlending, transparent: true
+    // Glowing energy orb inside crystal
+    const glowOrb = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: getGlowTex('rgba(210,0,255,0.8)', 128),
+      blending: THREE.AdditiveBlending, transparent: true, depthWrite: false
     }));
-    coreGlow.scale.setScalar(6);
-    coreGroup.add(coreGlow);
+    glowOrb.scale.setScalar(5);
+    coreGroup.add(glowOrb);
 
-    // ── Thick Carved Stone Rings ────────────────────────────────────────────
-    function createStoneRing(radius, thickness, segments) {
+    // ── Fragmented Rings ────────────────────────────────────────────────────
+    function createFragmentedRing(innerR, outerR, depth, fragmentsCount, rotSpeed, axis) {
       const group = new THREE.Group();
+      
       const stoneMat = new THREE.MeshStandardMaterial({
-        color: 0x1a1a2e,
-        roughness: 0.85,
-        metalness: 0.1,
+        color: 0x1f1930, // Dark slate purple
+        metalness: 0.3,
+        roughness: 0.7,
       });
 
-      const arc = (Math.PI * 2) / segments;
-      for (let i = 0; i < segments; i++) {
-        if (Math.random() > 0.8) continue; // broken gaps
+      const goldMat = new THREE.MeshStandardMaterial({
+        color: 0xffd700, // Gold/Brass accent for bevels
+        metalness: 0.9,
+        roughness: 0.3,
+      });
 
-        const curve = new THREE.CatmullRomCurve3([
-            new THREE.Vector3(Math.cos(i*arc)*radius, Math.sin(i*arc)*radius, 0),
-            new THREE.Vector3(Math.cos((i+0.5)*arc)*radius, Math.sin((i+0.5)*arc)*radius, (Math.random()-0.5)*0.2),
-            new THREE.Vector3(Math.cos((i+1)*arc)*radius, Math.sin((i+1)*arc)*radius, 0),
-        ]);
+      // We use materials array: [side/face material, bevel/extrusion material]
+      const materials = [stoneMat, goldMat];
+
+      const gap = 0.25; // radians
+      const totalArc = Math.PI * 2;
+      const arcLength = (totalArc / fragmentsCount) - gap;
+      
+      for (let i = 0; i < fragmentsCount; i++) {
+        // Skip occasional fragments to make it look ancient/broken
+        if (fragmentsCount > 3 && Math.random() > 0.8) continue;
+
+        const start = i * (totalArc / fragmentsCount) + (Math.random() * 0.1); // slight irregularity
         
-        const tubeGeo = new THREE.TubeGeometry(curve, 8, thickness, 6, false);
-        const segment = new THREE.Mesh(tubeGeo, stoneMat);
-        group.add(segment);
-
-        // Cracks/Emissive for each segment
-        const emissiveGeo = new THREE.TubeGeometry(curve, 8, thickness * 1.05, 6, false);
-        const emissiveSeg = new THREE.Mesh(emissiveGeo, new THREE.MeshBasicMaterial({
-            color: 0xaa00ff, wireframe: true, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending
-        }));
-        group.add(emissiveSeg);
+        const shape = new THREE.Shape();
+        shape.absarc(0, 0, outerR, start, start + arcLength, false);
+        shape.lineTo(Math.cos(start + arcLength) * innerR, Math.sin(start + arcLength) * innerR);
+        shape.absarc(0, 0, innerR, start + arcLength, start, true);
+        shape.lineTo(Math.cos(start) * outerR, Math.sin(start) * outerR);
+        
+        const extrudeSettings = {
+          depth: depth,
+          bevelEnabled: true,
+          bevelSegments: 3,
+          steps: 1,
+          bevelSize: 0.08,
+          bevelThickness: 0.08,
+          curveSegments: 48 // Very smooth curves
+        };
+        
+        const geo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        geo.translate(0, 0, -depth / 2);
+        
+        const mesh = new THREE.Mesh(geo, materials);
+        group.add(mesh);
       }
-      return group;
+
+      // Inner glowing energy ring
+      const innerGlowGeo = new THREE.CylinderGeometry(innerR - 0.1, innerR - 0.1, depth * 0.5, 64, 1, true);
+      const innerGlowMat = new THREE.MeshBasicMaterial({
+        color: 0xbb00ff,
+        transparent: true,
+        opacity: 0.2,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide,
+        depthWrite: false
+      });
+      const innerGlow = new THREE.Mesh(innerGlowGeo, innerGlowMat);
+      innerGlow.rotation.x = Math.PI / 2;
+      group.add(innerGlow);
+
+      return { obj: group, axis: axis.normalize(), speed: rotSpeed };
     }
 
-    const ring1 = createStoneRing(3.5, 0.45, 12);
-    const ring2 = createStoneRing(5.0, 0.55, 16);
-    const ring3 = createStoneRing(6.8, 0.65, 20);
-
-    const ringSet = [
-        { obj: ring1, axis: new THREE.Vector3(1, 0.2, 0.1).normalize(), speed: 0.006 },
-        { obj: ring2, axis: new THREE.Vector3(-0.2, 1, 0.3).normalize(), speed: 0.004 },
-        { obj: ring3, axis: new THREE.Vector3(0.1, -0.3, 1).normalize(), speed: 0.003 },
+    const rings = [
+      createFragmentedRing(2.8, 3.4, 0.6, 3, 0.008, new THREE.Vector3(1, 0.5, 0.2)),
+      createFragmentedRing(4.0, 4.8, 0.8, 4, -0.005, new THREE.Vector3(-0.5, 1, 0.5)),
+      createFragmentedRing(5.4, 6.4, 1.2, 5, 0.003, new THREE.Vector3(0.2, -0.5, 1)),
     ];
-    ringSet.forEach(r => mainGroup.add(r.obj));
 
-    // ── Floating Rocks / Debris ─────────────────────────────────────────────
-    const debris = [];
-    for(let i=0; i<30; i++) {
-        const geo = new THREE.DodecahedronGeometry(0.1 + Math.random()*0.3, 0);
-        const rock = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0x110022, roughness: 1 }));
-        const r = 4 + Math.random() * 8;
+    rings.forEach(r => mainGroup.add(r.obj));
+
+    // ── Floating Debris (Polyhedrons) ───────────────────────────────────────
+    const debrisGroup = new THREE.Group();
+    mainGroup.add(debrisGroup);
+    const debrisMats = [
+      new THREE.MeshStandardMaterial({ color: 0x1f1930, roughness: 0.8, metalness: 0.2 }),
+      new THREE.MeshStandardMaterial({ color: 0x2a1540, roughness: 0.6, metalness: 0.4 })
+    ];
+
+    for(let i=0; i<35; i++) {
+        const size = 0.15 + Math.random()*0.35;
+        const geo = new THREE.DodecahedronGeometry(size, 0);
+        const rock = new THREE.Mesh(geo, debrisMats[i % 2]);
+        const r = 7 + Math.random() * 8;
         const th = Math.random() * Math.PI * 2;
-        const ph = Math.random() * Math.PI;
+        const ph = Math.acos(2 * Math.random() - 1); // uniform spherical distribution
         rock.position.set(r*Math.sin(ph)*Math.cos(th), r*Math.sin(ph)*Math.sin(th), r*Math.cos(ph));
-        rock.userData.v = new THREE.Vector3((Math.random()-0.5)*0.01, (Math.random()-0.5)*0.01, (Math.random()-0.5)*0.01);
-        mainGroup.add(rock);
-        debris.push(rock);
+        
+        // Random rotation axis and speed
+        rock.userData.rotAxis = new THREE.Vector3(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5).normalize();
+        rock.userData.rotSpeed = 0.01 + Math.random() * 0.02;
+        // Orbit speed
+        rock.userData.orbitSpeed = (Math.random() - 0.5) * 0.005;
+        
+        debrisGroup.add(rock);
     }
 
-    // ── Atmosphere / Particles ──────────────────────────────────────────────
-    const pCount = 1500;
+    // ── Magical Particles ───────────────────────────────────────────────────
+    const pCount = 800;
     const pGeo = new THREE.BufferGeometry();
     const pPos = new Float32Array(pCount * 3);
-    for(let i=0; i<pCount*3; i++) pPos[i] = (Math.random()-0.5) * 40;
+    for(let i=0; i<pCount*3; i++) pPos[i] = (Math.random()-0.5) * 35;
     pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
     const pMat = new THREE.PointsMaterial({
-        size: 0.06, map: getGlowTex('rgba(180,120,255,1)', 16),
-        transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending, depthWrite: false
+        size: 0.08, map: getGlowTex('rgba(210,100,255,1)', 16),
+        transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending, depthWrite: false
     });
     const pSystem = new THREE.Points(pGeo, pMat);
     scene.add(pSystem);
 
-    // ── Interaction ─────────────────────────────────────────────────────────
+    // ── Arcball Controls ────────────────────────────────────────────────────
     const rotQ = new THREE.Quaternion();
     const drag = { active: false, px: 0, py: 0 };
-    let zoom = 12.0;
+    let zoom = 18.0;
     let autoRotate = true;
 
     canvas.addEventListener('mousedown', e => { drag.active = true; drag.px = e.clientX; drag.py = e.clientY; canvas.style.cursor = 'grabbing'; });
@@ -195,9 +232,23 @@
         autoRotate = false;
       }
     });
-    window.addEventListener('wheel', e => zoom = Math.max(6, Math.min(30, zoom + e.deltaY*0.01)), {passive:true});
+    window.addEventListener('wheel', e => zoom = Math.max(8, Math.min(35, zoom + e.deltaY*0.015)), {passive:true});
 
-    // ── Animation ────────────────────────────────────────────────────────────
+    // Touch support
+    let lastT = null;
+    canvas.addEventListener('touchstart', e => { lastT = e.touches[0]; drag.active = true; autoRotate = false; }, { passive: true });
+    canvas.addEventListener('touchmove', e => {
+      e.preventDefault();
+      if (!lastT) return;
+      const t = e.touches[0];
+      const dx = t.clientX - lastT.clientX, dy = t.clientY - lastT.clientY;
+      const axis = new THREE.Vector3(dy, dx, 0).normalize();
+      rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(axis, Math.sqrt(dx*dx+dy*dy)*0.005));
+      lastT = t;
+    }, { passive: false });
+    canvas.addEventListener('touchend', () => { drag.active = false; lastT = null; setTimeout(() => autoRotate = true, 3000); });
+
+    // ── Animation Loop ──────────────────────────────────────────────────────
     let t = 0;
     const _q = new THREE.Quaternion();
 
@@ -205,38 +256,45 @@
       requestAnimationFrame(animate);
       t += 0.01;
 
+      // Smooth zoom
       camera.position.z += (zoom - camera.position.z) * 0.05;
 
+      // Auto rotation
       if (autoRotate) {
-        _q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0.002);
+        _q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0.0015);
         rotQ.premultiply(_q);
       }
       mainGroup.quaternion.copy(rotQ);
 
-      // Core
-      cubeInner.rotation.x += 0.02;
-      cubeInner.rotation.y += 0.01;
-      coreLight.intensity = 4 + Math.sin(t * 3) * 2;
-      coreGlow.scale.setScalar(6 + Math.sin(t * 2) * 0.5);
+      // Core animation
+      crystal.rotation.x = Math.sin(t * 0.5) * 0.2;
+      crystal.rotation.y = t * 0.5;
+      crystalWire.rotation.copy(crystal.rotation);
+      
+      coreLight.intensity = 3 + Math.sin(t * 2) * 1.5;
+      glowOrb.scale.setScalar(4 + Math.sin(t * 3) * 0.5);
 
-      // Rings
-      ringSet.forEach(r => {
+      // Rings rotation
+      rings.forEach(r => {
         r.obj.rotateOnAxis(r.axis, r.speed);
       });
 
-      // Pillar effect
-      pillar.rotation.y += 0.005;
-      pillarMat.opacity = 0.12 + Math.sin(t * 1.5) * 0.05;
-
-      // Debris
-      debris.forEach(d => {
-        d.rotation.x += 0.01;
-        d.position.add(d.userData.v);
-        if(d.position.length() > 15) d.position.setLength(4);
+      // Debris animation
+      debrisGroup.children.forEach((rock, i) => {
+        rock.rotateOnAxis(rock.userData.rotAxis, rock.userData.rotSpeed);
+        // Orbit around center
+        rock.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), rock.userData.orbitSpeed);
+        // Slight bobbing
+        rock.position.y += Math.sin(t * 2 + i) * 0.005;
       });
 
-      // Particles
-      pSystem.rotation.y += 0.001;
+      // Particles swirl
+      pSystem.rotation.y = t * 0.05;
+      pSystem.rotation.z = Math.sin(t * 0.1) * 0.1;
+      
+      // Twinkle particles
+      const pMatOpacity = 0.4 + Math.sin(t * 4) * 0.2;
+      pSystem.material.opacity = pMatOpacity;
 
       renderer.render(scene, camera);
     }
