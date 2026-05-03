@@ -49,7 +49,9 @@
     const coreLight = new THREE.PointLight(0xcc00ff, 5, 25);
     coreLight.castShadow = true;
     coreLight.shadow.bias = -0.001;
-    mainGroup.add(coreLight);
+    const staticGroup = new THREE.Group();
+    scene.add(staticGroup);
+    staticGroup.add(coreLight);
 
     
     const dirLight = new THREE.DirectionalLight(0xdab3ff, 2.2);
@@ -76,7 +78,11 @@
 
 
     const coreGroup = new THREE.Group();
-    mainGroup.add(coreGroup);
+    staticGroup.add(coreGroup);
+    
+    
+    coreGroup.rotation.x = 0.15; 
+    coreGroup.rotation.y = -0.25;
 
     const CORE_RADIUS = 1.4;
     const coreGeo = new THREE.IcosahedronGeometry(CORE_RADIUS, 5);
@@ -172,7 +178,9 @@
         size: 0.12, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, map: getGlowTex('rgba(200,50,255,1)', 16)
     });
     const diskSystem = new THREE.Points(diskGeo, diskMat);
-    diskSystem.rotation.x = 0.2;
+    
+    
+    diskSystem.rotation.x = 0.05; 
     coreGroup.add(diskSystem);
 
     const bhGlow = new THREE.Sprite(new THREE.SpriteMaterial({
@@ -480,9 +488,16 @@
           let bx = p.r * Math.cos(p.th);
           let bz = p.r * Math.sin(p.th);
           let by = p.y;
+          
+          
           if (bz < 0) {
-              const bendFactor = Math.pow((1.8 - p.r), 2) * 2.2;
-              let bendY = bendFactor * Math.exp(-Math.pow(bx * 1.5, 2)); 
+              const r_val = p.r;
+              
+              const bendFactor = Math.pow((2.2 - r_val), 2.5) * 1.5;
+              
+              const falloff = Math.exp(-Math.pow(bx * 0.8, 2));
+              let bendY = bendFactor * falloff;
+              
               if (i % 2 === 0) bendY = -bendY;
               by += bendY;
           }
