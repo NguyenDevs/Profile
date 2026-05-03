@@ -554,10 +554,10 @@
       coreGeo.attributes.position.needsUpdate = true;
       coreGeo.computeVertexNormals();
 
-      const coreRotSpeed = 0.01 * (0.1 + 0.3 * coreIntro) * (0.5 + 0.5 * manualSpeedFactor);
+      const zf = Math.max(0, Math.min(1, (35 - zoom) / 27));
+      const coreRotSpeed = 0.01 * (0.1 + 0.3 * coreIntro) * (1 + zf * 2.0) * (0.5 + 0.5 * manualSpeedFactor);
       coreGroup.rotation.y += coreRotSpeed;
       coreGroup.rotation.z = Math.sin(t * 0.5) * 0.2 * coreIntro;
-      const zf = Math.max(0, Math.min(1, (35 - zoom) / 27));
       
       coreGroup.scale.setScalar((1 + zf * 0.2) * (0.25 + 0.75 * ringIntro));
 
