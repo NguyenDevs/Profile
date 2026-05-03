@@ -101,26 +101,46 @@
     }
 
     const coreMat = new THREE.MeshStandardMaterial({
-      color: 0x8800ff, emissive: 0x4400aa, emissiveIntensity: 0.8, wireframe: true, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending
+      color: 0x8800ff, emissive: 0x4400aa, emissiveIntensity: 0.5, wireframe: true, transparent: true, opacity: 0.1, blending: THREE.AdditiveBlending
     });
     
     const solidCoreMat = new THREE.MeshPhysicalMaterial({
-      color: 0x110022, emissive: 0x110022, metalness: 0.6, roughness: 0.2, clearcoat: 1.0, transparent: true, opacity: 0.25
+      color: 0x0a0015, emissive: 0x050010, metalness: 0.9, roughness: 0.1, clearcoat: 1.0, transparent: true, opacity: 0.3
     });
 
     const coreMeshSolid = new THREE.Mesh(coreGeo, solidCoreMat);
     const coreMeshWire = new THREE.Mesh(coreGeo, coreMat);
     
-    const corePointsMat = new THREE.PointsMaterial({
-        size: 0.05, color: 0xdd88ff, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, map: getGlowTex('rgba(200,100,255,1)', 16), depthWrite: false
-    });
-    const corePoints = new THREE.Points(coreGeo, corePointsMat);
+    
+    const filamentGroup = new THREE.Group();
+    coreGroup.add(filamentGroup);
+    const filaments = [];
+    const filamentCount = 24;
+    for(let i=0; i<filamentCount; i++) {
+        const segs = 64;
+        const pts = [];
+        for(let j=0; j<=segs; j++) pts.push(new THREE.Vector3());
+        const geo = new THREE.BufferGeometry().setFromPoints(pts);
+        const mat = new THREE.LineBasicMaterial({ 
+            color: i % 2 === 0 ? 0xff00cc : 0xaa00ff, 
+            transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending, depthWrite: false 
+        });
+        const line = new THREE.Line(geo, mat);
+        line.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
+        filamentGroup.add(line);
+        filaments.push({
+            line, 
+            r: 0.6 + Math.random() * 0.7, 
+            phase: Math.random() * 10,
+            speed: 0.5 + Math.random() * 1.5,
+            noiseScale: 0.2 + Math.random() * 0.4
+        });
+    }
 
     coreMeshSolid.scale.setScalar(0.98); 
     coreMeshSolid.castShadow = true;
     coreGroup.add(coreMeshSolid);
     coreGroup.add(coreMeshWire);
-    coreGroup.add(corePoints);
 
     const bhGeo = new THREE.SphereGeometry(0.35, 32, 32);
     const bhMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
@@ -469,7 +489,26 @@
       diskSystem.material.opacity = coreIntro;
 
       coreLight.intensity = (4 + Math.sin(t * 2) * 2) * coreIntro;
-      glowOrb.scale.setScalar((5.5 + Math.sin(t * 3) * 0.8) * (0.2 + 0.8 * coreIntro));
+      glowOrb.scale.setScalar((6.5 + Math.sin(t * 3) * 0.8) * (0.2 + 0.8 * coreIntro));
+
+      
+      filaments.forEach((f, idx) => {
+          const pos = f.line.geometry.attributes.position.array;
+          const segs = 64;
+          const time = t * f.speed;
+          for(let j=0; j<=segs; j++) {
+              const ang = (j/segs) * Math.PI * 2;
+              const n = Math.sin(ang * 3 + time + f.phase) * f.noiseScale;
+              const r = f.r * (1 + n * coreIntro);
+              pos[j*3] = Math.cos(ang) * r;
+              pos[j*3+1] = Math.sin(ang) * r;
+              pos[j*3+2] = Math.sin(time * 0.5 + ang * 2) * f.noiseScale * coreIntro;
+          }
+          f.line.geometry.attributes.position.needsUpdate = true;
+          f.line.rotation.y += 0.01 * coreIntro;
+          f.line.rotation.z += 0.005 * coreIntro;
+          f.line.material.opacity = (0.2 + Math.sin(t + f.phase) * 0.1) * coreIntro;
+      });
 
       rings.forEach((r, i) => {
           r.obj.rotateOnAxis(r.axis, r.speed * (1 + zf * 3.0) * (0.2 + 0.8 * ringIntro) * speedBoost);
