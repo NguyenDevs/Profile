@@ -153,6 +153,7 @@
     coreGroup.add(coreMeshSolid);
     coreGroup.add(coreMeshWire);
     coreGroup.add(corePoints);
+    coreGroup.userData.smoothM = 0;
 
     const bhGeo = new THREE.SphereGeometry(0.35, 32, 32);
     const bhMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
@@ -438,7 +439,14 @@
       const speedBoost = 1.0 + Math.pow(1.0 - ringIntro, 2) * 15.0;
 
       
-      const morphCycle = (t * 0.6) % 4;
+      const p = (t * 0.1) % 1; 
+      let targetM = 0;
+      if (p > 0.5 && p < 0.99) targetM = 2; 
+      else if (p >= 0.99) targetM = 3;      
+      
+      coreGroup.userData.smoothM += (targetM - coreGroup.userData.smoothM) * 0.05;
+      const morphCycle = coreGroup.userData.smoothM;
+
       const positions = coreGeo.attributes.position.array;
       for (let i = 0; i < N; i++) {
           const idx = i * 3, bx = basePos[idx], by = basePos[idx+1], bz = basePos[idx+2];
