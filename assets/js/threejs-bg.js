@@ -441,10 +441,11 @@
       
       if (!coreGroup.userData.nextPickTime || t > coreGroup.userData.nextPickTime) {
           const r = Math.random();
-          if (r < 0.50) coreGroup.userData.targetM = 0; 
-          else if (r < 0.99) coreGroup.userData.targetM = 2; 
-          else coreGroup.userData.targetM = 3; 
-          coreGroup.userData.nextPickTime = t + 4 + Math.random() * 4; 
+          if (r < 0.25) coreGroup.userData.targetM = 0; // Sphere
+          else if (r < 0.50) coreGroup.userData.targetM = 1; // Tectonic
+          else if (r < 0.75) coreGroup.userData.targetM = 2; // Blob
+          else coreGroup.userData.targetM = 3; // Gentle Wave
+          coreGroup.userData.nextPickTime = t + 5 + Math.random() * 5; 
       }
       coreGroup.userData.smoothM += (coreGroup.userData.targetM - coreGroup.userData.smoothM) * 0.04;
       const morphCycle = coreGroup.userData.smoothM;
@@ -454,13 +455,15 @@
           const idx = i * 3, bx = basePos[idx], by = basePos[idx+1], bz = basePos[idx+2];
           const theta = thetaArr[i], phi = phiArr[i];
           
-          const r1 = 1.0 + 0.3 * Math.sin(6 * theta + t * 3) * Math.sin(5 * phi - t * 2);
+          
+          const tectonic = Math.sin(6 * theta) * Math.cos(6 * phi);
+          const r1 = 1.0 + (tectonic > 0.3 ? 0.15 : (tectonic < -0.3 ? -0.1 : 0));
           const tx1 = bx * r1, ty1 = by * r1, tz1 = bz * r1;
           
           const r2 = 1.0 + 0.25 * Math.sin(3 * theta - t * 1.5) + 0.2 * Math.cos(4 * phi + t);
           const tx2 = bx * r2, ty2 = by * r2, tz2 = bz * r2;
           
-          const r3 = 1.0 + 0.15 * Math.sin(10 * phi - t * 6) + 0.1 * Math.sin(8 * theta + t * 4);
+          const r3 = 1.0 + 0.12 * Math.sin(8 * theta + t * 2) * Math.cos(t * 1.2) + 0.05 * Math.sin(phi * 6);
           const tx3 = bx * r3, ty3 = by * r3, tz3 = bz * r3;
 
           let tx, ty, tz;
