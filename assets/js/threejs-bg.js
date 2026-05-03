@@ -392,9 +392,10 @@
       if (autoRotate) { _q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0.0015); rotQ.premultiply(_q); }
       mainGroup.quaternion.copy(rotQ);
 
-      introProgress = Math.min(1, introProgress + 0.007);
-      const ringIntro = smoothstep(Math.min(1, introProgress / 0.85));
+      introProgress = Math.min(1, introProgress + 0.004);
+      const ringIntro = smoothstep(Math.min(1, introProgress / 0.75));
       const coreIntro = smoothstep(Math.max(0, (introProgress - 0.7) / 0.3));
+      const speedBoost = 1.0 + Math.pow(1.0 - ringIntro, 2) * 15.0;
 
       
       const morphCycle = (t * 0.6) % 4;
@@ -471,7 +472,7 @@
       glowOrb.scale.setScalar((5.5 + Math.sin(t * 3) * 0.8) * (0.2 + 0.8 * coreIntro));
 
       rings.forEach((r, i) => {
-          r.obj.rotateOnAxis(r.axis, r.speed * (1 + zf * 3.0) * (0.2 + 0.8 * ringIntro));
+          r.obj.rotateOnAxis(r.axis, r.speed * (1 + zf * 3.0) * (0.2 + 0.8 * ringIntro) * speedBoost);
           r.obj.scale.setScalar((1 + zf * (0.15 + i * 0.08)) * ringIntro);
       });
 
