@@ -158,7 +158,7 @@
     const diskPos = new Float32Array(diskCount * 3);
     const diskParams = [];
     for(let i=0; i<diskCount; i++) {
-        const r = 0.35 + Math.pow(Math.random(), 1.5) * 1.5;
+        const r = 0.35 + Math.pow(Math.random(), 1.5) * 0.85;
         const th = Math.random() * Math.PI * 2;
         const y = (Math.random() - 0.5) * 0.04;
         const speed = 0.03 + Math.random() * 0.07;
