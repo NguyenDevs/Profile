@@ -153,15 +153,15 @@
     const blackHole = new THREE.Mesh(bhGeo, bhMat);
     coreGroup.add(blackHole);
 
-    const diskCount = 800;
+    const diskCount = 4000;
     const diskGeo = new THREE.BufferGeometry();
     const diskPos = new Float32Array(diskCount * 3);
     const diskParams = [];
     for(let i=0; i<diskCount; i++) {
-        const r = 0.35 + Math.pow(Math.random(), 2) * 0.75;
+        const r = 0.35 + Math.pow(Math.random(), 1.5) * 1.5;
         const th = Math.random() * Math.PI * 2;
-        const y = (Math.random() - 0.5) * 0.05;
-        const speed = 0.02 + Math.random() * 0.04;
+        const y = (Math.random() - 0.5) * 0.04;
+        const speed = 0.03 + Math.random() * 0.07;
         diskParams.push({ r, th, y, speed });
         diskPos[i*3] = r * Math.cos(th);
         diskPos[i*3+1] = y;
@@ -169,7 +169,7 @@
     }
     diskGeo.setAttribute('position', new THREE.BufferAttribute(diskPos, 3));
     const diskMat = new THREE.PointsMaterial({
-        size: 0.04, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, map: getGlowTex('rgba(150,50,255,1)', 16)
+        size: 0.12, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, map: getGlowTex('rgba(200,50,255,1)', 16)
     });
     const diskSystem = new THREE.Points(diskGeo, diskMat);
     diskSystem.rotation.x = 0.2;
@@ -481,8 +481,8 @@
           let bz = p.r * Math.sin(p.th);
           let by = p.y;
           if (bz < 0) {
-              const bendAmount = Math.pow((1.3 - p.r), 2) * 1.8;
-              let bendY = bendAmount * Math.exp(-Math.pow(bx * 2, 2)); 
+              const bendFactor = Math.pow((1.8 - p.r), 2) * 2.2;
+              let bendY = bendFactor * Math.exp(-Math.pow(bx * 1.5, 2)); 
               if (i % 2 === 0) bendY = -bendY;
               by += bendY;
           }
@@ -492,7 +492,7 @@
           dPos[i*3+2] = bz;
       }
       diskSystem.geometry.attributes.position.needsUpdate = true;
-      diskSystem.material.opacity = coreIntro;
+      diskSystem.material.opacity = 0.4 + coreIntro * 0.6;
 
       coreLight.intensity = (4 + Math.sin(t * 2) * 2) * coreIntro;
       glowOrb.scale.setScalar((6.5 + Math.sin(t * 3) * 0.8) * (0.2 + 0.8 * coreIntro));
