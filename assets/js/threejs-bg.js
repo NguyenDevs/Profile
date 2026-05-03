@@ -289,32 +289,50 @@
     
     const rotQ = new THREE.Quaternion();
     const drag = { active: false, px: 0, py: 0 };
+    let velocity = { x: 0, y: 0 };
     let zoom = 22.0, autoRotate = true; 
+    let autoRotateTimeout = null;
 
-    canvas.addEventListener('mousedown', e => { drag.active = true; drag.px = e.clientX; drag.py = e.clientY; canvas.style.cursor = 'grabbing'; });
-    window.addEventListener('mouseup', () => { drag.active = false; canvas.style.cursor = 'grab'; setTimeout(() => autoRotate = true, 3000); });
+    canvas.addEventListener('mousedown', e => { 
+        drag.active = true; drag.px = e.clientX; drag.py = e.clientY; 
+        canvas.style.cursor = 'grabbing'; 
+        autoRotate = false; clearTimeout(autoRotateTimeout);
+    });
+    window.addEventListener('mouseup', () => { 
+        drag.active = false; canvas.style.cursor = 'grab'; 
+        autoRotateTimeout = setTimeout(() => autoRotate = true, 3000); 
+    });
     window.addEventListener('mousemove', e => {
       if (drag.active) {
         const dx = e.clientX - drag.px, dy = e.clientY - drag.py;
-        rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(dy, dx, 0).normalize(), Math.sqrt(dx*dx+dy*dy)*0.005));
-        drag.px = e.clientX; drag.py = e.clientY; autoRotate = false;
+        velocity.x = dx; velocity.y = dy;
+        const speed = Math.sqrt(dx*dx+dy*dy);
+        if (speed > 0) rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(dy, dx, 0).normalize(), speed*0.005));
+        drag.px = e.clientX; drag.py = e.clientY; 
       }
     });
     window.addEventListener('wheel', e => zoom = Math.max(8, Math.min(35, zoom + e.deltaY*0.015)), {passive:true});
 
     
     let lastT = null;
-    canvas.addEventListener('touchstart', e => { lastT = e.touches[0]; drag.active = true; autoRotate = false; }, { passive: true });
+    canvas.addEventListener('touchstart', e => { 
+        lastT = e.touches[0]; drag.active = true; 
+        autoRotate = false; clearTimeout(autoRotateTimeout);
+    }, { passive: true });
     canvas.addEventListener('touchmove', e => {
       e.preventDefault();
       if (!lastT) return;
       const t = e.touches[0];
       const dx = t.clientX - lastT.clientX, dy = t.clientY - lastT.clientY;
-      const axis = new THREE.Vector3(dy, dx, 0).normalize();
-      rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(axis, Math.sqrt(dx*dx+dy*dy)*0.005));
+      velocity.x = dx; velocity.y = dy;
+      const speed = Math.sqrt(dx*dx+dy*dy);
+      if (speed > 0) rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(dy, dx, 0).normalize(), speed*0.005));
       lastT = t;
     }, { passive: false });
-    canvas.addEventListener('touchend', () => { drag.active = false; lastT = null; setTimeout(() => autoRotate = true, 3000); });
+    canvas.addEventListener('touchend', () => { 
+        drag.active = false; lastT = null; 
+        autoRotateTimeout = setTimeout(() => autoRotate = true, 3000); 
+    });
 
     
     let t = 0; const _q = new THREE.Quaternion();
@@ -325,6 +343,18 @@
       camera.position.z += (zoom - camera.position.z) * 0.05;
       const currentZf = Math.max(0, Math.min(1, (35 - camera.position.z) / 27));
       camera.position.y = 2.0 - currentZf * 2.0;
+
+      if (!drag.active) {
+          const speed = Math.sqrt(velocity.x*velocity.x + velocity.y*velocity.y);
+          if (speed > 0.1) {
+              rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(velocity.y, velocity.x, 0).normalize(), speed*0.005));
+              velocity.x *= 0.95;
+              velocity.y *= 0.95;
+          }
+      } else {
+          velocity.x *= 0.5;
+          velocity.y *= 0.5;
+      }
 
       if (autoRotate) { _q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0.0015); rotQ.premultiply(_q); }
       mainGroup.quaternion.copy(rotQ);
