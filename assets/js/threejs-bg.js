@@ -90,12 +90,15 @@
     const N = basePos.length / 3;
     const thetaArr = new Float32Array(N);
     const phiArr = new Float32Array(N);
+    const randoms = new Float32Array(N);
     
     for (let i = 0; i < N; i++) {
         const x = basePos[i*3] / CORE_RADIUS, y = basePos[i*3+1] / CORE_RADIUS, z = basePos[i*3+2] / CORE_RADIUS;
         thetaArr[i] = Math.atan2(y, x);
         phiArr[i] = Math.acos(Math.max(-1, Math.min(1, z))); 
+        randoms[i] = Math.random();
     }
+    coreGeo.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1));
 
     function getGlowTex(color = 'rgba(170,0,255,1)', r = 128) {
         const c = document.createElement('canvas'); c.width = c.height = r * 2;
@@ -140,8 +143,34 @@
     }
 
     const corePointsMat = new THREE.PointsMaterial({
-        size: 0.12, color: 0xdd88ff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, map: getGlowTex('rgba(200,100,255,1)', 16), depthWrite: false
+        size: 0.09, color: 0xdd88ff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, map: getGlowTex('rgba(200,100,255,1)', 16), depthWrite: false
     });
+    corePointsMat.onBeforeCompile = (shader) => {
+        shader.uniforms.uTime = { value: 0 };
+        shader.vertexShader = `
+            attribute float aRandom;
+            varying float vRandom;
+            uniform float uTime;
+            ${shader.vertexShader}
+        `.replace(
+            `gl_PointSize = size;`,
+            `float t = uTime * (2.0 + aRandom * 3.0) + aRandom * 100.0;
+             float twinkle = 0.8 + 0.2 * sin(t);
+             gl_PointSize = size * twinkle;
+             vRandom = aRandom;`
+        );
+        shader.fragmentShader = `
+            varying float vRandom;
+            uniform float uTime;
+            ${shader.fragmentShader}
+        `.replace(
+            `vec4 diffuseColor = vec4( diffuse, opacity );`,
+            `float t = uTime * (2.0 + vRandom * 3.0) + vRandom * 100.0;
+             float twinkle = 0.4 + 0.6 * Math.pow(0.5 + 0.5 * sin(t), 2.0);
+             vec4 diffuseColor = vec4( diffuse, opacity * twinkle );`
+        );
+        corePointsMat.userData.shader = shader;
+    };
     const corePoints = new THREE.Points(coreGeo, corePointsMat);
 
     coreGroup.add(coreMeshWire);
@@ -559,6 +588,7 @@
       pSystem.rotation.z = Math.sin(t * 0.1) * 0.1;
       pSystem.material.opacity = 0.4 + Math.sin(t * 4) * 0.2;
 
+      if (corePointsMat.userData.shader) corePointsMat.userData.shader.uniforms.uTime.value = t;
       renderer.render(scene, camera);
     }
     animate();
