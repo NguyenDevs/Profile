@@ -52,7 +52,7 @@
     mainGroup.add(coreLight);
 
     
-    const dirLight = new THREE.DirectionalLight(0xdab3ff, 1.5);
+    const dirLight = new THREE.DirectionalLight(0xdab3ff, 2.2);
     dirLight.position.set(10, 20, 15);
     dirLight.castShadow = true;
     dirLight.shadow.camera.near = 0.5;
@@ -67,7 +67,7 @@
     scene.add(dirLight);
 
     
-    const fillLight = new THREE.DirectionalLight(0x4400aa, 1.0);
+    const fillLight = new THREE.DirectionalLight(0x4400aa, 1.5);
     fillLight.position.set(-15, -10, -15);
     scene.add(fillLight);
 
@@ -166,7 +166,9 @@
       const group = new THREE.Group();
       
       const stoneMat = new THREE.MeshPhysicalMaterial({
-        color: 0x110522, 
+        color: 0x1a0b3a, 
+        emissive: 0x110522,
+        emissiveIntensity: 0.4,
         metalness: 0.9,
         roughness: 0.1,
         clearcoat: 1.0,
@@ -174,7 +176,9 @@
       });
 
       const bevelMat = new THREE.MeshPhysicalMaterial({
-        color: 0x0a0011,
+        color: 0x140528,
+        emissive: 0x0a0011,
+        emissiveIntensity: 0.3,
         metalness: 0.8,
         roughness: 0.3,
         clearcoat: 0.5,
