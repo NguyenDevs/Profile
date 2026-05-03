@@ -420,7 +420,13 @@
         lastT = t;
       }
     }, { passive: false });
-
+    canvas.addEventListener('touchend', e => { 
+        if (e.touches.length < 2) initialPinchDist = null;
+        if (e.touches.length === 0) {
+            drag.active = false; 
+            lastT = null; 
+            autoRotateTimeout = setTimeout(() => autoRotate = true, 3000); 
+        }
     });
 
     
