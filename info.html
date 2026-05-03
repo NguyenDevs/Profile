@@ -67,7 +67,7 @@
     }
     .info-label__eyebrow {
       font-family: 'Syne', sans-serif;
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 700;
       letter-spacing: 0.3em;
       text-transform: uppercase;
@@ -385,7 +385,7 @@
 
       const display = document.getElementById("time-lived-display");
       if (display) {
-          display.innerHTML = `NguyenDevs &middot; lived for ${years} years, ${months} months, ${days} days, ${hours} hours, ${minutes} minutes and ${seconds} seconds.`;
+          display.innerHTML = `NguyenDevs has lived for ${years} years, ${months} months, ${days} days, ${hours} hours, ${minutes} minutes and ${seconds} seconds.`;
       }
     }
     setInterval(updateLivedTime, 1000);
