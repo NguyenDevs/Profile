@@ -111,7 +111,7 @@
     });
     
     const solidCoreMat = new THREE.MeshPhysicalMaterial({
-      color: 0x110022, emissive: 0x110022, metalness: 0.6, roughness: 0.2, clearcoat: 1.0, transparent: true, opacity: 0.25
+      color: 0x110022, emissive: 0x110022, metalness: 0.6, roughness: 0.2, clearcoat: 1.0, transparent: true, opacity: 0.05
     });
 
     const coreMeshSolid = new THREE.Mesh(coreGeo, solidCoreMat);
@@ -493,9 +493,9 @@
           if (bz < 0) {
               const r_val = p.r;
               
-              const bendFactor = Math.pow((2.2 - r_val), 2.5) * 1.5;
+              const bendFactor = Math.pow((1.3 - (r_val/1.3)), 2) * 1.2;
               
-              const falloff = Math.exp(-Math.pow(bx * 0.8, 2));
+              const falloff = Math.exp(-Math.pow(bx * 1.8, 2));
               let bendY = bendFactor * falloff;
               
               if (i % 2 === 0) bendY = -bendY;
