@@ -435,7 +435,8 @@
     Object.assign(sliderContainer.style, {
         position: 'fixed', right: '40px', top: '50%', transform: 'translateY(-50%)',
         width: '60px', height: '350px', zIndex: '1000', display: 'flex',
-        flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
+        flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)'
     });
     
     /* sliderLabel removed as per request */
@@ -450,6 +451,7 @@
     ];
     markers.forEach(m => {
         const div = document.createElement('div');
+        div.className = 'slider-marker';
         div.innerText = m.l;
         Object.assign(div.style, {
             position: 'absolute', right: '0px', color: m.v === 1 ? '#fff' : 'rgba(255,255,255,0.3)',
@@ -478,8 +480,35 @@
             height: 30px; background: #fff; box-shadow: 0 0 30px #cc00ff, 0 0 10px #cc00ff;
         }
         #speed-slider::-moz-range-thumb {
-            width: 10px; height: 35px; background: #cc00ff; border: 1px solid #fff;
+            width: 8px; height: 20px; background: #cc00ff; border: 1px solid #fff;
             border-radius: 2px; cursor: pointer; box-shadow: 0 0 15px #cc00ff;
+        }
+
+        /* Auto-fade logic */
+        body.playlist-is-expanded #speed-slider-container,
+        body.modal-is-open #speed-slider-container {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transform: translateY(-50%) translateX(20px) !important;
+        }
+
+        /* Mobile Optimization */
+        @media (max-width: 768px) {
+            #speed-slider-container {
+                right: 15px !important;
+                height: 220px !important;
+                width: 40px !important;
+            }
+            #speed-slider {
+                width: 180px !important;
+            }
+            .slider-marker {
+                display: none !important;
+            }
+            #speed-slider::-webkit-slider-thumb {
+                width: 12px !important;
+                height: 24px !important;
+            }
         }
     `;
     document.head.appendChild(style);
