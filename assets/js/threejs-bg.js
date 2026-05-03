@@ -296,6 +296,7 @@
     let velocity = { x: 0, y: 0 };
     let zoom = 22.0, autoRotate = true; 
     let autoRotateTimeout = null;
+    let introProgress = 0; 
 
     canvas.addEventListener('mousedown', e => { 
         drag.active = true; drag.px = e.clientX; drag.py = e.clientY; 
@@ -391,6 +392,10 @@
       if (autoRotate) { _q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0.0015); rotQ.premultiply(_q); }
       mainGroup.quaternion.copy(rotQ);
 
+      introProgress = Math.min(1, introProgress + 0.007);
+      const ringIntro = smoothstep(Math.min(1, introProgress / 0.85));
+      const coreIntro = smoothstep(Math.max(0, (introProgress - 0.7) / 0.3));
+
       
       const morphCycle = (t * 0.6) % 4;
       const positions = coreGeo.attributes.position.array;
@@ -398,16 +403,11 @@
           const idx = i * 3, bx = basePos[idx], by = basePos[idx+1], bz = basePos[idx+2];
           const theta = thetaArr[i], phi = phiArr[i];
           
-          
-          
-          
           const r1 = 1.0 + 0.3 * Math.sin(6 * theta + t * 3) * Math.sin(5 * phi - t * 2);
           const tx1 = bx * r1, ty1 = by * r1, tz1 = bz * r1;
           
-          
           const r2 = 1.0 + 0.25 * Math.sin(3 * theta - t * 1.5) + 0.2 * Math.cos(4 * phi + t);
           const tx2 = bx * r2, ty2 = by * r2, tz2 = bz * r2;
-          
           
           const r3 = 1.0 + 0.15 * Math.sin(10 * phi - t * 6) + 0.1 * Math.sin(8 * theta + t * 4);
           const tx3 = bx * r3, ty3 = by * r3, tz3 = bz * r3;
@@ -426,22 +426,25 @@
               const lerp = smoothstep(morphCycle - 3);
               tx = tx3 + (bx - tx3) * lerp; ty = ty3 + (by - ty3) * lerp; tz = tz3 + (bz - tz3) * lerp;
           }
-          positions[idx] = tx; positions[idx+1] = ty; positions[idx+2] = tz;
+          
+          positions[idx] = bx + (tx - bx) * coreIntro; 
+          positions[idx+1] = by + (ty - by) * coreIntro; 
+          positions[idx+2] = bz + (tz - bz) * coreIntro;
       }
       coreGeo.attributes.position.needsUpdate = true;
       coreGeo.computeVertexNormals();
 
-      coreGroup.rotation.y = t * 0.4;
-      coreGroup.rotation.z = Math.sin(t * 0.5) * 0.2;
+      coreGroup.rotation.y = t * (0.1 + 0.3 * coreIntro);
+      coreGroup.rotation.z = Math.sin(t * 0.5) * 0.2 * coreIntro;
       const zf = Math.max(0, Math.min(1, (35 - zoom) / 27));
       
-      coreGroup.scale.setScalar(1 + zf * 0.2);
+      coreGroup.scale.setScalar((1 + zf * 0.2) * (0.5 + 0.5 * ringIntro));
 
       const dPos = diskSystem.geometry.attributes.position.array;
       for(let i=0; i<diskCount; i++) {
           let p = diskParams[i];
-          p.th -= p.speed * (1 + zf * 2);
-          p.r -= 0.005; 
+          p.th -= p.speed * (1 + zf * 2) * coreIntro;
+          p.r -= 0.005 * coreIntro; 
           if (p.r < 0.35) { 
               p.r = 1.1; 
               p.th = Math.random() * Math.PI * 2;
@@ -462,13 +465,16 @@
           dPos[i*3+2] = bz;
       }
       diskSystem.geometry.attributes.position.needsUpdate = true;
-      coreLight.intensity = 4 + Math.sin(t * 2) * 2;
-      glowOrb.scale.setScalar(5.5 + Math.sin(t * 3) * 0.8);
+      diskSystem.material.opacity = coreIntro;
+
+      coreLight.intensity = (4 + Math.sin(t * 2) * 2) * coreIntro;
+      glowOrb.scale.setScalar((5.5 + Math.sin(t * 3) * 0.8) * (0.2 + 0.8 * coreIntro));
 
       rings.forEach((r, i) => {
-          r.obj.rotateOnAxis(r.axis, r.speed * (1 + zf * 3.0));
-          r.obj.scale.setScalar(1 + zf * (0.15 + i * 0.08));
+          r.obj.rotateOnAxis(r.axis, r.speed * (1 + zf * 3.0) * (0.2 + 0.8 * ringIntro));
+          r.obj.scale.setScalar((1 + zf * (0.15 + i * 0.08)) * ringIntro);
       });
+
       debrisGroup.children.forEach((rock, i) => {
         rock.rotateOnAxis(rock.userData.rotAxis, rock.userData.rotSpeed);
         rock.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), rock.userData.orbitSpeed);
