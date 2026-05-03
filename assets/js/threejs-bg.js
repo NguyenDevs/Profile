@@ -111,7 +111,7 @@
     });
     
     const solidCoreMat = new THREE.MeshPhysicalMaterial({
-      color: 0x110022, emissive: 0x110022, metalness: 0.6, roughness: 0.2, clearcoat: 1.0, transparent: true, opacity: 0.15, depthWrite: false
+      color: 0x050010, emissive: 0x050010, metalness: 0.9, roughness: 0.1, clearcoat: 1.0, transparent: true, opacity: 0.25, depthWrite: false
     });
 
     const coreMeshSolid = new THREE.Mesh(coreGeo, solidCoreMat);
@@ -164,7 +164,7 @@
     const flareGroup = new THREE.Group();
     coreGroup.add(flareGroup);
     const flares = [];
-    const maxFlares = 8;
+    const maxFlares = 4;
 
     function createFlare() {
         const segs = 32;
@@ -184,7 +184,7 @@
         const end = new THREE.Vector3().setFromSphericalCoords(1.4, theta + (Math.random()-0.5)*0.5, phi + (Math.random()-0.5)*0.5);
         const mid = start.clone().lerp(end, 0.5).normalize().multiplyScalar(1.4 + 0.5 + Math.random() * 0.8);
 
-        return { line, start, mid, end, life: 0, speed: 0.01 + Math.random() * 0.02 };
+        return { line, start, mid, end, life: 0, speed: 0.005 + Math.random() * 0.01 };
     }
 
     for(let i=0; i<maxFlares; i++) flares.push(createFlare());
