@@ -439,12 +439,14 @@
       const speedBoost = 1.0 + Math.pow(1.0 - ringIntro, 2) * 15.0;
 
       
-      const p = (t * 0.1) % 1; 
-      let targetM = 0;
-      if (p > 0.5 && p < 0.99) targetM = 2; 
-      else if (p >= 0.99) targetM = 3;      
-      
-      coreGroup.userData.smoothM += (targetM - coreGroup.userData.smoothM) * 0.05;
+      if (!coreGroup.userData.nextPickTime || t > coreGroup.userData.nextPickTime) {
+          const r = Math.random();
+          if (r < 0.50) coreGroup.userData.targetM = 0; 
+          else if (r < 0.99) coreGroup.userData.targetM = 2; 
+          else coreGroup.userData.targetM = 3; 
+          coreGroup.userData.nextPickTime = t + 4 + Math.random() * 4; 
+      }
+      coreGroup.userData.smoothM += (coreGroup.userData.targetM - coreGroup.userData.smoothM) * 0.04;
       const morphCycle = coreGroup.userData.smoothM;
 
       const positions = coreGeo.attributes.position.array;
