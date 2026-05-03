@@ -106,16 +106,12 @@
         return new THREE.CanvasTexture(c);
     }
 
-    const coreMat = new THREE.MeshStandardMaterial({
-      color: 0xaa00ff, emissive: 0x4400aa, emissiveIntensity: 1.2, wireframe: true, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending, depthWrite: false
-    });
-    
-    const solidCoreMat = new THREE.MeshPhysicalMaterial({
-      color: 0x000000, wireframe: false, transparent: true, opacity: 0, colorWrite: false, depthWrite: false
+    const coreMat = new THREE.MeshPhysicalMaterial({
+      color: 0xaa00ff, emissive: 0x4400aa, emissiveIntensity: 1.5, wireframe: true, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false
     });
 
-    const coreMeshSolid = new THREE.Mesh(coreGeo, solidCoreMat);
     const coreMeshWire = new THREE.Mesh(coreGeo, coreMat);
+    coreMeshWire.castShadow = true; 
     
     
     const filamentGroup = new THREE.Group();
@@ -148,9 +144,6 @@
     });
     const corePoints = new THREE.Points(coreGeo, corePointsMat);
 
-    coreMeshSolid.scale.setScalar(0.98); 
-    coreMeshSolid.castShadow = true;
-    coreGroup.add(coreMeshSolid);
     coreGroup.add(coreMeshWire);
     coreGroup.add(corePoints);
     coreGroup.userData.smoothM = 0;
