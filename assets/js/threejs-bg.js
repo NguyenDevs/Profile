@@ -107,7 +107,7 @@
     }
 
     const coreMat = new THREE.MeshPhysicalMaterial({
-      color: 0xaa00ff, emissive: 0x4400aa, emissiveIntensity: 1.5, wireframe: true, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false
+      color: 0xaa00ff, emissive: 0x4400aa, emissiveIntensity: 1.0, wireframe: true, transparent: true, opacity: 0.25, blending: THREE.AdditiveBlending, depthWrite: false
     });
 
     const coreMeshWire = new THREE.Mesh(coreGeo, coreMat);
@@ -140,7 +140,7 @@
     }
 
     const corePointsMat = new THREE.PointsMaterial({
-        size: 0.05, color: 0xdd88ff, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, map: getGlowTex('rgba(200,100,255,1)', 16), depthWrite: false
+        size: 0.12, color: 0xdd88ff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, map: getGlowTex('rgba(200,100,255,1)', 16), depthWrite: false
     });
     const corePoints = new THREE.Points(coreGeo, corePointsMat);
 
@@ -485,7 +485,7 @@
       coreGroup.rotation.z = Math.sin(t * 0.5) * 0.2 * coreIntro;
       const zf = Math.max(0, Math.min(1, (35 - zoom) / 27));
       
-      coreGroup.scale.setScalar((1 + zf * 0.2) * (0.5 + 0.5 * ringIntro));
+      coreGroup.scale.setScalar((1 + zf * 0.2) * (0.25 + 0.75 * ringIntro));
 
       
       flares.forEach(f => {
@@ -518,8 +518,8 @@
               pos[i*3] = p.x; pos[i*3+1] = p.y; pos[i*3+2] = p.z;
           }
           f.line.geometry.attributes.position.needsUpdate = true;
-          f.line.material.opacity = alpha * 0.6 * coreIntro;
-          f.line.material.color.setHSL(0.8 + Math.sin(t + f.life)*0.1, 1, 0.6);
+          f.line.material.opacity = alpha * 0.9 * coreIntro;
+          f.line.material.color.setHSL(0.85 + Math.sin(t + f.life)*0.05, 1, 0.7);
       });
 
       coreLight.intensity = (4 + Math.sin(t * 2) * 2) * coreIntro;
