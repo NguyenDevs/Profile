@@ -143,7 +143,7 @@
     }
 
     const corePointsMat = new THREE.PointsMaterial({
-        size: 0.12, color: 0xdd88ff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, map: getGlowTex('rgba(200,100,255,1)', 16), depthWrite: false
+        size: 0.09, color: 0xdd88ff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, map: getGlowTex('rgba(200,100,255,1)', 16), depthWrite: false
     });
     corePointsMat.onBeforeCompile = (shader) => {
         shader.uniforms.uTime = { value: 0 };
@@ -166,7 +166,7 @@
         `.replace(
             `vec4 diffuseColor = vec4( diffuse, opacity );`,
             `float t = uTime * (2.0 + vRandom * 3.0) + vRandom * 100.0;
-             float twinkle = 0.4 + 0.6 * Math.pow(0.5 + 0.5 * sin(t), 2.0);
+             float twinkle = 0.4 + 0.6 * pow(0.5 + 0.5 * sin(t), 2.0);
              vec4 diffuseColor = vec4( diffuse, opacity * twinkle );`
         );
         corePointsMat.userData.shader = shader;
@@ -438,13 +438,7 @@
         flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
     });
     
-    const sliderLabel = document.createElement('div');
-    sliderLabel.innerText = 'VELOCITY CONTROL';
-    Object.assign(sliderLabel.style, {
-        position: 'absolute', top: '-40px', color: '#cc00ff', fontSize: '9px',
-        letterSpacing: '4px', textTransform: 'uppercase', opacity: '0.8',
-        fontWeight: '900', writingMode: 'vertical-rl', transform: 'rotate(180deg)'
-    });
+    /* sliderLabel removed as per request */
 
     const speedSlider = document.createElement('input');
     speedSlider.id = 'speed-slider';
@@ -475,13 +469,13 @@
             position: relative;
         }
         #speed-slider::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 10px; height: 35px; 
+            -webkit-appearance: none; width: 8px; height: 20px; 
             background: #cc00ff; border: 1px solid #fff; border-radius: 2px;
             cursor: pointer; box-shadow: 0 0 15px #cc00ff, 0 0 5px #fff;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         #speed-slider::-webkit-slider-thumb:hover {
-            height: 50px; background: #fff; box-shadow: 0 0 30px #cc00ff, 0 0 10px #cc00ff;
+            height: 30px; background: #fff; box-shadow: 0 0 30px #cc00ff, 0 0 10px #cc00ff;
         }
         #speed-slider::-moz-range-thumb {
             width: 10px; height: 35px; background: #cc00ff; border: 1px solid #fff;
@@ -490,7 +484,7 @@
     `;
     document.head.appendChild(style);
 
-    sliderContainer.appendChild(sliderLabel);
+    /* sliderLabel child removed */
     sliderContainer.appendChild(speedSlider);
     document.body.appendChild(sliderContainer);
 
