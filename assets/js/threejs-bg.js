@@ -319,23 +319,51 @@
 
     
     let lastT = null;
+    let initialPinchDist = null;
+
     canvas.addEventListener('touchstart', e => { 
-        lastT = e.touches[0]; drag.active = true; 
-        autoRotate = false; clearTimeout(autoRotateTimeout);
+        if (e.touches.length === 2) {
+            initialPinchDist = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+            drag.active = false; 
+        } else {
+            lastT = e.touches[0]; 
+            drag.active = true; 
+        }
+        autoRotate = false; 
+        clearTimeout(autoRotateTimeout);
     }, { passive: true });
+
     canvas.addEventListener('touchmove', e => {
-      e.preventDefault();
-      if (!lastT) return;
-      const t = e.touches[0];
-      const dx = t.clientX - lastT.clientX, dy = t.clientY - lastT.clientY;
-      velocity.x = dx; velocity.y = dy;
-      const speed = Math.sqrt(dx*dx+dy*dy);
-      if (speed > 0) rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(dy, dx, 0).normalize(), speed*0.005));
-      lastT = t;
+      if (e.touches.length === 2 && initialPinchDist !== null) {
+        e.preventDefault();
+        const dist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+        );
+        const delta = dist - initialPinchDist;
+        zoom = Math.max(8, Math.min(35, zoom - delta * 0.05));
+        initialPinchDist = dist;
+      } else if (e.touches.length === 1 && lastT) {
+        e.preventDefault();
+        const t = e.touches[0];
+        const dx = t.clientX - lastT.clientX, dy = t.clientY - lastT.clientY;
+        velocity.x = dx; velocity.y = dy;
+        const speed = Math.sqrt(dx*dx+dy*dy);
+        if (speed > 0) rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(dy, dx, 0).normalize(), speed*0.005));
+        lastT = t;
+      }
     }, { passive: false });
-    canvas.addEventListener('touchend', () => { 
-        drag.active = false; lastT = null; 
-        autoRotateTimeout = setTimeout(() => autoRotate = true, 3000); 
+
+    canvas.addEventListener('touchend', e => { 
+        if (e.touches.length < 2) initialPinchDist = null;
+        if (e.touches.length === 0) {
+            drag.active = false; 
+            lastT = null; 
+            autoRotateTimeout = setTimeout(() => autoRotate = true, 3000); 
+        }
     });
 
     
