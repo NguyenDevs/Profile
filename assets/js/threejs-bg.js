@@ -143,7 +143,7 @@
     }
 
     const corePointsMat = new THREE.PointsMaterial({
-        size: 0.09, color: 0xdd88ff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, map: getGlowTex('rgba(200,100,255,1)', 16), depthWrite: false
+        size: 0.12, color: 0xdd88ff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, map: getGlowTex('rgba(200,100,255,1)', 16), depthWrite: false
     });
     corePointsMat.onBeforeCompile = (shader) => {
         shader.uniforms.uTime = { value: 0 };
@@ -421,13 +421,57 @@
       }
     }, { passive: false });
 
-    canvas.addEventListener('touchend', e => { 
-        if (e.touches.length < 2) initialPinchDist = null;
-        if (e.touches.length === 0) {
-            drag.active = false; 
-            lastT = null; 
-            autoRotateTimeout = setTimeout(() => autoRotate = true, 3000); 
+    });
+
+    
+    const sliderContainer = document.createElement('div');
+    sliderContainer.id = 'speed-slider-container';
+    Object.assign(sliderContainer.style, {
+        position: 'fixed', right: '30px', top: '50%', transform: 'translateY(-50%)',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: '1000',
+        gap: '20px', background: 'rgba(20, 10, 35, 0.4)', backdropFilter: 'blur(15px)',
+        padding: '40px 15px', borderRadius: '40px', border: '1px solid rgba(255, 255, 255, 0.1)',
+        boxShadow: '0 20px 40px rgba(0,0,0,0.5)', transition: 'opacity 0.5s ease'
+    });
+    
+    const sliderLabel = document.createElement('div');
+    sliderLabel.innerText = 'ROTATION';
+    Object.assign(sliderLabel.style, {
+        color: '#fff', fontSize: '9px', letterSpacing: '3px', textTransform: 'uppercase',
+        opacity: '0.6', fontWeight: '800', writingMode: 'vertical-rl', transform: 'rotate(180deg)'
+    });
+
+    const speedSlider = document.createElement('input');
+    speedSlider.id = 'speed-slider';
+    speedSlider.type = 'range'; speedSlider.min = '0'; speedSlider.max = '5'; speedSlider.step = '0.01'; speedSlider.value = '1';
+    Object.assign(speedSlider.style, {
+        appearance: 'none', width: '150px', height: '4px', background: 'rgba(255,255,255,0.1)',
+        outline: 'none', borderRadius: '2px', cursor: 'pointer', transform: 'rotate(-90deg)',
+        margin: '70px 0'
+    });
+
+    const style = document.createElement('style');
+    style.textContent = `
+        #speed-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 20px; height: 20px; 
+            background: #cc00ff; border-radius: 50%; cursor: pointer;
+            box-shadow: 0 0 15px #cc00ff, 0 0 30px rgba(204,0,255,0.5);
+            border: 2px solid #fff;
         }
+        #speed-slider::-moz-range-thumb {
+            width: 20px; height: 20px; background: #cc00ff; border-radius: 50%;
+            cursor: pointer; box-shadow: 0 0 15px #cc00ff; border: 2px solid #fff;
+        }
+    `;
+    document.head.appendChild(style);
+
+    sliderContainer.appendChild(sliderLabel);
+    sliderContainer.appendChild(speedSlider);
+    document.body.appendChild(sliderContainer);
+
+    let manualSpeedFactor = 1.0;
+    speedSlider.addEventListener('input', (e) => {
+        manualSpeedFactor = parseFloat(e.target.value);
     });
 
     
@@ -510,7 +554,8 @@
       coreGeo.attributes.position.needsUpdate = true;
       coreGeo.computeVertexNormals();
 
-      coreGroup.rotation.y = t * (0.1 + 0.3 * coreIntro);
+      const coreRotSpeed = 0.01 * (0.1 + 0.3 * coreIntro) * (0.5 + 0.5 * manualSpeedFactor);
+      coreGroup.rotation.y += coreRotSpeed;
       coreGroup.rotation.z = Math.sin(t * 0.5) * 0.2 * coreIntro;
       const zf = Math.max(0, Math.min(1, (35 - zoom) / 27));
       
@@ -574,7 +619,7 @@
       });
 
       rings.forEach((r, i) => {
-          r.obj.rotateOnAxis(r.axis, r.speed * (1 + zf * 3.0) * (0.2 + 0.8 * ringIntro) * speedBoost);
+          r.obj.rotateOnAxis(r.axis, r.speed * (1 + zf * 3.0) * (0.2 + 0.8 * ringIntro) * speedBoost * manualSpeedFactor);
           r.obj.scale.setScalar((1 + zf * (0.15 + i * 0.08)) * ringIntro);
       });
 
