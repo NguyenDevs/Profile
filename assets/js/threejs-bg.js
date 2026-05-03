@@ -101,11 +101,11 @@
     }
 
     const coreMat = new THREE.MeshStandardMaterial({
-      color: 0x8800ff, emissive: 0x4400aa, emissiveIntensity: 0.5, wireframe: true, transparent: true, opacity: 0.1, blending: THREE.AdditiveBlending
+      color: 0x8800ff, emissive: 0x4400aa, emissiveIntensity: 0.8, wireframe: true, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending
     });
     
     const solidCoreMat = new THREE.MeshPhysicalMaterial({
-      color: 0x0a0015, emissive: 0x050010, metalness: 0.9, roughness: 0.1, clearcoat: 1.0, transparent: true, opacity: 0.3
+      color: 0x110022, emissive: 0x110022, metalness: 0.6, roughness: 0.2, clearcoat: 1.0, transparent: true, opacity: 0.25
     });
 
     const coreMeshSolid = new THREE.Mesh(coreGeo, solidCoreMat);
@@ -115,32 +115,38 @@
     const filamentGroup = new THREE.Group();
     coreGroup.add(filamentGroup);
     const filaments = [];
-    const filamentCount = 24;
+    const filamentCount = 20;
     for(let i=0; i<filamentCount; i++) {
-        const segs = 64;
+        const segs = 48;
         const pts = [];
         for(let j=0; j<=segs; j++) pts.push(new THREE.Vector3());
         const geo = new THREE.BufferGeometry().setFromPoints(pts);
         const mat = new THREE.LineBasicMaterial({ 
-            color: i % 2 === 0 ? 0xff00cc : 0xaa00ff, 
-            transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending, depthWrite: false 
+            color: i % 2 === 0 ? 0xff0088 : 0xaa00ff, 
+            transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false 
         });
         const line = new THREE.Line(geo, mat);
         line.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
         filamentGroup.add(line);
         filaments.push({
             line, 
-            r: 0.6 + Math.random() * 0.7, 
+            r: 0.4 + Math.random() * 0.5, 
             phase: Math.random() * 10,
-            speed: 0.5 + Math.random() * 1.5,
-            noiseScale: 0.2 + Math.random() * 0.4
+            speed: 0.8 + Math.random() * 1.5,
+            noiseScale: 0.15 + Math.random() * 0.25
         });
     }
+
+    const corePointsMat = new THREE.PointsMaterial({
+        size: 0.05, color: 0xdd88ff, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, map: getGlowTex('rgba(200,100,255,1)', 16), depthWrite: false
+    });
+    const corePoints = new THREE.Points(coreGeo, corePointsMat);
 
     coreMeshSolid.scale.setScalar(0.98); 
     coreMeshSolid.castShadow = true;
     coreGroup.add(coreMeshSolid);
     coreGroup.add(coreMeshWire);
+    coreGroup.add(corePoints);
 
     const bhGeo = new THREE.SphereGeometry(0.35, 32, 32);
     const bhMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
