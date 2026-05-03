@@ -159,30 +159,35 @@
     const blackHole = new THREE.Mesh(bhGeo, bhMat);
     coreGroup.add(blackHole);
 
-    const diskCount = 4000;
-    const diskGeo = new THREE.BufferGeometry();
-    const diskPos = new Float32Array(diskCount * 3);
-    const diskParams = [];
-    for(let i=0; i<diskCount; i++) {
-        const r = 0.35 + Math.pow(Math.random(), 1.5) * 0.85;
-        const th = Math.random() * Math.PI * 2;
-        const y = (Math.random() - 0.5) * 0.04;
-        const speed = 0.03 + Math.random() * 0.07;
-        diskParams.push({ r, th, y, speed });
-        diskPos[i*3] = r * Math.cos(th);
-        diskPos[i*3+1] = y;
-        diskPos[i*3+2] = r * Math.sin(th);
+    
+    
+    const flareGroup = new THREE.Group();
+    coreGroup.add(flareGroup);
+    const flares = [];
+    const maxFlares = 8;
+
+    function createFlare() {
+        const segs = 32;
+        const pts = [];
+        for(let i=0; i<=segs; i++) pts.push(new THREE.Vector3());
+        const geo = new THREE.BufferGeometry().setFromPoints(pts);
+        const mat = new THREE.LineBasicMaterial({ 
+            color: 0xff33aa, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false 
+        });
+        const line = new THREE.Line(geo, mat);
+        flareGroup.add(line);
+        
+        
+        const phi = Math.random() * Math.PI * 2;
+        const theta = Math.random() * Math.PI;
+        const start = new THREE.Vector3().setFromSphericalCoords(1.4, theta, phi);
+        const end = new THREE.Vector3().setFromSphericalCoords(1.4, theta + (Math.random()-0.5)*0.5, phi + (Math.random()-0.5)*0.5);
+        const mid = start.clone().lerp(end, 0.5).normalize().multiplyScalar(1.4 + 0.5 + Math.random() * 0.8);
+
+        return { line, start, mid, end, life: 0, speed: 0.01 + Math.random() * 0.02 };
     }
-    diskGeo.setAttribute('position', new THREE.BufferAttribute(diskPos, 3));
-    const diskMat = new THREE.PointsMaterial({
-        size: 0.12, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, map: getGlowTex('rgba(200,50,255,1)', 16)
-    });
-    const diskSystem = new THREE.Points(diskGeo, diskMat);
-    diskSystem.renderOrder = 5; 
-    
-    
-    diskSystem.rotation.x = 0.05; 
-    coreGroup.add(diskSystem);
+
+    for(let i=0; i<maxFlares; i++) flares.push(createFlare());
 
     const bhGlow = new THREE.Sprite(new THREE.SpriteMaterial({
       map: getGlowTex('rgba(200,150,255,0.9)', 64), blending: THREE.AdditiveBlending, transparent: true, depthWrite: false
@@ -476,39 +481,40 @@
       
       coreGroup.scale.setScalar((1 + zf * 0.2) * (0.5 + 0.5 * ringIntro));
 
-      const dPos = diskSystem.geometry.attributes.position.array;
-      for(let i=0; i<diskCount; i++) {
-          let p = diskParams[i];
-          p.th -= p.speed * (1 + zf * 2) * coreIntro;
-          p.r -= 0.005 * coreIntro; 
-          if (p.r < 0.35) { 
-              p.r = 1.1; 
-              p.th = Math.random() * Math.PI * 2;
-          }
-          
-          let bx = p.r * Math.cos(p.th);
-          let bz = p.r * Math.sin(p.th);
-          let by = p.y;
-          
-          
-          if (bz < 0) {
-              const r_val = p.r;
-              
-              const bendFactor = Math.pow((1.3 - (r_val/1.3)), 2) * 1.2;
-              
-              const falloff = Math.exp(-Math.pow(bx * 1.8, 2));
-              let bendY = bendFactor * falloff;
-              
-              if (i % 2 === 0) bendY = -bendY;
-              by += bendY;
+      
+      flares.forEach(f => {
+          f.life += f.speed * coreIntro;
+          if (f.life > 1) {
+              f.life = 0;
+              const phi = Math.random() * Math.PI * 2;
+              const theta = Math.random() * Math.PI;
+              f.start.setFromSphericalCoords(1.4, theta, phi);
+              f.end.setFromSphericalCoords(1.4, theta + (Math.random()-0.5)*0.6, phi + (Math.random()-0.5)*0.6);
+              f.mid.copy(f.start).lerp(f.end, 0.5).normalize().multiplyScalar(1.4 + 0.4 + Math.random() * 0.9);
           }
 
-          dPos[i*3] = bx;
-          dPos[i*3+1] = by;
-          dPos[i*3+2] = bz;
-      }
-      diskSystem.geometry.attributes.position.needsUpdate = true;
-      diskSystem.material.opacity = 0.4 + coreIntro * 0.6;
+          const pos = f.line.geometry.attributes.position.array;
+          const segs = 32;
+          const alpha = Math.sin(f.life * Math.PI); 
+          
+          for(let i=0; i<=segs; i++) {
+              const t_lerp = i / segs;
+              
+              const p = new THREE.Vector3();
+              p.x = (1 - t_lerp) * (1 - t_lerp) * f.start.x + 2 * (1 - t_lerp) * t_lerp * f.mid.x + t_lerp * t_lerp * f.end.x;
+              p.y = (1 - t_lerp) * (1 - t_lerp) * f.start.y + 2 * (1 - t_lerp) * t_lerp * f.mid.y + t_lerp * t_lerp * f.end.y;
+              p.z = (1 - t_lerp) * (1 - t_lerp) * f.start.z + 2 * (1 - t_lerp) * t_lerp * f.mid.z + t_lerp * t_lerp * f.end.z;
+              
+              
+              const noise = Math.sin(t_lerp * 10 + t * 5) * 0.05 * alpha;
+              p.addScaledVector(p.clone().normalize(), noise);
+
+              pos[i*3] = p.x; pos[i*3+1] = p.y; pos[i*3+2] = p.z;
+          }
+          f.line.geometry.attributes.position.needsUpdate = true;
+          f.line.material.opacity = alpha * 0.6 * coreIntro;
+          f.line.material.color.setHSL(0.8 + Math.sin(t + f.life)*0.1, 1, 0.6);
+      });
 
       coreLight.intensity = (4 + Math.sin(t * 2) * 2) * coreIntro;
       glowOrb.scale.setScalar((6.5 + Math.sin(t * 3) * 0.8) * (0.2 + 0.8 * coreIntro));
