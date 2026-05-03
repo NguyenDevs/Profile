@@ -107,11 +107,11 @@
     }
 
     const coreMat = new THREE.MeshStandardMaterial({
-      color: 0x8800ff, emissive: 0x4400aa, emissiveIntensity: 0.8, wireframe: true, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending
+      color: 0x8800ff, emissive: 0x4400aa, emissiveIntensity: 0.8, wireframe: true, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending, depthWrite: false
     });
     
     const solidCoreMat = new THREE.MeshPhysicalMaterial({
-      color: 0x110022, emissive: 0x110022, metalness: 0.6, roughness: 0.2, clearcoat: 1.0, transparent: true, opacity: 0.05
+      color: 0x110022, emissive: 0x110022, metalness: 0.6, roughness: 0.2, clearcoat: 1.0, transparent: true, opacity: 0.15, depthWrite: false
     });
 
     const coreMeshSolid = new THREE.Mesh(coreGeo, solidCoreMat);
@@ -178,6 +178,7 @@
         size: 0.12, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, map: getGlowTex('rgba(200,50,255,1)', 16)
     });
     const diskSystem = new THREE.Points(diskGeo, diskMat);
+    diskSystem.renderOrder = 5; 
     
     
     diskSystem.rotation.x = 0.05; 
