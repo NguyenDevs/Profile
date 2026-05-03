@@ -433,40 +433,59 @@
     const sliderContainer = document.createElement('div');
     sliderContainer.id = 'speed-slider-container';
     Object.assign(sliderContainer.style, {
-        position: 'fixed', right: '30px', top: '50%', transform: 'translateY(-50%)',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: '1000',
-        gap: '20px', background: 'rgba(20, 10, 35, 0.4)', backdropFilter: 'blur(15px)',
-        padding: '40px 15px', borderRadius: '40px', border: '1px solid rgba(255, 255, 255, 0.1)',
-        boxShadow: '0 20px 40px rgba(0,0,0,0.5)', transition: 'opacity 0.5s ease'
+        position: 'fixed', right: '40px', top: '50%', transform: 'translateY(-50%)',
+        width: '60px', height: '350px', zIndex: '1000', display: 'flex',
+        flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
     });
     
     const sliderLabel = document.createElement('div');
-    sliderLabel.innerText = 'ROTATION';
+    sliderLabel.innerText = 'VELOCITY CONTROL';
     Object.assign(sliderLabel.style, {
-        color: '#fff', fontSize: '9px', letterSpacing: '3px', textTransform: 'uppercase',
-        opacity: '0.6', fontWeight: '800', writingMode: 'vertical-rl', transform: 'rotate(180deg)'
+        position: 'absolute', top: '-40px', color: '#cc00ff', fontSize: '9px',
+        letterSpacing: '4px', textTransform: 'uppercase', opacity: '0.8',
+        fontWeight: '900', writingMode: 'vertical-rl', transform: 'rotate(180deg)'
     });
 
     const speedSlider = document.createElement('input');
     speedSlider.id = 'speed-slider';
     speedSlider.type = 'range'; speedSlider.min = '0'; speedSlider.max = '5'; speedSlider.step = '0.01'; speedSlider.value = '1';
-    Object.assign(speedSlider.style, {
-        appearance: 'none', width: '150px', height: '4px', background: 'rgba(255,255,255,0.1)',
-        outline: 'none', borderRadius: '2px', cursor: 'pointer', transform: 'rotate(-90deg)',
-        margin: '70px 0'
+    
+    // Add markers
+    const markers = [
+        { v: 0, l: '0X' }, { v: 1, l: '1X (DEF)' }, { v: 2.5, l: '2.5X' }, { v: 5, l: 'MAX' }
+    ];
+    markers.forEach(m => {
+        const div = document.createElement('div');
+        div.innerText = m.l;
+        Object.assign(div.style, {
+            position: 'absolute', right: '0px', color: m.v === 1 ? '#fff' : 'rgba(255,255,255,0.3)',
+            fontSize: '8px', fontWeight: 'bold', pointerEvents: 'none',
+            top: `${(1 - m.v/5) * 250 + 50}px`, borderBottom: m.v === 1 ? '1px solid #cc00ff' : '1px solid rgba(255,255,255,0.1)',
+            width: '20px', textAlign: 'right', paddingBottom: '2px'
+        });
+        sliderContainer.appendChild(div);
     });
 
     const style = document.createElement('style');
     style.textContent = `
+        #speed-slider {
+            appearance: none; width: 250px; height: 1px; 
+            background: linear-gradient(to right, rgba(204,0,255,0), rgba(204,0,255,0.5), rgba(204,0,255,0));
+            outline: none; cursor: crosshair; transform: rotate(-90deg);
+            position: relative;
+        }
         #speed-slider::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 20px; height: 20px; 
-            background: #cc00ff; border-radius: 50%; cursor: pointer;
-            box-shadow: 0 0 15px #cc00ff, 0 0 30px rgba(204,0,255,0.5);
-            border: 2px solid #fff;
+            -webkit-appearance: none; width: 10px; height: 35px; 
+            background: #cc00ff; border: 1px solid #fff; border-radius: 2px;
+            cursor: pointer; box-shadow: 0 0 15px #cc00ff, 0 0 5px #fff;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #speed-slider::-webkit-slider-thumb:hover {
+            height: 50px; background: #fff; box-shadow: 0 0 30px #cc00ff, 0 0 10px #cc00ff;
         }
         #speed-slider::-moz-range-thumb {
-            width: 20px; height: 20px; background: #cc00ff; border-radius: 50%;
-            cursor: pointer; box-shadow: 0 0 15px #cc00ff; border: 2px solid #fff;
+            width: 10px; height: 35px; background: #cc00ff; border: 1px solid #fff;
+            border-radius: 2px; cursor: pointer; box-shadow: 0 0 15px #cc00ff;
         }
     `;
     document.head.appendChild(style);
