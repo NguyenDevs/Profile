@@ -308,6 +308,7 @@ function openMobilePlaylist() {
   if (elements.mModal) {
     elements.mModal.classList.add('active');
     elements.mModal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-is-open');
     document.body.style.overflow = 'hidden';
   }
 }
@@ -316,6 +317,7 @@ function closeMobilePlaylist() {
   if (elements.mModal) {
     elements.mModal.classList.remove('active');
     elements.mModal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-is-open');
     document.body.style.overflow = '';
   }
 }
@@ -333,7 +335,7 @@ function startAutoCollapse(delay = 2500) {
 
     if (elements.dPlaylistContainer?.classList.contains('expanded')) {
       elements.dPlaylistContainer.classList.remove('expanded');
-      document.querySelector('.sidebar-wrapper')?.classList.remove('playlist-is-expanded');
+      document.body.classList.remove('playlist-is-expanded');
       startAutoCollapse(800);
       return;
     }
@@ -388,7 +390,7 @@ function handleGlobalClick(e) {
     } else {
       if (elements.dPlaylistContainer) {
         elements.dPlaylistContainer.classList.toggle('expanded');
-        document.querySelector('.sidebar-wrapper')?.classList.toggle('playlist-is-expanded');
+        document.body.classList.toggle('playlist-is-expanded');
         if (elements.dPlaylistContainer.classList.contains('expanded') ||
           (elements.mobilePlayer && elements.mobilePlayer.classList.contains('expanded'))) {
           startAutoCollapse();
@@ -427,7 +429,7 @@ function handleGlobalClick(e) {
   if (elements.mobilePlayer && elements.mobilePlayer.classList.contains('expanded') && !e.target.closest('#mobile-music-player')) {
     if (elements.dPlaylistContainer?.classList.contains('expanded')) {
       elements.dPlaylistContainer.classList.remove('expanded');
-      document.querySelector('.sidebar-wrapper')?.classList.remove('playlist-is-expanded');
+      document.body.classList.remove('playlist-is-expanded');
       setTimeout(() => {
         elements.mobilePlayer.classList.remove('expanded');
       }, 800);
