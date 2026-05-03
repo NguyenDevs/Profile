@@ -107,11 +107,11 @@
     }
 
     const coreMat = new THREE.MeshStandardMaterial({
-      color: 0x8800ff, emissive: 0x4400aa, emissiveIntensity: 0.8, wireframe: true, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending, depthWrite: false
+      color: 0xaa00ff, emissive: 0x4400aa, emissiveIntensity: 1.2, wireframe: true, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending, depthWrite: false
     });
     
     const solidCoreMat = new THREE.MeshPhysicalMaterial({
-      color: 0x8800ff, emissive: 0x4400aa, emissiveIntensity: 0.8, wireframe: true, transparent: true, opacity: 0.25, depthWrite: false
+      color: 0x000000, wireframe: false, transparent: true, opacity: 0, colorWrite: false, depthWrite: false
     });
 
     const coreMeshSolid = new THREE.Mesh(coreGeo, solidCoreMat);
