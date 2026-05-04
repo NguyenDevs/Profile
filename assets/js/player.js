@@ -359,6 +359,7 @@ function handleGlobalClick(e) {
     stopAutoCollapse();
     if (elements.mobilePlayer) {
       elements.mobilePlayer.classList.toggle('expanded');
+      document.body.classList.toggle('mobile-player-expanded', elements.mobilePlayer.classList.contains('expanded'));
       if (elements.mobilePlayer.classList.contains('expanded')) startAutoCollapse();
     }
     return;
@@ -426,17 +427,19 @@ function handleGlobalClick(e) {
     return;
   }
 
-  if (elements.mobilePlayer && elements.mobilePlayer.classList.contains('expanded') && !e.target.closest('#mobile-music-player')) {
-    if (elements.dPlaylistContainer?.classList.contains('expanded')) {
-      elements.dPlaylistContainer.classList.remove('expanded');
-      document.body.classList.remove('playlist-is-expanded');
-      setTimeout(() => {
+    if (elements.mobilePlayer && elements.mobilePlayer.classList.contains('expanded') && !e.target.closest('#mobile-music-player')) {
+      if (elements.dPlaylistContainer?.classList.contains('expanded')) {
+        elements.dPlaylistContainer.classList.remove('expanded');
+        document.body.classList.remove('playlist-is-expanded');
+        setTimeout(() => {
+          elements.mobilePlayer.classList.remove('expanded');
+          document.body.classList.remove('mobile-player-expanded');
+        }, 800);
+      } else {
         elements.mobilePlayer.classList.remove('expanded');
-      }, 800);
-    } else {
-      elements.mobilePlayer.classList.remove('expanded');
+        document.body.classList.remove('mobile-player-expanded');
+      }
     }
-  }
 }
 
 function handleGlobalInput(e) {

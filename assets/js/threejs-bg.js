@@ -292,14 +292,32 @@
       return { obj: group, axis: axis.normalize(), speed: rotSpeed };
     }
 
-    const validPairs = [[0,2], [0,3], [0,4], [1,3], [1,4], [1,5], [2,4], [2,5], [3,5]];
-    const ring4Skip = validPairs[Math.floor(Math.random() * validPairs.length)];
+    function getSkipIndices(count, probs) {
+      const r = Math.random() * 100;
+      let cumulative = 0;
+      let numToSkip = 0;
+      for (const p of probs) {
+        cumulative += p.prob;
+        if (r <= cumulative) {
+          numToSkip = p.skip;
+          break;
+        }
+      }
+      const indices = [];
+      const available = Array.from({ length: count }, (_, i) => i);
+      for (let i = 0; i < numToSkip; i++) {
+        if (available.length === 0) break;
+        const idx = Math.floor(Math.random() * available.length);
+        indices.push(available.splice(idx, 1)[0]);
+      }
+      return indices;
+    }
 
     const rings = [
-      createFragmentedRing(3.0, 3.6, 0.6, 3, 0.007, new THREE.Vector3(1, 0.5, 0.2)),
-      createFragmentedRing(4.2, 5.0, 0.8, 4, -0.004, new THREE.Vector3(-0.5, 1, 0.5)),
-      createFragmentedRing(5.6, 6.6, 1.2, 5, 0.003, new THREE.Vector3(0.2, -0.5, 1)),
-      createFragmentedRing(7.2, 8.4, 1.4, 6, -0.002, new THREE.Vector3(0.5, 0.8, -0.3), ring4Skip),
+      createFragmentedRing(3.0, 3.6, 0.6, 3, 0.007, new THREE.Vector3(1, 0.5, 0.2), getSkipIndices(3, [{ skip: 1, prob: 20 }, { skip: 0, prob: 80 }])),
+      createFragmentedRing(4.2, 5.0, 0.8, 4, -0.004, new THREE.Vector3(-0.5, 1, 0.5), getSkipIndices(4, [{ skip: 1, prob: 30 }, { skip: 0, prob: 70 }])),
+      createFragmentedRing(5.6, 6.6, 1.2, 5, 0.003, new THREE.Vector3(0.2, -0.5, 1), getSkipIndices(5, [{ skip: 1, prob: 30 }, { skip: 2, prob: 20 }, { skip: 0, prob: 50 }])),
+      createFragmentedRing(7.2, 8.4, 1.4, 6, -0.002, new THREE.Vector3(0.5, 0.8, -0.3), getSkipIndices(6, [{ skip: 1, prob: 30 }, { skip: 2, prob: 20 }, { skip: 3, prob: 10 }, { skip: 0, prob: 40 }])),
     ];
     rings.forEach(r => mainGroup.add(r.obj));
 
@@ -439,83 +457,162 @@
         transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)'
     });
     
-    /* sliderLabel removed as per request */
-
     const speedSlider = document.createElement('input');
     speedSlider.id = 'speed-slider';
     speedSlider.type = 'range'; speedSlider.min = '0'; speedSlider.max = '5'; speedSlider.step = '0.01'; speedSlider.value = '1';
     
-    // Add markers
+    // Markers (0x - 5x)
     const markers = [
-        { v: 0, l: '0X' }, { v: 1, l: '1X (DEF)' }, { v: 2.5, l: '2.5X' }, { v: 5, l: 'MAX' }
+        { v: 0, l: '0x' }, { v: 1, l: '1x' }, { v: 2, l: '2x' }, { v: 3, l: '3x' }, { v: 4, l: '4x' }, { v: 5, l: '5x' }
     ];
     markers.forEach(m => {
         const div = document.createElement('div');
         div.className = 'slider-marker';
         div.innerText = m.l;
         Object.assign(div.style, {
-            position: 'absolute', right: '0px', color: m.v === 1 ? '#fff' : 'rgba(255,255,255,0.3)',
-            fontSize: '8px', fontWeight: 'bold', pointerEvents: 'none',
-            top: `${(1 - m.v/5) * 250 + 50}px`, borderBottom: m.v === 1 ? '1px solid #cc00ff' : '1px solid rgba(255,255,255,0.1)',
-            width: '20px', textAlign: 'right', paddingBottom: '2px'
+            position: 'absolute', right: '0px', color: m.v === 1 ? '#fff' : 'rgba(255,255,255,0.4)',
+            fontSize: '9px', fontWeight: 'bold', pointerEvents: 'none',
+            top: `${(1 - m.v/5) * 250 + 50}px`, borderBottom: '1px solid rgba(255,255,255,0.15)',
+            width: '24px', textAlign: 'right', paddingBottom: '2px'
         });
         sliderContainer.appendChild(div);
     });
 
+    const btnDown = document.createElement('button');
+    btnDown.id = 'speed-down-btn';
+    btnDown.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 13H5v-2h14v2z"/></svg>';
+    
+    const btnUp = document.createElement('button');
+    btnUp.id = 'speed-up-btn';
+    btnUp.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 13h-6V7h-2v6H5v2h6v6h2v-6h6v-2z"/></svg>';
+
+    sliderContainer.appendChild(btnDown);
+    sliderContainer.appendChild(speedSlider);
+    sliderContainer.appendChild(btnUp);
+
     const style = document.createElement('style');
     style.textContent = `
+        #speed-slider-container button {
+            display: none;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--accent3, #cc00ff);
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.3s; flex-shrink: 0;
+            padding: 0; outline: none;
+        }
+        #speed-slider-container button:active { transform: scale(0.9); background: #cc00ff; color: #fff; }
+
         #speed-slider {
             appearance: none; width: 250px; height: 1px; 
-            background: linear-gradient(to right, rgba(204,0,255,0), rgba(204,0,255,0.5), rgba(204,0,255,0));
+            background: linear-gradient(to right, rgba(204,0,255,0), rgba(204,0,255,0.6), rgba(204,0,255,0));
             outline: none; cursor: crosshair; transform: rotate(-90deg);
             position: relative;
         }
         #speed-slider::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 8px; height: 20px; 
-            background: #cc00ff; border: 1px solid #fff; border-radius: 2px;
+            -webkit-appearance: none; width: 14px; height: 14px; 
+            background: #cc00ff; border: 2px solid #fff; border-radius: 50%;
             cursor: pointer; box-shadow: 0 0 15px #cc00ff, 0 0 5px #fff;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         #speed-slider::-webkit-slider-thumb:hover {
-            height: 30px; background: #fff; box-shadow: 0 0 30px #cc00ff, 0 0 10px #cc00ff;
+            transform: scale(1.3); background: #fff; box-shadow: 0 0 30px #cc00ff, 0 0 10px #cc00ff;
         }
         #speed-slider::-moz-range-thumb {
-            width: 8px; height: 20px; background: #cc00ff; border: 1px solid #fff;
-            border-radius: 2px; cursor: pointer; box-shadow: 0 0 15px #cc00ff;
+            width: 14px; height: 14px; background: #cc00ff; border: 2px solid #fff;
+            border-radius: 50%; cursor: pointer; box-shadow: 0 0 15px #cc00ff;
         }
 
-        /* Auto-fade logic */
         body.playlist-is-expanded #speed-slider-container,
+        body.mobile-player-expanded #speed-slider-container,
         body.modal-is-open #speed-slider-container {
             opacity: 0 !important;
             pointer-events: none !important;
             transform: translateY(-50%) translateX(20px) !important;
         }
 
-        /* Mobile Optimization */
         @media (max-width: 768px) {
             #speed-slider-container {
-                right: 15px !important;
-                height: 220px !important;
-                width: 40px !important;
+                right: 0 !important;
+                left: 50% !important;
+                top: auto !important;
+                bottom: 24px !important;
+                transform: translateX(-50%) !important;
+                width: calc(100% - 150px) !important;
+                height: 54px !important;
+                flex-direction: row !important;
+                background: rgba(20, 20, 25, 0.6);
+                backdrop-filter: blur(10px);
+                border-radius: 18px;
+                padding: 0 10px;
+                border: 1px solid rgba(255,255,255,0.08);
+                gap: 8px;
             }
+            #speed-slider-container button { display: flex; }
             #speed-slider {
-                width: 180px !important;
+                width: 100% !important;
+                transform: rotate(0deg) !important;
             }
             .slider-marker {
-                display: none !important;
+                top: -18px !important;
+                right: auto !important;
+                text-align: center !important;
+                border-bottom: none !important;
+                border-left: 1px solid rgba(255,255,255,0.2) !important;
+                height: 4px !important;
+                width: 1px !important;
+                padding: 0 !important;
             }
-            #speed-slider::-webkit-slider-thumb {
-                width: 12px !important;
-                height: 24px !important;
+            .slider-marker {
+                display: block !important;
+                font-size: 8px !important;
+                padding-top: 10px !important;
+                height: auto !important;
+                width: 30px !important;
+                margin-left: -15px !important;
+            }
+            
+            body.mobile-player-expanded #speed-slider-container {
+                transform: translateX(-50%) translateY(40px) !important;
+                opacity: 0 !important;
             }
         }
     `;
     document.head.appendChild(style);
 
-    /* sliderLabel child removed */
-    sliderContainer.appendChild(speedSlider);
     document.body.appendChild(sliderContainer);
+
+    btnDown.onclick = (e) => {
+        e.stopPropagation();
+        speedSlider.value = Math.max(0, Math.floor(parseFloat(speedSlider.value) * 2 - 1) / 2);
+        speedSlider.dispatchEvent(new Event('input'));
+    };
+    btnUp.onclick = (e) => {
+        e.stopPropagation();
+        speedSlider.value = Math.min(5, Math.ceil(parseFloat(speedSlider.value) * 2 + 1) / 2);
+        speedSlider.dispatchEvent(new Event('input'));
+    };
+
+    // Update marker positions on mobile
+    function updateMarkerPos() {
+        if (window.innerWidth <= 768) {
+            markers.forEach((m, i) => {
+                const marker = sliderContainer.querySelectorAll('.slider-marker')[i];
+                if (marker) {
+                    const rect = speedSlider.getBoundingClientRect();
+                    const containerRect = sliderContainer.getBoundingClientRect();
+                    const leftOffset = rect.left - containerRect.left;
+                    marker.style.left = `${leftOffset + (m.v / 5) * rect.width}px`;
+                    marker.style.top = '100%';
+                    marker.style.marginTop = '2px';
+                }
+            });
+        }
+    }
+    window.addEventListener('resize', updateMarkerPos);
+    setTimeout(updateMarkerPos, 150);
 
     let manualSpeedFactor = 1.0;
     speedSlider.addEventListener('input', (e) => {
