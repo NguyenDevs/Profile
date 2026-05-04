@@ -105,7 +105,9 @@ export function loadPage(url, push) {
 
       if (push) {
         // Normalize URL for history: replace /index.html with /
-        const displayUrl = url.replace(/\/index\.html$/, '/');
+          const displayUrl = url
+              .replace(/\/index\.html$/, '/')
+              .replace(/\.html$/, '');
         history.pushState(null, '', displayUrl);
       }
 
@@ -137,8 +139,14 @@ export function loadPage(url, push) {
       // Restore index page backgrounds when leaving info.html
       const gradientBg = document.querySelector('.gradient-bg');
       const bgNoise = document.querySelector('.bg-noise');
-      if (gradientBg) gradientBg.style.display = '';
-      if (bgNoise) bgNoise.style.display = '';
+      if (gradientBg) {
+        gradientBg.style.display = '';
+        gradientBg.style.visibility = 'visible';
+      }
+      if (bgNoise) {
+        bgNoise.style.display = '';
+        bgNoise.style.visibility = 'visible';
+      }
 
       document.body.style.background = '';
       document.body.style.overflow = '';
