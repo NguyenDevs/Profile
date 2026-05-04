@@ -89,6 +89,14 @@ export function loadPage(url, push) {
         }
       });
 
+      // Inject inline <style> blocks from fetched page
+      const newStyles = doc.querySelectorAll('style');
+      newStyles.forEach(style => {
+        const s = document.createElement('style');
+        s.textContent = style.textContent;
+        document.head.appendChild(s);
+      });
+
       const newContent = doc.querySelector('.wrapper') || doc.querySelector('.projects-container') || doc.querySelector('.coming-soon');
       if (!newContent) {
         window.location.href = url;
@@ -106,11 +114,32 @@ export function loadPage(url, push) {
         clearInterval(window._livedTimeInterval);
         window._livedTimeInterval = null;
       }
+      if (window._threejsRafId) {
+        cancelAnimationFrame(window._threejsRafId);
+        window._threejsRafId = null;
+      }
+      if (window._endskyRafId) {
+        cancelAnimationFrame(window._endskyRafId);
+        window._endskyRafId = null;
+      }
       document.querySelectorAll('#threejs-canvas, #endsky-canvas, #speed-slider-container').forEach(el => el.remove());
       document.querySelectorAll('style').forEach(s => {
-        if (s.textContent && s.textContent.includes('#speed-slider-container')) s.remove();
+        if (s.textContent && (
+          s.textContent.includes('#speed-slider-container') ||
+          s.textContent.includes('.info-label') ||
+          s.textContent.includes('#08080e')
+        )) {
+          s.remove();
+        }
       });
       document.querySelectorAll('script[src*="threejs-bg.js"], script[src*="endsky-bg.js"], script[src*="three.min.js"]').forEach(s => s.remove());
+
+      // Restore index page backgrounds when leaving info.html
+      const gradientBg = document.querySelector('.gradient-bg');
+      const bgNoise = document.querySelector('.bg-noise');
+      if (gradientBg) gradientBg.style.display = '';
+      if (bgNoise) bgNoise.style.display = '';
+
       document.body.style.background = '';
       document.body.style.overflow = '';
 
@@ -133,10 +162,9 @@ export function loadPage(url, push) {
         const src = script.getAttribute('src');
         if (src) {
           if (src.includes('main.js')) return;
-          const exists = Array.from(document.scripts).some(s => s.getAttribute('src') === src);
-          if (exists) return;
           const s = document.createElement('script');
           s.src = src;
+          s.async = false;
           if (script.type) s.type = script.type;
           document.body.appendChild(s);
         } else {
@@ -147,10 +175,14 @@ export function loadPage(url, push) {
         }
       });
 
-      // Apply info.html specific body styles
+      // Apply info.html specific body styles and hide index backgrounds
       if (doc.querySelector('.info-label')) {
         document.body.style.background = '#08080e';
         document.body.style.overflow = 'hidden';
+        const gradientBg = document.querySelector('.gradient-bg');
+        const bgNoise = document.querySelector('.bg-noise');
+        if (gradientBg) gradientBg.style.display = 'none';
+        if (bgNoise) bgNoise.style.display = 'none';
       }
 
       if (newContent.classList.contains('projects-grid') || newContent.querySelector('.projects-grid')) {

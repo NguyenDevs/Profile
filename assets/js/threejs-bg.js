@@ -599,7 +599,7 @@
     let t = 0; const _q = new THREE.Quaternion();
 
     function animate() {
-      requestAnimationFrame(animate);
+      window._threejsRafId = requestAnimationFrame(animate);
       t += 0.01;
 
       window.dispatchEvent(new CustomEvent('threejs-camera', { detail: {

@@ -175,7 +175,7 @@
     resize();
 
     function render() {
-        requestAnimationFrame(render);
+        window._endskyRafId = requestAnimationFrame(render);
         currentZoom += (targetZoom - currentZoom) * 0.03;
         currentQ = lerpQ(currentQ, targetQ, 0.03);
 
