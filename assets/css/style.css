@@ -959,7 +959,7 @@ html { scroll-behavior: smooth; }
     from { transform: translateY(30px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
   }
-}
+
 
 .player-info { margin-bottom: 15px; }
 
@@ -1703,6 +1703,7 @@ body.is-mobile .music-toggle {
   padding: 20px;
   position: relative;
   z-index: 10;
+  pointer-events: none;
 }
 .coming-soon h1 {
   font-family: 'Syne', sans-serif;
@@ -2121,4 +2122,4 @@ body.is-mobile .music-toggle {
     padding: 24px 16px 16px;
     min-height: 340px;
   }
-}
+}
