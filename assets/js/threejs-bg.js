@@ -534,9 +534,9 @@
             transform: translateY(-50%);
         }
         .slider-marker span {
-            position: absolute; left: 12px; top: 50%; transform: translateY(-50%) rotate(90deg);
+            position: absolute; left: 8px; top: 50%; transform: translateY(-50%) rotate(90deg);
             font-size: 10px; font-weight: bold; color: rgba(255,255,255,0.4);
-            width: 25px; text-align: left; white-space: nowrap;
+            width: 25px; text-align: left; white-space: nowrap; line-height: 1;
         }
 
         body.playlist-is-expanded #speed-slider-container,
@@ -557,13 +557,7 @@
             }
             #speed-slider-container button { display: flex; width: 27.6px !important; height: 27.6px !important; }
             #speed-slider { width: 100% !important; transform: rotate(0deg) !important; height: 3px !important; }
-            #speed-marker-track { 
-                position: absolute; transform: rotate(0deg); 
-                width: calc(100% - 24px); 
-                height: 1px; left: 12px; bottom: 12px;
-            }
-            .slider-marker { height: 4px; background: rgba(255,255,255,0.5); }
-            .slider-marker span { display: none !important; }
+            #speed-marker-track { display: none !important; }
             body.mobile-player-expanded #speed-slider-container {
                 transform: translateX(-50%) translateY(40px) !important; opacity: 0 !important;
             }
