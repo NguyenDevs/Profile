@@ -460,23 +460,6 @@
     const speedSlider = document.createElement('input');
     speedSlider.id = 'speed-slider';
     speedSlider.type = 'range'; speedSlider.min = '0'; speedSlider.max = '5'; speedSlider.step = '0.01'; speedSlider.value = '1';
-    
-    // Markers (0x - 5x)
-    const markers = [
-        { v: 0, l: '0x' }, { v: 1, l: '1x' }, { v: 2, l: '2x' }, { v: 3, l: '3x' }, { v: 4, l: '4x' }, { v: 5, l: '5x' }
-    ];
-    markers.forEach(m => {
-        const div = document.createElement('div');
-        div.className = 'slider-marker';
-        div.innerText = m.l;
-        Object.assign(div.style, {
-            position: 'absolute', right: '0px', color: m.v === 1 ? '#fff' : 'rgba(255,255,255,0.4)',
-            fontSize: '9px', fontWeight: 'bold', pointerEvents: 'none',
-            top: `${(1 - m.v/5) * 250 + 50}px`, borderBottom: '1px solid rgba(255,255,255,0.15)',
-            width: '24px', textAlign: 'right', paddingBottom: '2px'
-        });
-        sliderContainer.appendChild(div);
-    });
 
     const btnDown = document.createElement('button');
     btnDown.id = 'speed-down-btn';
@@ -486,30 +469,43 @@
     btnUp.id = 'speed-up-btn';
     btnUp.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 13h-6V7h-2v6H5v2h6v6h2v-6h6v-2z"/></svg>';
 
+    const markerTrack = document.createElement('div');
+    markerTrack.id = 'speed-marker-track';
+    
+    const markers = [
+        { v: 0, l: '0x' }, { v: 1, l: '1x' }, { v: 2, l: '2x' }, { v: 3, l: '3x' }, { v: 4, l: '4x' }, { v: 5, l: '5x' }
+    ];
+    markers.forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'slider-marker';
+        div.innerHTML = `<span>${m.l}</span>`;
+        div.style.position = 'absolute';
+        markerTrack.appendChild(div);
+    });
+
     sliderContainer.appendChild(btnDown);
     sliderContainer.appendChild(speedSlider);
     sliderContainer.appendChild(btnUp);
+    sliderContainer.appendChild(markerTrack);
 
     const style = document.createElement('style');
     style.textContent = `
+        #speed-slider-container {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
         #speed-slider-container button {
-            display: none;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: var(--accent3, #cc00ff);
-            width: 34px; height: 34px;
-            border-radius: 50%;
-            align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.3s; flex-shrink: 0;
-            padding: 0; outline: none;
+            display: none; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
+            color: var(--accent3, #cc00ff); width: 34px; height: 34px; border-radius: 50%;
+            align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;
+            flex-shrink: 0; padding: 0; outline: none; z-index: 10;
         }
         #speed-slider-container button:active { transform: scale(0.9); background: #cc00ff; color: #fff; }
 
         #speed-slider {
-            appearance: none; width: 250px; height: 1px; 
-            background: linear-gradient(to right, rgba(204,0,255,0), rgba(204,0,255,0.6), rgba(204,0,255,0));
+            appearance: none; width: 250px; height: 2px; 
+            background: rgba(204,0,255,0.2);
             outline: none; cursor: crosshair; transform: rotate(-90deg);
-            position: relative;
+            position: relative; z-index: 5;
         }
         #speed-slider::-webkit-slider-thumb {
             -webkit-appearance: none; width: 14px; height: 14px; 
@@ -517,72 +513,74 @@
             cursor: pointer; box-shadow: 0 0 15px #cc00ff, 0 0 5px #fff;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        #speed-slider::-webkit-slider-thumb:hover {
-            transform: scale(1.3); background: #fff; box-shadow: 0 0 30px #cc00ff, 0 0 10px #cc00ff;
-        }
         #speed-slider::-moz-range-thumb {
             width: 14px; height: 14px; background: #cc00ff; border: 2px solid #fff;
             border-radius: 50%; cursor: pointer; box-shadow: 0 0 15px #cc00ff;
         }
 
+        #speed-marker-track {
+            position: absolute; width: 250px; height: 1px; pointer-events: none;
+            transform: rotate(-90deg); z-index: 4;
+        }
+        .slider-marker {
+            width: 1px; height: 6px; background: rgba(255,255,255,0.3);
+            transform: translateY(-50%);
+        }
+        .slider-marker span {
+            position: absolute; right: -30px; top: 50%; transform: translateY(-50%) rotate(90deg);
+            font-size: 10px; font-weight: bold; color: rgba(255,255,255,0.4);
+            width: 25px; text-align: left;
+        }
+
         body.playlist-is-expanded #speed-slider-container,
         body.mobile-player-expanded #speed-slider-container,
         body.modal-is-open #speed-slider-container {
-            opacity: 0 !important;
-            pointer-events: none !important;
+            opacity: 0 !important; pointer-events: none !important;
             transform: translateY(-50%) translateX(20px) !important;
         }
 
         @media (max-width: 768px) {
             #speed-slider-container {
-                right: 0 !important;
-                left: 50% !important;
-                top: auto !important;
-                bottom: 24px !important;
-                transform: translateX(-50%) !important;
-                width: calc(100% - 150px) !important;
-                height: 54px !important;
-                flex-direction: row !important;
-                background: rgba(20, 20, 25, 0.6);
-                backdrop-filter: blur(10px);
-                border-radius: 18px;
-                padding: 0 10px;
-                border: 1px solid rgba(255,255,255,0.08);
-                gap: 8px;
+                right: 0 !important; left: 50% !important; top: auto !important; bottom: 24px !important;
+                transform: translateX(-50%) !important; width: calc(100% - 150px) !important;
+                height: 54px !important; flex-direction: row !important;
+                background: rgba(20, 20, 25, 0.7); backdrop-filter: blur(12px);
+                border-radius: 18px; padding: 0 12px; border: 1px solid rgba(255,255,255,0.1);
+                gap: 12px;
             }
             #speed-slider-container button { display: flex; }
-            #speed-slider {
-                width: 100% !important;
-                transform: rotate(0deg) !important;
+            #speed-slider { width: 100% !important; transform: rotate(0deg) !important; height: 3px !important; }
+            #speed-marker-track { 
+                position: absolute; transform: rotate(0deg); 
+                width: calc(100% - 100px); /* Adjust to match slider track */
+                height: 1px; left: 50px; bottom: 12px;
             }
-            .slider-marker {
-                top: -18px !important;
-                right: auto !important;
-                text-align: center !important;
-                border-bottom: none !important;
-                border-left: 1px solid rgba(255,255,255,0.2) !important;
-                height: 4px !important;
-                width: 1px !important;
-                padding: 0 !important;
+            .slider-marker { height: 4px; background: rgba(255,255,255,0.5); }
+            .slider-marker span {
+                right: auto; left: 50%; top: -15px; transform: translateX(-50%);
+                text-align: center; font-size: 9px;
             }
-            .slider-marker {
-                display: block !important;
-                font-size: 8px !important;
-                padding-top: 10px !important;
-                height: auto !important;
-                width: 30px !important;
-                margin-left: -15px !important;
-            }
-            
             body.mobile-player-expanded #speed-slider-container {
-                transform: translateX(-50%) translateY(40px) !important;
-                opacity: 0 !important;
+                transform: translateX(-50%) translateY(40px) !important; opacity: 0 !important;
             }
         }
     `;
     document.head.appendChild(style);
 
     document.body.appendChild(sliderContainer);
+
+    function updateMarkerPos() {
+        const isMobile = window.innerWidth <= 768;
+        markers.forEach((m, i) => {
+            const div = markerTrack.children[i];
+            if (div) {
+                div.style.left = `${(m.v / 5) * 100}%`;
+                if (m.v === 1) div.querySelector('span').style.color = '#fff';
+            }
+        });
+    }
+    window.addEventListener('resize', updateMarkerPos);
+    updateMarkerPos();
 
     btnDown.onclick = (e) => {
         e.stopPropagation();
@@ -594,25 +592,6 @@
         speedSlider.value = Math.min(5, Math.ceil(parseFloat(speedSlider.value) * 2 + 1) / 2);
         speedSlider.dispatchEvent(new Event('input'));
     };
-
-    // Update marker positions on mobile
-    function updateMarkerPos() {
-        if (window.innerWidth <= 768) {
-            markers.forEach((m, i) => {
-                const marker = sliderContainer.querySelectorAll('.slider-marker')[i];
-                if (marker) {
-                    const rect = speedSlider.getBoundingClientRect();
-                    const containerRect = sliderContainer.getBoundingClientRect();
-                    const leftOffset = rect.left - containerRect.left;
-                    marker.style.left = `${leftOffset + (m.v / 5) * rect.width}px`;
-                    marker.style.top = '100%';
-                    marker.style.marginTop = '2px';
-                }
-            });
-        }
-    }
-    window.addEventListener('resize', updateMarkerPos);
-    setTimeout(updateMarkerPos, 150);
 
     let manualSpeedFactor = 1.0;
     speedSlider.addEventListener('input', (e) => {
