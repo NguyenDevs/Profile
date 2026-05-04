@@ -628,8 +628,8 @@
           const speed = Math.sqrt(velocity.x*velocity.x + velocity.y*velocity.y);
           if (speed > 0.08) {
               rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(velocity.y, velocity.x, 0).normalize(), speed*0.007));
-              velocity.x *= 0.98;
-              velocity.y *= 0.98;
+              velocity.x *= 0.985;
+              velocity.y *= 0.985;
           }
       } else {
           velocity.x *= 0.5;
