@@ -22,7 +22,7 @@ export function initRouting() {
       e.preventDefault();
       e.stopPropagation();
 
-      const targetUrl = link.href;
+      const targetUrl = link.href.replace(/\.html$/, '');
       // Normalize URL for comparison
       const cleanTarget = targetUrl.replace(/\/index\.html$/, '/');
       const cleanCurrent = window.location.href.replace(/\/index\.html$/, '/');
