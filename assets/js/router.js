@@ -157,17 +157,20 @@ export function loadPage(url, push) {
 
       // Execute non-module scripts from the fetched page
       const scripts = doc.querySelectorAll('script');
-      scripts.forEach(script => {
-        if (script.type === 'module') return;
+      console.log('[SPA] Found scripts:', scripts.length);
+      scripts.forEach((script, i) => {
+        if (script.type === 'module') { console.log('[SPA] Skipping module script'); return; }
         const src = script.getAttribute('src');
         if (src) {
-          if (src.includes('main.js')) return;
+          if (src.includes('main.js')) { console.log('[SPA] Skipping main.js'); return; }
+          console.log('[SPA] Injecting external script:', src);
           const s = document.createElement('script');
           s.src = src;
           s.async = false;
           if (script.type) s.type = script.type;
           document.body.appendChild(s);
         } else {
+          console.log('[SPA] Injecting inline script');
           const s = document.createElement('script');
           s.textContent = script.textContent;
           document.body.appendChild(s);
@@ -176,13 +179,16 @@ export function loadPage(url, push) {
       });
 
       // Apply info.html specific body styles and hide index backgrounds
-      if (doc.querySelector('.info-label')) {
+      const isInfoPage = !!doc.querySelector('.info-label');
+      console.log('[SPA] Is info page?', isInfoPage);
+      if (isInfoPage) {
         document.body.style.background = '#08080e';
         document.body.style.overflow = 'hidden';
         const gradientBg = document.querySelector('.gradient-bg');
         const bgNoise = document.querySelector('.bg-noise');
-        if (gradientBg) gradientBg.style.display = 'none';
-        if (bgNoise) bgNoise.style.display = 'none';
+        console.log('[SPA] gradient-bg found:', !!gradientBg, '| bg-noise found:', !!bgNoise);
+        if (gradientBg) { gradientBg.style.display = 'none'; console.log('[SPA] Hid gradient-bg'); }
+        if (bgNoise) { bgNoise.style.display = 'none'; console.log('[SPA] Hid bg-noise'); }
       }
 
       if (newContent.classList.contains('projects-grid') || newContent.querySelector('.projects-grid')) {
