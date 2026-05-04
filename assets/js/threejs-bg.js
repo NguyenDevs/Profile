@@ -143,7 +143,7 @@
     }
 
     const corePointsMat = new THREE.PointsMaterial({
-        size: 0.09, color: 0xdd88ff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, map: getGlowTex('rgba(200,100,255,1)', 16), depthWrite: false
+        size: 0.12, color: 0xdd88ff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, map: getGlowTex('rgba(200,100,255,1)', 16), depthWrite: false
     });
     corePointsMat.onBeforeCompile = (shader) => {
         shader.uniforms.uTime = { value: 0 };
