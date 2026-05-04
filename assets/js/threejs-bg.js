@@ -402,7 +402,7 @@
         const dx = e.clientX - drag.px, dy = e.clientY - drag.py;
         velocity.x = dx; velocity.y = dy;
         const speed = Math.sqrt(dx*dx+dy*dy);
-        if (speed > 0) rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(dy, dx, 0).normalize(), speed*0.005));
+        if (speed > 0) rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(dy, dx, 0).normalize(), speed*0.007));
         drag.px = e.clientX; drag.py = e.clientY; 
       }
     });
@@ -443,7 +443,7 @@
         const dx = t.clientX - lastT.clientX, dy = t.clientY - lastT.clientY;
         velocity.x = dx; velocity.y = dy;
         const speed = Math.sqrt(dx*dx+dy*dy);
-        if (speed > 0) rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(dy, dx, 0).normalize(), speed*0.005));
+        if (speed > 0) rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(dy, dx, 0).normalize(), speed*0.007));
         lastT = t;
       }
     }, { passive: false });
@@ -626,10 +626,10 @@
 
       if (!drag.active) {
           const speed = Math.sqrt(velocity.x*velocity.x + velocity.y*velocity.y);
-          if (speed > 0.1) {
-              rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(velocity.y, velocity.x, 0).normalize(), speed*0.005));
-              velocity.x *= 0.95;
-              velocity.y *= 0.95;
+          if (speed > 0.08) {
+              rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(velocity.y, velocity.x, 0).normalize(), speed*0.007));
+              velocity.x *= 0.98;
+              velocity.y *= 0.98;
           }
       } else {
           velocity.x *= 0.5;
