@@ -110,6 +110,7 @@ export function loadPage(url, push) {
       document.querySelectorAll('style').forEach(s => {
         if (s.textContent && s.textContent.includes('#speed-slider-container')) s.remove();
       });
+      document.querySelectorAll('script[src*="threejs-bg.js"], script[src*="endsky-bg.js"], script[src*="three.min.js"]').forEach(s => s.remove());
       document.body.style.background = '';
       document.body.style.overflow = '';
 
