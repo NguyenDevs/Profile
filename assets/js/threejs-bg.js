@@ -335,8 +335,8 @@
         color: 0x110522, roughness: 0.2, metalness: 0.9, clearcoat: 0.8, flatShading: true
     });
 
-    for(let i=0; i<20; i++) {
-        const size = 0.10 + Math.random()*0.20; 
+    for(let i=0; i<30; i++) {
+        const size = 0.10 + Math.random()*0.30;
         const randGeo = Math.floor(Math.random() * 5);
         let geo;
         switch(randGeo) {
@@ -360,7 +360,7 @@
     }
 
     
-    const pCount = 4500;
+    const pCount = 5500;
     const pGeo = new THREE.BufferGeometry();
     const pPos = new Float32Array(pCount * 3);
     for(let i=0; i<pCount; i++) {
@@ -372,7 +372,7 @@
     }
     pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
     const pMat = new THREE.PointsMaterial({
-        size: 0.06, map: getGlowTex('rgba(190,100,255,1)', 16),
+        size: 0.08, map: getGlowTex('rgba(190,100,255,1)', 16),
         transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false
     });
     const pSystem = new THREE.Points(pGeo, pMat);
