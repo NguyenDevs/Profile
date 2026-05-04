@@ -601,6 +601,12 @@
     function animate() {
       requestAnimationFrame(animate);
       t += 0.01;
+
+      window.dispatchEvent(new CustomEvent('threejs-camera', { detail: {
+        zoom: zoom,
+        quaternion: { x: rotQ.x, y: rotQ.y, z: rotQ.z, w: rotQ.w }
+      }}));
+
       camera.position.z += (zoom - camera.position.z) * 0.05;
       const currentZf = Math.max(0, Math.min(1, (35 - camera.position.z) / 27));
       camera.position.y = 2.0 - currentZf * 2.0;

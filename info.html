@@ -50,11 +50,6 @@
       overflow: hidden;
     }
 
-    /* gradient-bg sits BELOW Three.js canvas (z-index:2) */
-    .gradient-bg {
-      z-index: 1 !important;
-    }
-
     /* Floating minimal label */
     .info-label {
       position: fixed;
@@ -200,20 +195,6 @@
 </head>
 <body>
 
-  <!-- Gradient background (same as index) -->
-  <div class="gradient-bg">
-    <svg xmlns="http://www.w3.org/2000/svg" style="display:none;">
-      <defs>
-        <filter id="goo">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
-          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8" result="goo" />
-          <feBlend in="SourceGraphic" in2="goo" />
-        </filter>
-      </defs>
-    </svg>
-    <div class="gradients-container"></div>
-  </div>
-
   <!-- Minimal floating label -->
   <div class="info-label" aria-label="Info page">
     <div class="info-label__eyebrow" id="time-lived-display" style="letter-spacing: 0.05em; font-size: 11px; font-family: 'Syne', sans-serif; font-variant-numeric: tabular-nums; text-transform: none;">NguyenDevs &middot; calculating...</div>
@@ -348,6 +329,7 @@
   <!-- Three.js + particle background (info.html only) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="assets/js/threejs-bg.js"></script>
+  <script src="assets/js/endsky-bg.js"></script>
 
   <script>
     function updateLivedTime() {
