@@ -599,15 +599,26 @@
 
     
     let t = 0; const _q = new THREE.Quaternion();
+      let lastDispatchedZoom = zoom;
+      let lastDispatchedQ = { x: 0, y: 0, z: 0, w: 1 };
+      function quatChanged(a, b) {
+          return Math.abs(a.x-b.x)>0.0001 || Math.abs(a.y-b.y)>0.0001 ||
+              Math.abs(a.z-b.z)>0.0001 || Math.abs(a.w-b.w)>0.0001;
+      }
 
     function animate() {
       window._threejsRafId = requestAnimationFrame(animate);
       t += 0.01;
 
-      window.dispatchEvent(new CustomEvent('threejs-camera', { detail: {
-        zoom: zoom,
-        quaternion: { x: rotQ.x, y: rotQ.y, z: rotQ.z, w: rotQ.w }
-      }}));
+        if (Math.abs(zoom - lastDispatchedZoom) > 0.01 || quatChanged(rotQ, lastDispatchedQ)) {
+            window.dispatchEvent(new CustomEvent('threejs-camera', { detail: {
+                    zoom: zoom,
+                    quaternion: { x: rotQ.x, y: rotQ.y, z: rotQ.z, w: rotQ.w },
+                    dragging: drag.active
+                }}));
+            lastDispatchedZoom = zoom;
+            lastDispatchedQ = { x: rotQ.x, y: rotQ.y, z: rotQ.z, w: rotQ.w };
+        }
 
       camera.position.z += (zoom - camera.position.z) * 0.05;
       const currentZf = Math.max(0, Math.min(1, (35 - camera.position.z) / 27));

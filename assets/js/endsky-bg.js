@@ -124,6 +124,7 @@
     const uRot = gl.getUniformLocation(prog, 'uRot');
     const uZoom = gl.getUniformLocation(prog, 'uZoom');
     let targetQ = { x: 0, y: 0, z: 0, w: 1 };
+    let isDragging = false;
     let currentQ = { x: 0, y: 0, z: 0, w: 1 };
     let targetZoom = 22;
     let currentZoom = 22;
@@ -134,6 +135,7 @@
             targetQ = { x: -d.quaternion.x, y: -d.quaternion.y, z: -d.quaternion.z, w: d.quaternion.w };
         }
         if (d.zoom !== undefined) targetZoom = d.zoom;
+        if (d.dragging !== undefined) isDragging = d.dragging;
     });
 
     function lerpQ(curr, target, t) {
@@ -176,8 +178,9 @@
 
     function render() {
         window._endskyRafId = requestAnimationFrame(render);
-        currentZoom += (targetZoom - currentZoom) * 0.03;
-        currentQ = lerpQ(currentQ, targetQ, 0.03);
+        const lerpFactor = isDragging ? 0.15 : 0.03;
+        currentZoom += (targetZoom - currentZoom) * lerpFactor;
+        currentQ = lerpQ(currentQ, targetQ, lerpFactor);
 
         const b = quatToBasis(currentQ);
         const zoomScale = 1.0 + (currentZoom - 22) * 0.005;
