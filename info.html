@@ -195,10 +195,13 @@
 </head>
 <body>
 
-  <!-- Minimal floating label -->
-  <div class="info-label" aria-label="Info page">
-    <div class="info-label__eyebrow" id="time-lived-display" style="letter-spacing: 0.05em; font-size: 11px; font-family: 'Syne', sans-serif; font-variant-numeric: tabular-nums; text-transform: none;">NguyenDevs &middot; calculating...</div>
-    <h1 class="info-label__title">INFO</h1>
+  <!-- SPA content wrapper for info page -->
+  <div class="coming-soon">
+    <!-- Minimal floating label -->
+    <div class="info-label" aria-label="Info page">
+      <div class="info-label__eyebrow" id="time-lived-display" style="letter-spacing: 0.05em; font-size: 11px; font-family: 'Syne', sans-serif; font-variant-numeric: tabular-nums; text-transform: none;">NguyenDevs &middot; calculating...</div>
+      <h1 class="info-label__title">INFO</h1>
+    </div>
   </div>
 
   <!-- ── Music Player ── -->
@@ -370,7 +373,7 @@
           display.innerHTML = `NguyenDevs has lived for ${years} years, ${months} months, ${days} days, ${hours} hours, ${minutes} minutes and ${seconds} seconds.`;
       }
     }
-    setInterval(updateLivedTime, 1000);
+    window._livedTimeInterval = setInterval(updateLivedTime, 1000);
     updateLivedTime();
   </script>
 

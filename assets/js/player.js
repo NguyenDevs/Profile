@@ -1,10 +1,12 @@
 let playlist = [
-  { name: "Memory Reboot", artist: "VØJ x Narvent", file: "VØJ x Narvent - Memory Reboot.mp3" },
-  { name: "Lost Road", artist: "Aurenth x Knonzzz", file: "Aurenth x Knonzzz - Lost Road.mp3" },
   { name: "Comfort Chain", artist: "Instupendo", file: "Instupendo - Comfort Chain.mp3" },
   { name: "Skins 2", artist: "KREZUS, Surreal_dvd", file: "KREZUS, Surreal_dvd - Skins 2.mp3" },
   { name: "Time To Pretend", artist: "Lazer Boomerang", file: "Lazer Boomerang - Time To Pretend.mp3" },
-  { name: "Interlinked", artist: "Lonely Lies, GOLDKID", file: "Lonely Lies, GOLDKID - Interlinked.mp3" }
+  { name: "Interlinked", artist: "Lonely Lies, GOLDKID", file: "Lonely Lies, GOLDKID - Interlinked.mp3" },
+  { name: "Deep Focus for Study", artist: "Relaxing Medieval", file: "Relaxing Medieval - Deep Focus for Study.mp3" },
+  { name: "Deep Healing Relaxing Music", artist: "Tranquility", file: "Tranquility - Deep Healing Relaxing Music.mp3" },
+  { name: "Study Ambience", artist: "Valley of Dreams", file: "Valley of Dreams - Study Ambience.mp3" },
+  { name: "Memory Reboot", artist: "VØJ x Narvent", file: "VØJ x Narvent - Memory Reboot.mp3" }
 ];
 
 let currentTrackIndex = 0;
@@ -142,9 +144,21 @@ function setupPlaylist(isInitialLoad) {
   const hasSource = music.src && music.src !== '' && music.src !== window.location.href;
   if (isInitialLoad || !hasSource) {
     const savedTrack = localStorage.getItem('music_track_index');
-    if (savedTrack !== null) {
+    const savedFile = localStorage.getItem('music_track_file');
+    if (savedFile !== null) {
+      const fileIndex = playlist.findIndex(t => t.file === savedFile);
+      if (fileIndex !== -1) {
+        currentTrackIndex = fileIndex;
+      } else if (savedTrack !== null) {
+        currentTrackIndex = parseInt(savedTrack, 10);
+        if (currentTrackIndex >= playlist.length) currentTrackIndex = 0;
+      }
+    } else if (savedTrack !== null) {
       currentTrackIndex = parseInt(savedTrack, 10);
       if (currentTrackIndex >= playlist.length) currentTrackIndex = 0;
+    } else {
+      const defaultIndex = playlist.findIndex(t => t.file === 'Relaxing Medieval - Deep Focus for Study.mp3');
+      currentTrackIndex = defaultIndex !== -1 ? defaultIndex : 0;
     }
     loadTrack(currentTrackIndex);
 
@@ -180,6 +194,7 @@ function loadTrack(index) {
   localStorage.setItem('music_track_index', index);
   const track = playlist[index];
   if (!track) return;
+  localStorage.setItem('music_track_file', track.file);
 
   const newSrc = `assets/music/${track.file}`;
   const currentFile = music.src.split('/').pop();

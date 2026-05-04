@@ -101,6 +101,18 @@ export function loadPage(url, push) {
         history.pushState(null, '', displayUrl);
       }
 
+      // Cleanup previous page specific elements (info.html backgrounds, intervals, etc.)
+      if (window._livedTimeInterval) {
+        clearInterval(window._livedTimeInterval);
+        window._livedTimeInterval = null;
+      }
+      document.querySelectorAll('#threejs-canvas, #endsky-canvas, #speed-slider-container').forEach(el => el.remove());
+      document.querySelectorAll('style').forEach(s => {
+        if (s.textContent && s.textContent.includes('#speed-slider-container')) s.remove();
+      });
+      document.body.style.background = '';
+      document.body.style.overflow = '';
+
       if (content) {
         content.parentElement.replaceChild(newContent, content);
         newContent.style.opacity = '0';
@@ -111,6 +123,33 @@ export function loadPage(url, push) {
       } else {
         window.location.href = url;
         return;
+      }
+
+      // Execute non-module scripts from the fetched page
+      const scripts = doc.querySelectorAll('script');
+      scripts.forEach(script => {
+        if (script.type === 'module') return;
+        const src = script.getAttribute('src');
+        if (src) {
+          if (src.includes('main.js')) return;
+          const exists = Array.from(document.scripts).some(s => s.getAttribute('src') === src);
+          if (exists) return;
+          const s = document.createElement('script');
+          s.src = src;
+          if (script.type) s.type = script.type;
+          document.body.appendChild(s);
+        } else {
+          const s = document.createElement('script');
+          s.textContent = script.textContent;
+          document.body.appendChild(s);
+          s.remove();
+        }
+      });
+
+      // Apply info.html specific body styles
+      if (doc.querySelector('.info-label')) {
+        document.body.style.background = '#08080e';
+        document.body.style.overflow = 'hidden';
       }
 
       if (newContent.classList.contains('projects-grid') || newContent.querySelector('.projects-grid')) {

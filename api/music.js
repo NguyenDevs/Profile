@@ -14,7 +14,7 @@ export default function handler(req, res) {
       });
     }
 
-    const files = fs.readdirSync(musicDir);
+    const files = fs.readdirSync(musicDir).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
     
     // Filter for .mp3 files
     const musicFiles = files
