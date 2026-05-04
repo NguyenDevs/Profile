@@ -748,8 +748,6 @@
       rings.forEach((r, i) => {
           const ringSpeed = r.speed * (1 + zf * 3.0) * (0.2 + 0.8 * ringIntro) * speedBoost * manualSpeedFactor;
           r.obj.rotateOnAxis(r.axis, ringSpeed);
-          
-          // Whole-ring tumble rotation (rotating "around themselves" on multiple axes)
           r.obj.rotateX(0.002 * manualSpeedFactor * ringIntro);
           r.obj.rotateZ(0.001 * manualSpeedFactor * ringIntro);
           

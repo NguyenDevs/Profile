@@ -123,8 +123,6 @@
     const uResolution = gl.getUniformLocation(prog, 'uResolution');
     const uRot = gl.getUniformLocation(prog, 'uRot');
     const uZoom = gl.getUniformLocation(prog, 'uZoom');
-
-    // Smooth state — follows Three.js scene with lag for a slower, smoother feel
     let targetQ = { x: 0, y: 0, z: 0, w: 1 };
     let currentQ = { x: 0, y: 0, z: 0, w: 1 };
     let targetZoom = 22;
@@ -133,8 +131,6 @@
     window.addEventListener('threejs-camera', e => {
         const d = e.detail;
         if (d.quaternion) {
-            // Conjugate (inverse) because mainGroup rotation is the object spinning,
-            // which is equivalent to the camera orbiting in the opposite direction.
             targetQ = { x: -d.quaternion.x, y: -d.quaternion.y, z: -d.quaternion.z, w: d.quaternion.w };
         }
         if (d.zoom !== undefined) targetZoom = d.zoom;
@@ -180,8 +176,6 @@
 
     function render() {
         requestAnimationFrame(render);
-
-        // Smooth interpolation — slower and smoother following
         currentZoom += (targetZoom - currentZoom) * 0.03;
         currentQ = lerpQ(currentQ, targetQ, 0.03);
 
