@@ -178,7 +178,7 @@
 
     function render() {
         window._endskyRafId = requestAnimationFrame(render);
-        const lerpFactor = isDragging ? 0.15 : 0.03;
+        const lerpFactor = isDragging ? 0.08 : 0.01;
         currentZoom += (targetZoom - currentZoom) * lerpFactor;
         currentQ = lerpQ(currentQ, targetQ, lerpFactor);
 
