@@ -512,7 +512,7 @@
             appearance: none; width: 250px; height: 2px; 
             background: rgba(204,0,255,0.2);
             outline: none; cursor: crosshair; transform: rotate(-90deg);
-            position: relative; z-index: 5;
+            position: relative; z-index: 5; padding: 0; margin: 0;
         }
         #speed-slider::-webkit-slider-thumb {
             -webkit-appearance: none; width: 14px; height: 14px; 
@@ -534,9 +534,9 @@
             transform: translateY(-50%);
         }
         .slider-marker span {
-            position: absolute; right: -32px; top: 50%; transform: translateY(-50%) rotate(90deg);
+            position: absolute; left: 12px; top: 50%; transform: translateY(-50%) rotate(90deg);
             font-size: 10px; font-weight: bold; color: rgba(255,255,255,0.4);
-            width: 25px; text-align: left;
+            width: 25px; text-align: left; white-space: nowrap;
         }
 
         body.playlist-is-expanded #speed-slider-container,
@@ -559,8 +559,8 @@
             #speed-slider { width: 100% !important; transform: rotate(0deg) !important; height: 3px !important; }
             #speed-marker-track { 
                 position: absolute; transform: rotate(0deg); 
-                width: calc(100% - 100px); 
-                height: 1px; left: 50px; bottom: 12px;
+                width: calc(100% - 24px); 
+                height: 1px; left: 12px; bottom: 12px;
             }
             .slider-marker { height: 4px; background: rgba(255,255,255,0.5); }
             .slider-marker span { display: none !important; }
