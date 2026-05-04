@@ -3,6 +3,7 @@
   'use strict';
 
   function boot() {
+    console.log('[ThreeJS] boot() called, THREE defined?', typeof THREE !== 'undefined');
     if (typeof THREE === 'undefined') { setTimeout(boot, 50); return; }
     init();
   }
@@ -13,7 +14,7 @@
   }
 
   function init() {
-    
+    console.log('[ThreeJS] init() starting');
     const canvas = document.createElement('canvas');
     canvas.id = 'threejs-canvas';
     Object.assign(canvas.style, {
@@ -22,7 +23,8 @@
       transition: 'opacity 2s ease', cursor: 'grab', background: 'transparent',
     });
     document.body.insertBefore(canvas, document.body.firstChild);
-    requestAnimationFrame(() => canvas.style.opacity = '1');
+    console.log('[ThreeJS] Canvas inserted at firstChild, body children:', document.body.children.length);
+    requestAnimationFrame(() => { canvas.style.opacity = '1'; console.log('[ThreeJS] Canvas opacity set to 1'); });
 
     
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
