@@ -458,7 +458,7 @@
     const sliderContainer = document.createElement('div');
     sliderContainer.id = 'speed-slider-container';
     Object.assign(sliderContainer.style, {
-        position: 'fixed', right: '40px', top: '50%', transform: 'translateY(-50%)',
+        position: 'fixed', right: '15px', top: '50%', transform: 'translateY(-50%)',
         width: '60px', height: '350px', zIndex: '1000', display: 'flex',
         flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)'
@@ -534,9 +534,9 @@
             transform: translateY(-50%);
         }
         .slider-marker span {
-            position: absolute; left: -32px; top: 50%; transform: translateY(-50%) rotate(90deg);
+            position: absolute; right: -32px; top: 50%; transform: translateY(-50%) rotate(90deg);
             font-size: 10px; font-weight: bold; color: rgba(255,255,255,0.4);
-            width: 25px; text-align: right;
+            width: 25px; text-align: left;
         }
 
         body.playlist-is-expanded #speed-slider-container,
@@ -563,10 +563,7 @@
                 height: 1px; left: 50px; bottom: 12px;
             }
             .slider-marker { height: 4px; background: rgba(255,255,255,0.5); }
-            .slider-marker span {
-                right: auto; left: 50%; top: -15px; transform: translateX(-50%);
-                text-align: center; font-size: 9px;
-            }
+            .slider-marker span { display: none !important; }
             body.mobile-player-expanded #speed-slider-container {
                 transform: translateX(-50%) translateY(40px) !important; opacity: 0 !important;
             }
