@@ -147,7 +147,6 @@ export function loadPage(url, push) {
       });
       document.querySelectorAll('script[src*="threejs-bg.js"], script[src*="endsky-bg.js"], script[src*="three.min.js"]').forEach(s => s.remove());
 
-      // Restore index page backgrounds when leaving info.html
       const gradientBg = document.querySelector('.gradient-bg');
       const bgNoise = document.querySelector('.bg-noise');
       if (gradientBg) {
@@ -198,16 +197,26 @@ export function loadPage(url, push) {
       });
 
       // Apply info.html specific body styles and hide index backgrounds
-      const isInfoPage = !!doc.querySelector('.info-label');
-      console.log('[SPA] Is info page?', isInfoPage);
+      const isInfoPage = url.includes('/info');
+
       if (isInfoPage) {
         document.body.style.background = '#08080e';
         document.body.style.overflow = 'hidden';
-        const gradientBg = document.querySelector('.gradient-bg');
-        const bgNoise = document.querySelector('.bg-noise');
-        console.log('[SPA] gradient-bg found:', !!gradientBg, '| bg-noise found:', !!bgNoise);
-        if (gradientBg) { gradientBg.style.display = 'none'; console.log('[SPA] Hid gradient-bg'); }
-        if (bgNoise) { bgNoise.style.display = 'none'; console.log('[SPA] Hid bg-noise'); }
+
+        if (gradientBg) gradientBg.style.display = 'none';
+        if (bgNoise) bgNoise.style.display = 'none';
+      } else {
+        document.body.style.background = '';
+        document.body.style.overflow = '';
+
+        if (gradientBg) {
+          gradientBg.style.display = '';
+          gradientBg.style.visibility = 'visible';
+        }
+        if (bgNoise) {
+          bgNoise.style.display = '';
+          bgNoise.style.visibility = 'visible';
+        }
       }
 
       if (newContent.classList.contains('projects-grid') || newContent.querySelector('.projects-grid')) {
