@@ -752,9 +752,9 @@
           const ringSpeed = r.speed * (1 + zf * 3.0) * (0.2 + 0.8 * ringIntro) * speedBoost * manualSpeedFactor;
           r.obj.rotateOnAxis(r.axis, ringSpeed);
           
-          r.fragments.forEach(f => {
-              f.mesh.rotateOnAxis(f.axis, f.speed * manualSpeedFactor * ringIntro);
-          });
+          // Whole-ring tumble rotation (rotating "around themselves" on multiple axes)
+          r.obj.rotateX(0.002 * manualSpeedFactor * ringIntro);
+          r.obj.rotateZ(0.001 * manualSpeedFactor * ringIntro);
           
           r.obj.scale.setScalar((1 + zf * (0.15 + i * 0.08)) * ringIntro);
       });
