@@ -227,6 +227,7 @@
     
     function createFragmentedRing(innerR, outerR, depth, fragmentsCount, rotSpeed, axis, hiddenIndices = null) {
       const group = new THREE.Group();
+      const fragments = [];
       
       const stoneMat = new THREE.MeshPhysicalMaterial({
         color: 0x1a0b3a, 
@@ -287,9 +288,15 @@
         mesh.castShadow = true;
         mesh.receiveShadow = true; 
         group.add(mesh);
+        
+        fragments.push({
+            mesh,
+            axis: new THREE.Vector3(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5).normalize(),
+            speed: 0.01 + Math.random() * 0.02
+        });
       }
 
-      return { obj: group, axis: axis.normalize(), speed: rotSpeed };
+      return { obj: group, axis: axis.normalize(), speed: rotSpeed, fragments };
     }
 
     function getSkipIndices(count, probs) {
@@ -495,7 +502,7 @@
         }
         #speed-slider-container button {
             display: none; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
-            color: var(--accent3, #cc00ff); width: 34px; height: 34px; border-radius: 50%;
+            color: var(--accent3, #cc00ff); width: 27.6px; height: 27.6px; border-radius: 50%;
             align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;
             flex-shrink: 0; padding: 0; outline: none; z-index: 10;
         }
@@ -527,9 +534,9 @@
             transform: translateY(-50%);
         }
         .slider-marker span {
-            position: absolute; right: -30px; top: 50%; transform: translateY(-50%) rotate(90deg);
+            position: absolute; left: -32px; top: 50%; transform: translateY(-50%) rotate(90deg);
             font-size: 10px; font-weight: bold; color: rgba(255,255,255,0.4);
-            width: 25px; text-align: left;
+            width: 25px; text-align: right;
         }
 
         body.playlist-is-expanded #speed-slider-container,
@@ -548,11 +555,11 @@
                 border-radius: 18px; padding: 0 12px; border: 1px solid rgba(255,255,255,0.1);
                 gap: 12px;
             }
-            #speed-slider-container button { display: flex; }
+            #speed-slider-container button { display: flex; width: 27.6px !important; height: 27.6px !important; }
             #speed-slider { width: 100% !important; transform: rotate(0deg) !important; height: 3px !important; }
             #speed-marker-track { 
                 position: absolute; transform: rotate(0deg); 
-                width: calc(100% - 100px); /* Adjust to match slider track */
+                width: calc(100% - 100px); 
                 height: 1px; left: 50px; bottom: 12px;
             }
             .slider-marker { height: 4px; background: rgba(255,255,255,0.5); }
@@ -570,7 +577,6 @@
     document.body.appendChild(sliderContainer);
 
     function updateMarkerPos() {
-        const isMobile = window.innerWidth <= 768;
         markers.forEach((m, i) => {
             const div = markerTrack.children[i];
             if (div) {
@@ -743,7 +749,13 @@
       });
 
       rings.forEach((r, i) => {
-          r.obj.rotateOnAxis(r.axis, r.speed * (1 + zf * 3.0) * (0.2 + 0.8 * ringIntro) * speedBoost * manualSpeedFactor);
+          const ringSpeed = r.speed * (1 + zf * 3.0) * (0.2 + 0.8 * ringIntro) * speedBoost * manualSpeedFactor;
+          r.obj.rotateOnAxis(r.axis, ringSpeed);
+          
+          r.fragments.forEach(f => {
+              f.mesh.rotateOnAxis(f.axis, f.speed * manualSpeedFactor * ringIntro);
+          });
+          
           r.obj.scale.setScalar((1 + zf * (0.15 + i * 0.08)) * ringIntro);
       });
 
