@@ -43,8 +43,19 @@ export function initRouting() {
 }
 
 export function loadPage(url, push) {
-  if (isTransitioning) return;
-  isTransitioning = true;
+    if (isTransitioning) return;
+
+    // Map clean URL → file thực
+    let fetchUrl = url;
+    if (!url.endsWith('.html')) {
+        if (url.endsWith('/')) {
+            fetchUrl = url + 'index.html';
+        } else {
+            fetchUrl = url + '.html';
+        }
+    }
+
+    isTransitioning = true;
 
   const music = document.getElementById('bg-music');
   const wasPlaying = music ? !music.paused : false;
@@ -71,7 +82,7 @@ export function loadPage(url, push) {
   const content = document.querySelector('.wrapper') || document.querySelector('.projects-container') || document.querySelector('.coming-soon');
   if (content) content.style.opacity = '0';
 
-  fetch(url)
+    fetch(fetchUrl)
     .then(res => res.text())
     .then(html => {
       const parser = new DOMParser();
@@ -105,9 +116,9 @@ export function loadPage(url, push) {
 
       if (push) {
         // Normalize URL for history: replace /index.html with /
-          const displayUrl = url
-              .replace(/\/index\.html$/, '/')
-              .replace(/\.html$/, '');
+        const displayUrl = url
+          .replace(/\/index\.html$/, '/')
+          .replace(/\.html$/, '');
         history.pushState(null, '', displayUrl);
       }
 
