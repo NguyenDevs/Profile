@@ -177,39 +177,40 @@
     window.addEventListener('resize', resize);
     resize();
 
+    function scaleQ(q, s) {
+        let h = Math.acos(Math.max(-1, Math.min(1, q.w)));
+        if (Math.abs(h) < 1e-6) return { x: 0, y: 0, z: 0, w: 1 };
+        let sn = Math.sin(h);
+        if (Math.abs(sn) < 1e-6) return { x: 0, y: 0, z: 0, w: 1 };
+        let r = Math.sin(h * s) / sn;
+        return { x: q.x * r, y: q.y * r, z: q.z * r, w: Math.cos(h * s) };
+    }
+
     function render() {
         window._endskyRafId = requestAnimationFrame(render);
-        
         const srcQ = window._threejsRotQ;
         if (srcQ) {
             if (!lastSrcQ) {
                 lastSrcQ = { x: srcQ.x, y: srcQ.y, z: srcQ.z, w: srcQ.w };
             }
-
             let curQ = { x: srcQ.x, y: srcQ.y, z: srcQ.z, w: srcQ.w };
-            let dot = curQ.x * lastSrcQ.x + curQ.y * lastSrcQ.y + curQ.z * lastSrcQ.z + curQ.w * lastSrcQ.w;
-            if (dot < 0) {
-                curQ.x = -curQ.x; curQ.y = -curQ.y; curQ.z = -curQ.z; curQ.w = -curQ.w;
-            }
-
-            const invLast = { x: -lastSrcQ.x, y: -lastSrcQ.y, z: -lastSrcQ.z, w: lastSrcQ.w };
-            let dq = multiplyQ(curQ, invLast);
+            let d = curQ.x * lastSrcQ.x + curQ.y * lastSrcQ.y + curQ.z * lastSrcQ.z + curQ.w * lastSrcQ.w;
+            if (d < 0) { curQ.x = -curQ.x; curQ.y = -curQ.y; curQ.z = -curQ.z; curQ.w = -curQ.w; }
             
-            const invDq = { x: -dq.x, y: -dq.y, z: -dq.z, w: dq.w };
-            const dqScaled = lerpQ({ x: 0, y: 0, z: 0, w: 1 }, invDq, 0.6);
-
-            accumulatedQ = multiplyQ(dqScaled, accumulatedQ);
-            const len = Math.sqrt(accumulatedQ.x**2 + accumulatedQ.y**2 + accumulatedQ.z**2 + accumulatedQ.w**2);
-            accumulatedQ.x /= len; accumulatedQ.y /= len; accumulatedQ.z /= len; accumulatedQ.w /= len;
-
+            let invL = { x: -lastSrcQ.x, y: -lastSrcQ.y, z: -lastSrcQ.z, w: lastSrcQ.w };
+            let dq = multiplyQ(curQ, invL);
+            let dqS = scaleQ({ x: -dq.x, y: -dq.y, z: -dq.z, w: dq.w }, 0.6);
+            
+            accumulatedQ = multiplyQ(dqS, accumulatedQ);
+            let ln = Math.sqrt(accumulatedQ.x**2 + accumulatedQ.y**2 + accumulatedQ.z**2 + accumulatedQ.w**2);
+            accumulatedQ.x /= ln; accumulatedQ.y /= ln; accumulatedQ.z /= ln; accumulatedQ.w /= ln;
+            
             targetQ = accumulatedQ;
             lastSrcQ = curQ;
         }
 
-        const lerpFactor = 0.05; 
-        currentZoom += (targetZoom - currentZoom) * lerpFactor;
-        currentQ = lerpQ(currentQ, targetQ, 0.04);
-
+        currentZoom += (targetZoom - currentZoom) * 0.05;
+        currentQ = lerpQ(currentQ, targetQ, 0.15);
         const b = quatToBasis(currentQ);
         const zoomScale = 1.0 + (currentZoom - 22) * 0.005;
 
