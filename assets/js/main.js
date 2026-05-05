@@ -4,7 +4,6 @@ import { initDynamicBackground } from './background.js';
 import { initMusicPlayer, syncPlayerElements, updateUI } from './player.js';
 import { initNavigation, initProjectSlider, updateNavActiveState } from './ui.js';
 
-// Initialize music player early to start loading
 initMusicPlayer();
 initNavigation();
 
@@ -30,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.addEventListener('resize', detectMobile);
 
-// Optionally expose some functions for debugging in console if needed
 window.app = {
   syncPlayerElements,
   updateUI,

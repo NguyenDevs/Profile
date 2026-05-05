@@ -34,7 +34,6 @@ export function initMusicPlayer() {
       setupPlaylist();
     });
 
-  // Attach event listeners
   document.addEventListener('click', handleGlobalClick);
   document.addEventListener('input', handleGlobalInput);
   
@@ -467,6 +466,5 @@ function handleGlobalInput(e) {
   }
 }
 
-// Expose some functions to window for the router and global access
 window.updateUI = updateUI;
 window.syncPlayerElements = syncPlayerElements;

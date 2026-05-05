@@ -456,7 +456,10 @@
         }
     });
 
-    
+    if (document.getElementById('speed-slider-container')) {
+        document.getElementById('speed-slider-container').remove();
+    }
+
     const sliderContainer = document.createElement('div');
     sliderContainer.id = 'speed-slider-container';
     Object.assign(sliderContainer.style, {
@@ -565,6 +568,7 @@
             }
         }
     `;
+    style.dataset.spaInjected = '1';
     document.head.appendChild(style);
 
     document.body.appendChild(sliderContainer);

@@ -1,8 +1,6 @@
-/**
- * tiktok.js — fetch TikTok stats và hiển thị dạng rút gọn (K, M).
- */
-
 const STATS_URL = '/api/tiktok-stats';
+const CACHE_KEY = 'tt_stats_cache';
+const CACHE_TTL = 30 * 60 * 1000; // 30 phút
 
 function formatShort(num) {
   if (!num || isNaN(num)) return '0';
@@ -17,15 +15,40 @@ export function fetchTikTokStats() {
   const likesEl    = document.getElementById('tt-likes');
 
   if (!followerEl || !likesEl) return;
+  const cached = localStorage.getItem(CACHE_KEY);
+  if (cached) {
+    try {
+      const { followers, likes, timestamp } = JSON.parse(cached);
+      followerEl.textContent = formatShort(followers);
+      likesEl.textContent    = formatShort(likes);
 
+      if (Date.now() - timestamp < CACHE_TTL) {
+      }
+    } catch (e) {
+      console.warn('[TikTok] Cache error:', e);
+    }
+  }
   fetch(STATS_URL)
     .then(res => res.json())
     .then(data => {
-      followerEl.textContent = formatShort(data.followers_raw || 0);
-      likesEl.textContent    = formatShort(data.likes_raw     || 0);
+      const followers = data.followers_raw || 0;
+      const likes = data.likes_raw || 0;
+
+      followerEl.textContent = formatShort(followers);
+      likesEl.textContent    = formatShort(likes);
+
+      localStorage.setItem(CACHE_KEY, JSON.stringify({
+        followers,
+        likes,
+        timestamp: Date.now()
+      }));
     })
-    .catch(() => {
-      followerEl.textContent = '110.6K';
-      likesEl.textContent    = '3.8M';
+    .catch(err => {
+      console.warn('[TikTok] Fetch error:', err);
+      if (followerEl.textContent === '' || followerEl.textContent === '0') {
+        followerEl.textContent = '110.6K';
+        likesEl.textContent    = '3.8M';
+      }
     });
 }
+

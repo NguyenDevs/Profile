@@ -10,7 +10,6 @@ const CORS_HEADERS = {
   'Content-Type': 'application/json',
 };
 
-// Fallback khi scrape thất bại
 const FALLBACK = {
   followers_raw: 111111,
   likes_raw: 3900000,
@@ -23,8 +22,6 @@ export default async function handler(request) {
   }
 
   try {
-    // TikTok server-side renders user stats vào thẻ
-    // <script id="__UNIVERSAL_DATA_FOR_REHYDRATION__" type="application/json">
     const res = await fetch(TIKTOK_PROFILE_URL, {
       headers: {
         'User-Agent':
@@ -41,7 +38,6 @@ export default async function handler(request) {
 
     const html = await res.text();
 
-    // ── Phương pháp 1: parse JSON từ script rehydration ──────────────────
     let followersRaw = 0;
     let likesRaw = 0;
 
@@ -53,7 +49,6 @@ export default async function handler(request) {
       try {
         const json = JSON.parse(scriptMatch[1]);
 
-        // Duyệt đệ quy để tìm stats
         const stats = deepFind(json, (obj) =>
           obj && typeof obj === 'object' &&
           ('followerCount' in obj || 'fans' in obj)
@@ -64,11 +59,9 @@ export default async function handler(request) {
           likesRaw     = stats.heartCount ?? stats.heart ?? stats.diggCount ?? 0;
         }
       } catch (_) {
-        // JSON parse lỗi → thử regex fallback
       }
     }
 
-    // ── Phương pháp 2: regex trực tiếp trên HTML nếu P1 thất bại ─────────
     if (!followersRaw) {
       const fMatch = html.match(/"followerCount"\s*:\s*(\d+)/);
       if (fMatch) followersRaw = parseInt(fMatch[1], 10);
@@ -78,7 +71,6 @@ export default async function handler(request) {
       if (lMatch) likesRaw = parseInt(lMatch[1], 10);
     }
 
-    // ── Phương pháp 3: parse từ SIGI_STATE (cấu trúc cũ hơn) ────────────
     if (!followersRaw) {
       const sigiMatch = html.match(/window\['SIGI_STATE'\]\s*=\s*({[\s\S]*?});\s*window/);
       if (sigiMatch) {

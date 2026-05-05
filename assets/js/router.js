@@ -1,10 +1,9 @@
+import { fetchTikTokStats } from './tiktok.js';
 import { initProjectSlider, updateNavActiveState } from './ui.js';
 import { updateUI, syncPlayerElements } from './player.js';
 
 let isTransitioning = false;
 let currentFetchController = null;
-
-// ─── Helpers ───────────────────────────────────────────────────────────────
 
 function normalizeUrl(url) {
   return url
@@ -23,11 +22,8 @@ function isSameUrl(a, b) {
 }
 
 function isInfoPage(url) {
-  // Chỉ match đúng /info hoặc /info/ — không match /info-page hay /portfolio-info
   return /\/info\/?$/.test(normalizeUrl(url));
 }
-
-// ─── Cleanup helpers ───────────────────────────────────────────────────────
 
 function cleanupPageSpecificResources() {
   if (window._livedTimeInterval) {
@@ -50,10 +46,8 @@ function cleanupPageSpecificResources() {
   document.querySelectorAll('script[src*="threejs-bg.js"], script[src*="endsky-bg.js"], script[src*="three.min.js"]')
       .forEach(s => s.remove());
 
-  // Xóa injected styles từ trang trước
   document.querySelectorAll('style[data-spa-injected]').forEach(s => s.remove());
 
-  // Xóa injected external scripts từ trang trước
   document.querySelectorAll('script[data-spa-injected]').forEach(s => s.remove());
 }
 
@@ -74,7 +68,6 @@ function applyPageBodyStyles(url) {
   }
 }
 
-// ─── Script injection ──────────────────────────────────────────────────────
 
 function injectScripts(doc) {
   doc.querySelectorAll('script').forEach(script => {
@@ -86,11 +79,10 @@ function injectScripts(doc) {
       const s = document.createElement('script');
       s.src = src;
       s.async = false;
-      s.dataset.spaInjected = '1'; // ← đánh dấu để cleanup sau
+      s.dataset.spaInjected = '1';
       if (script.type) s.type = script.type;
       document.body.appendChild(s);
     } else {
-      // Inline script: tạo, chạy, xóa
       const s = document.createElement('script');
       s.textContent = script.textContent;
       document.body.appendChild(s);
@@ -100,7 +92,6 @@ function injectScripts(doc) {
 }
 
 function injectStyles(doc) {
-  // Stylesheet links
   doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
     const href = link.getAttribute('href');
     if (!document.querySelector(`link[href="${href}"]`)) {
@@ -112,16 +103,13 @@ function injectStyles(doc) {
     }
   });
 
-  // Inline styles
   doc.querySelectorAll('style').forEach(style => {
     const s = document.createElement('style');
     s.textContent = style.textContent;
-    s.dataset.spaInjected = '1'; // ← đánh dấu để cleanup sau
+    s.dataset.spaInjected = '1';
     document.head.appendChild(s);
   });
 }
-
-// ─── Loader ────────────────────────────────────────────────────────────────
 
 function getOrCreateLoader() {
   let loader = document.getElementById('page-loader');
@@ -150,15 +138,11 @@ function hideLoader(loader) {
   }, 500);
 }
 
-// ─── Music helpers ─────────────────────────────────────────────────────────
-
 function saveMusicState(music) {
   if (!music) return;
   localStorage.setItem('music_current_time', music.currentTime);
   localStorage.setItem('music_paused', music.paused);
 }
-
-// ─── Core ──────────────────────────────────────────────────────────────────
 
 export function initRouting() {
   window.addEventListener('popstate', () => {
@@ -199,8 +183,6 @@ export function initRouting() {
 
 export function loadPage(url, push) {
   if (isTransitioning) return;
-
-  // Abort pending fetch nếu có
   if (currentFetchController) {
     currentFetchController.abort();
   }
@@ -214,8 +196,6 @@ export function loadPage(url, push) {
 
   const loader = getOrCreateLoader();
   showLoader(loader);
-
-  // Capture content ref sau khi DOM ổn định (trước fetch)
   const content = document.querySelector('.wrapper')
       || document.querySelector('.projects-container')
       || document.querySelector('.coming-soon');
@@ -250,7 +230,6 @@ export function loadPage(url, push) {
         injectScripts(doc);
         applyPageBodyStyles(url);
 
-        // Swap content
         const liveContent = document.querySelector('.wrapper')
             || document.querySelector('.projects-container')
             || document.querySelector('.coming-soon');
@@ -262,14 +241,17 @@ export function loadPage(url, push) {
 
         liveContent.parentElement.replaceChild(newContent, liveContent);
         newContent.style.opacity = '0';
-        newContent.offsetHeight; // force reflow
+        newContent.offsetHeight;
         newContent.style.transition = 'opacity 0.4s ease';
         newContent.style.opacity = '1';
         window.scrollTo(0, 0);
 
-        // Post-swap setup
         if (newContent.classList.contains('projects-grid') || newContent.querySelector('.projects-grid')) {
           initProjectSlider();
+        }
+
+        if (newContent.querySelector('#tiktok-card')) {
+          fetchTikTokStats();
         }
 
         const mPlayer = document.getElementById('mobile-music-player');
