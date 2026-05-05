@@ -199,7 +199,7 @@
             
             let invL = { x: -lastSrcQ.x, y: -lastSrcQ.y, z: -lastSrcQ.z, w: lastSrcQ.w };
             let dq = multiplyQ(curQ, invL);
-            let dqS = scaleQ({ x: -dq.x, y: -dq.y, z: -dq.z, w: dq.w }, 0.6);
+            let dqS = scaleQ(dq, 0.4);
             
             accumulatedQ = multiplyQ(dqS, accumulatedQ);
             let ln = Math.sqrt(accumulatedQ.x**2 + accumulatedQ.y**2 + accumulatedQ.z**2 + accumulatedQ.w**2);
@@ -210,7 +210,7 @@
         }
 
         currentZoom += (targetZoom - currentZoom) * 0.05;
-        currentQ = lerpQ(currentQ, targetQ, 0.15);
+        currentQ = lerpQ(currentQ, targetQ, 0.05);
         const b = quatToBasis(currentQ);
         const zoomScale = 1.0 + (currentZoom - 22) * 0.005;
 
