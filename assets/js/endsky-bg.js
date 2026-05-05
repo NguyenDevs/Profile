@@ -180,7 +180,9 @@
         window._endskyRafId = requestAnimationFrame(render);
         const lerpFactor = isDragging ? 0.05 : 0.01;
         currentZoom += (targetZoom - currentZoom) * lerpFactor;
-        currentQ = lerpQ(currentQ, targetQ, lerpFactor);
+        
+        // Use direct sync for quaternion to avoid shortest-path flips and lag
+        currentQ = targetQ;
 
         const b = quatToBasis(currentQ);
         const zoomScale = 1.0 + (currentZoom - 22) * 0.005;

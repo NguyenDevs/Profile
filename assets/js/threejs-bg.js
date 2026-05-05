@@ -641,6 +641,7 @@
       }
 
       if (autoRotate) { _q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0.0015); rotQ.premultiply(_q); }
+      rotQ.normalize(); 
       mainGroup.quaternion.copy(rotQ);
 
       introProgress = Math.min(1, introProgress + 0.004);
