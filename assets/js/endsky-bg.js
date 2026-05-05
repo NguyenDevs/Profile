@@ -123,11 +123,21 @@
     const uResolution = gl.getUniformLocation(prog, 'uResolution');
     const uRot = gl.getUniformLocation(prog, 'uRot');
     const uZoom = gl.getUniformLocation(prog, 'uZoom');
+    let lastSrcQ = null;
+    let accumulatedQ = { x: 0, y: 0, z: 0, w: 1 };
     let targetQ = { x: 0, y: 0, z: 0, w: 1 };
-    let isDragging = false;
     let currentQ = { x: 0, y: 0, z: 0, w: 1 };
     let targetZoom = 22;
     let currentZoom = 22;
+
+    function multiplyQ(a, b) {
+        return {
+            x: a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
+            y: a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x,
+            z: a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w,
+            w: a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z
+        };
+    }
 
     function lerpQ(curr, target, t) {
         let dot = curr.x * target.x + curr.y * target.y + curr.z * target.z + curr.w * target.w;
@@ -172,9 +182,24 @@
         
         const srcQ = window._threejsRotQ;
         if (srcQ) {
-            const q = { x: -srcQ.x, y: -srcQ.y, z: -srcQ.z, w: srcQ.w };
-            const identity = { x: 0, y: 0, z: 0, w: 1 };
-            targetQ = lerpQ(identity, q, 0.6); 
+            if (!lastSrcQ) {
+                lastSrcQ = { x: srcQ.x, y: srcQ.y, z: srcQ.z, w: srcQ.w };
+            }
+
+            const invLast = { x: -lastSrcQ.x, y: -lastSrcQ.y, z: -lastSrcQ.z, w: lastSrcQ.w };
+            let dq = multiplyQ(srcQ, invLast);
+            
+            if (dq.w < 0) { dq.x = -dq.x; dq.y = -dq.y; dq.z = -dq.z; dq.w = -dq.w; }
+
+            const invDq = { x: -dq.x, y: -dq.y, z: -dq.z, w: dq.w };
+            const dqScaled = lerpQ({ x: 0, y: 0, z: 0, w: 1 }, invDq, 0.6);
+
+            accumulatedQ = multiplyQ(dqScaled, accumulatedQ);
+            const len = Math.sqrt(accumulatedQ.x**2 + accumulatedQ.y**2 + accumulatedQ.z**2 + accumulatedQ.w**2);
+            accumulatedQ.x /= len; accumulatedQ.y /= len; accumulatedQ.z /= len; accumulatedQ.w /= len;
+
+            targetQ = accumulatedQ;
+            lastSrcQ = { x: srcQ.x, y: srcQ.y, z: srcQ.z, w: srcQ.w };
         }
 
         const lerpFactor = 0.05; 
