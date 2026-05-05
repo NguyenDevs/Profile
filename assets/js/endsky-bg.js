@@ -132,7 +132,9 @@
     window.addEventListener('threejs-camera', e => {
         const d = e.detail;
         if (d.quaternion) {
-            targetQ = { x: -d.quaternion.x, y: -d.quaternion.y, z: -d.quaternion.z, w: d.quaternion.w };
+            const q = new THREE.Quaternion(-d.quaternion.x, -d.quaternion.y, -d.quaternion.z, d.quaternion.w);
+            const identity = new THREE.Quaternion();
+            identity.slerp(q, 0.6); 
         }
         if (d.zoom !== undefined) targetZoom = d.zoom;
         if (d.dragging !== undefined) isDragging = d.dragging;
@@ -180,9 +182,7 @@
         window._endskyRafId = requestAnimationFrame(render);
         const lerpFactor = isDragging ? 0.05 : 0.01;
         currentZoom += (targetZoom - currentZoom) * lerpFactor;
-        
-        // Use direct sync for quaternion to avoid shortest-path flips and lag
-        currentQ = targetQ;
+        currentQ = lerpQ(currentQ, targetQ, isDragging ? 0.03 : 0.015);
 
         const b = quatToBasis(currentQ);
         const zoomScale = 1.0 + (currentZoom - 22) * 0.005;
