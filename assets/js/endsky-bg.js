@@ -129,17 +129,6 @@
     let targetZoom = 22;
     let currentZoom = 22;
 
-    window.addEventListener('threejs-camera', e => {
-        const d = e.detail;
-        if (d.quaternion) {
-            const q = { x: -d.quaternion.x, y: -d.quaternion.y, z: -d.quaternion.z, w: d.quaternion.w };
-            const identity = { x: 0, y: 0, z: 0, w: 1 };
-            targetQ = lerpQ(identity, q, 0.6); 
-        }
-        if (d.zoom !== undefined) targetZoom = d.zoom;
-        if (d.dragging !== undefined) isDragging = d.dragging;
-    });
-
     function lerpQ(curr, target, t) {
         let dot = curr.x * target.x + curr.y * target.y + curr.z * target.z + curr.w * target.w;
         let sign = dot < 0 ? -1 : 1;
@@ -180,10 +169,17 @@
 
     function render() {
         window._endskyRafId = requestAnimationFrame(render);
-        const lerpFactor = isDragging ? 0.05 : 0.01;
+        
+        const srcQ = window._threejsRotQ;
+        if (srcQ) {
+            const q = { x: -srcQ.x, y: -srcQ.y, z: -srcQ.z, w: srcQ.w };
+            const identity = { x: 0, y: 0, z: 0, w: 1 };
+            targetQ = lerpQ(identity, q, 0.6); 
+        }
+
+        const lerpFactor = 0.05; 
         currentZoom += (targetZoom - currentZoom) * lerpFactor;
-        // Use a slightly higher lerp factor so the movement is visible but still "heavy"
-        currentQ = lerpQ(currentQ, targetQ, isDragging ? 0.05 : 0.02);
+        currentQ = lerpQ(currentQ, targetQ, 0.04);
 
         const b = quatToBasis(currentQ);
         const zoomScale = 1.0 + (currentZoom - 22) * 0.005;
