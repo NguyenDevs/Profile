@@ -643,6 +643,7 @@
       if (autoRotate) { _q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0.0015); rotQ.premultiply(_q); }
       rotQ.normalize(); 
       mainGroup.quaternion.copy(rotQ);
+      window._threejsRotQ = rotQ;
 
       introProgress = Math.min(1, introProgress + 0.004);
       const ringIntro = smoothstep(Math.min(1, introProgress / 0.75));
