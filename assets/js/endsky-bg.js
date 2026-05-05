@@ -186,11 +186,15 @@
                 lastSrcQ = { x: srcQ.x, y: srcQ.y, z: srcQ.z, w: srcQ.w };
             }
 
-            const invLast = { x: -lastSrcQ.x, y: -lastSrcQ.y, z: -lastSrcQ.z, w: lastSrcQ.w };
-            let dq = multiplyQ(srcQ, invLast);
-            
-            if (dq.w < 0) { dq.x = -dq.x; dq.y = -dq.y; dq.z = -dq.z; dq.w = -dq.w; }
+            let curQ = { x: srcQ.x, y: srcQ.y, z: srcQ.z, w: srcQ.w };
+            let dot = curQ.x * lastSrcQ.x + curQ.y * lastSrcQ.y + curQ.z * lastSrcQ.z + curQ.w * lastSrcQ.w;
+            if (dot < 0) {
+                curQ.x = -curQ.x; curQ.y = -curQ.y; curQ.z = -curQ.z; curQ.w = -curQ.w;
+            }
 
+            const invLast = { x: -lastSrcQ.x, y: -lastSrcQ.y, z: -lastSrcQ.z, w: lastSrcQ.w };
+            let dq = multiplyQ(curQ, invLast);
+            
             const invDq = { x: -dq.x, y: -dq.y, z: -dq.z, w: dq.w };
             const dqScaled = lerpQ({ x: 0, y: 0, z: 0, w: 1 }, invDq, 0.6);
 
@@ -199,7 +203,7 @@
             accumulatedQ.x /= len; accumulatedQ.y /= len; accumulatedQ.z /= len; accumulatedQ.w /= len;
 
             targetQ = accumulatedQ;
-            lastSrcQ = { x: srcQ.x, y: srcQ.y, z: srcQ.z, w: srcQ.w };
+            lastSrcQ = curQ;
         }
 
         const lerpFactor = 0.05; 
