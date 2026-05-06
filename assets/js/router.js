@@ -40,7 +40,7 @@ function cleanupPageSpecificResources() {
   }
 
   document
-      .querySelectorAll('#threejs-canvas, #endsky-canvas, #speed-slider-container, #cyber-toggle, #cyber-hud-menu, #cyber-hex-menu')
+      .querySelectorAll('#threejs-canvas, #endsky-canvas, #speed-slider-container, #cyber-toggle, #cyber-hud-menu, #cyber-hex-menu, #cyber-settings-wrap')
       .forEach(el => el.remove());
 
   document.querySelectorAll('script[src*="threejs-bg.js"], script[src*="endsky-bg.js"], script[src*="three.min.js"]')

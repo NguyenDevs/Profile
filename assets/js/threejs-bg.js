@@ -16,24 +16,38 @@
     style.textContent = `
       @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
       :root{--cp-purple:#b289ef;--cp-cyan:#00ffe7;--cp-font:'Share Tech Mono',monospace}
-      .cyber-hud-toggle{position:fixed;top:24px;right:14px;z-index:999999;width:54px;height:54px;background:rgba(25,25,30,0.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.12);border-radius:50%;color:var(--cp-purple);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);box-shadow:0 10px 40px rgba(0,0,0,0.5);pointer-events:auto}
-      .cyber-hud-toggle:hover{background:rgba(178,137,239,0.2);border-color:#b289ef;color:#fff;transform:scale(1.1);box-shadow:0 0 25px rgba(178,137,239,0.5)}
-      .cyber-hud-toggle svg{width:24px;height:24px;transition:transform .6s cubic-bezier(0.34, 1.56, 0.64, 1)}
-      .cyber-hud-toggle.active{background:rgba(176,79,255,0.15);border-color:var(--cp-purple);color:#fff;box-shadow:0 0 30px var(--cp-purple);transform:rotate(90deg)}
-      #cyber-hex-menu{position:fixed;top:90px;right:14px;z-index:10000;width:300px;height:300px;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:all .5s cubic-bezier(0.19, 1, 0.22, 1);transform:scale(0.8) rotate(-10deg)}
-      #cyber-hex-menu.open{opacity:1;pointer-events:all;transform:scale(1) rotate(0deg)}
-      .hex-svg{width:100%;height:100%;filter:drop-shadow(0 0 20px rgba(0,0,0,0.5))}
-      .hex-slice{fill:rgba(15,15,20,0.8);stroke:rgba(178,137,239,0.3);stroke-width:1;cursor:pointer;transition:all .3s}
-      .hex-slice:hover{fill:rgba(178,137,239,0.15);stroke:var(--cp-purple)}
-      .hex-slice.active{fill:rgba(178,137,239,0.25);stroke:var(--cp-purple);filter:url(#hex-glow)}
-      .hex-icon-group{pointer-events:none}
-      .hex-label{font-family:var(--cp-font);font-size:10px;fill:var(--cp-purple);text-transform:uppercase;letter-spacing:1px}
-      .hex-value{font-family:var(--cp-font);font-size:14px;fill:var(--cp-cyan);font-weight:bold}
-      .knob-indicator{fill:none;stroke:var(--cp-cyan);stroke-width:2;stroke-linecap:round;stroke-dasharray:100;transition:stroke-dashoffset 0.1s}
+      .cyber-settings-wrap{position:fixed;top:24px;right:14px;z-index:10001;display:flex;align-items:center;justify-content:center}
+      .settings-toggle{width:54px;height:54px;background:rgba(25,25,30,0.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.12);border-radius:50%;color:var(--cp-purple);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);box-shadow:0 10px 40px rgba(0,0,0,0.5);z-index:2}
+      .settings-toggle:hover{background:rgba(178,137,239,0.2);border-color:#b289ef;color:#fff;transform:scale(1.1);box-shadow:0 0 25px rgba(178,137,239,0.5)}
+      .settings-toggle.active{transform:rotate(90deg);background:rgba(176,79,255,0.15);border-color:var(--cp-purple);color:#fff;box-shadow:0 0 30px var(--cp-purple)}
+      .settings-menu{position:absolute;top:0;right:0;width:54px;height:54px;pointer-events:none}
+      .settings-item{position:absolute;width:46px;height:46px;background:rgba(20,20,25,0.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(178,137,239,0.3);border-radius:23px;color:var(--cp-cyan);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transform:scale(0.5);transition:all .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);box-shadow:0 8px 25px rgba(0,0,0,0.4);overflow:hidden}
+      .cyber-settings-wrap.open .settings-item{opacity:1;pointer-events:auto}
+      .settings-item.active{background:var(--cp-purple);color:#fff;border-color:#fff}
+      .settings-item svg{width:20px;height:20px;flex-shrink:0}
+      .settings-slider-wrap{position:absolute;opacity:0;pointer-events:none;transition:all .4s;display:flex;align-items:center;gap:10px}
+      .settings-item.active .settings-slider-wrap{opacity:1;pointer-events:auto}
+      .settings-item.active svg{opacity:0.5}
+      .s-slider{appearance:none;-webkit-appearance:none;background:rgba(255,255,255,0.2);height:4px;border-radius:2px;outline:none}
+      .s-slider::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:14px;height:14px;background:#fff;border-radius:50%;cursor:pointer;box-shadow:0 0 10px var(--cp-cyan)}
+      .s-val{font-family:var(--cp-font);font-size:10px;min-width:25px}
+      @media (min-width:769px){
+        .cyber-settings-wrap.open #s-item-speed{transform:scale(1) translate(-70px, 70px)}
+        .cyber-settings-wrap.open #s-item-brightness{transform:scale(1) translate(-130px, 130px)}
+        .cyber-settings-wrap.open #s-item-distance{transform:scale(1) translate(-190px, 190px)}
+        .settings-item.active{width:220px;transform:scale(1) translate(-244px, 0) !important}
+        .settings-slider-wrap{left:50px;right:15px}
+        .s-slider{width:110px}
+      }
       @media (max-width:768px){
-        .cyber-hud-toggle{top:auto;bottom:24px;left:50%;transform:translateX(-50%)}
-        #cyber-hex-menu{top:auto;bottom:100px;left:50%;transform:translateX(-50%) scale(0.8)}
-        #cyber-hex-menu.open{transform:translateX(-50%) scale(1)}
+        .cyber-settings-wrap{top:auto;bottom:24px;left:50%;right:auto;transform:translateX(-50%)}
+        .cyber-settings-wrap.open #s-item-speed{transform:scale(1) translateY(-70px)}
+        .cyber-settings-wrap.open #s-item-brightness{transform:scale(1) translateY(-130px)}
+        .cyber-settings-wrap.open #s-item-distance{transform:scale(1) translateY(-190px)}
+        .settings-item.active{height:180px;transform:scale(1) translateY(-210px) !important;flex-direction:column;padding:20px 0}
+        .settings-slider-wrap{flex-direction:column-reverse;bottom:50px;left:0;right:0;top:15px}
+        .s-slider{width:100px;transform:rotate(-90deg)}
+        .settings-item.active svg{margin-top:auto}
       }
     `;
     document.head.appendChild(style);
@@ -442,126 +456,82 @@
     let manualDistanceFactor = 1.0;
 
     function initSettings3D() {
-      let toggle = document.getElementById('cyber-toggle');
-      if (!toggle) {
-        toggle = document.createElement('button');
-        toggle.id = 'cyber-toggle';
-        document.body.appendChild(toggle);
-      }
-      toggle.className = 'cyber-hud-toggle';
-      toggle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
+      let wrapper = document.getElementById('cyber-settings-wrap');
+      if (wrapper) wrapper.remove();
 
-      const menu = document.createElement('div');
-      menu.id = 'cyber-hex-menu';
-      menu.innerHTML = `
-        <svg class="hex-svg" viewBox="0 0 300 300">
-          <defs>
-            <filter id="hex-glow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="5" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-            </filter>
-          </defs>
-          <g transform="translate(150, 150)">
-            <path class="hex-slice" id="slice-speed" d="M 0,0 L 0,-130 L 112,-65 L 112,65 Z" transform="rotate(0)" />
-            <path class="hex-slice" id="slice-brightness" d="M 0,0 L 0,-130 L 112,-65 L 112,65 Z" transform="rotate(120)" />
-            <path class="hex-slice" id="slice-distance" d="M 0,0 L 0,-130 L 112,-65 L 112,65 Z" transform="rotate(240)" />
-            
-            <g class="hex-icon-group" transform="translate(50, 0)">
-              <text class="hex-label" x="0" y="-15" text-anchor="middle">SPEED</text>
-              <text class="hex-value" id="hex-val-speed" x="0" y="10" text-anchor="middle">1.0</text>
-              <circle class="knob-indicator" id="knob-speed" cx="0" cy="0" r="35" transform="rotate(-90)" />
-            </g>
-            <g class="hex-icon-group" transform="rotate(120) translate(50, 0) rotate(-120)">
-              <text class="hex-label" x="0" y="-15" text-anchor="middle">EXPOSURE</text>
-              <text class="hex-value" id="hex-val-brightness" x="0" y="10" text-anchor="middle">0.5</text>
-              <circle class="knob-indicator" id="knob-brightness" cx="0" cy="0" r="35" transform="rotate(-90)" />
-            </g>
-            <g class="hex-icon-group" transform="rotate(240) translate(50, 0) rotate(-240)">
-              <text class="hex-label" x="0" y="-15" text-anchor="middle">SCALE</text>
-              <text class="hex-value" id="hex-val-distance" x="0" y="10" text-anchor="middle">1.0</text>
-              <circle class="knob-indicator" id="knob-distance" cx="0" cy="0" r="35" transform="rotate(-90)" />
-            </g>
-          </g>
-        </svg>
+      wrapper = document.createElement('div');
+      wrapper.id = 'cyber-settings-wrap';
+      wrapper.className = 'cyber-settings-wrap';
+      wrapper.innerHTML = `
+        <button class="settings-toggle" id="settings-toggle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <div class="settings-menu">
+          <div class="settings-item" id="s-item-speed" data-target="speed">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+            <div class="settings-slider-wrap">
+              <input type="range" class="s-slider" id="s-slider-speed" min="0" max="4" step="0.05" value="${manualSpeedFactor}">
+              <span class="s-val" id="s-val-speed">${manualSpeedFactor.toFixed(1)}</span>
+            </div>
+          </div>
+          <div class="settings-item" id="s-item-brightness" data-target="brightness">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            <div class="settings-slider-wrap">
+              <input type="range" class="s-slider" id="s-slider-brightness" min="0.1" max="3" step="0.05" value="${manualBrightnessFactor}">
+              <span class="s-val" id="s-val-brightness">${manualBrightnessFactor.toFixed(1)}</span>
+            </div>
+          </div>
+          <div class="settings-item" id="s-item-distance" data-target="distance">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="M9 21H3v-6"></path><path d="M21 3l-7 7"></path><path d="M3 21l7-7"></path></svg>
+            <div class="settings-slider-wrap">
+              <input type="range" class="s-slider" id="s-slider-distance" min="0.3" max="2" step="0.05" value="${manualDistanceFactor}">
+              <span class="s-val" id="s-val-distance">${manualDistanceFactor.toFixed(1)}</span>
+            </div>
+          </div>
+        </div>
       `;
-      document.body.appendChild(menu);
+      document.body.appendChild(wrapper);
 
-      const configs = {
-        speed:      { id: 'speed',      min: 0,   max: 4, defaultVal: 1.0, current: 1.0, setter: v => { manualSpeedFactor = v; } },
-        brightness: { id: 'brightness', min: 0.1, max: 3, defaultVal: 0.5, current: 0.5, setter: v => { manualBrightnessFactor = v; } },
-        distance:   { id: 'distance',   min: 0.3, max: 2, defaultVal: 1.0, current: 1.0, setter: v => { manualDistanceFactor = v; } },
-      };
+      const toggleBtn = wrapper.querySelector('.settings-toggle');
+      const items = wrapper.querySelectorAll('.settings-item');
 
-      function updateUI(key) {
-        const cfg = configs[key];
-        const valEl = document.getElementById('hex-val-' + cfg.id);
-        const knob = document.getElementById('knob-' + cfg.id);
-        if (valEl) valEl.textContent = cfg.current.toFixed(1);
-        if (knob) {
-          const pct = (cfg.current - cfg.min) / (cfg.max - cfg.min);
-          const dash = 220;
-          knob.style.strokeDasharray = dash;
-          knob.style.strokeDashoffset = dash * (1 - pct);
-        }
-      }
-
-      Object.keys(configs).forEach(updateUI);
-
-      let activeSlice = null;
-      let startY = 0;
-      let startVal = 0;
-
-      function onPointerDown(e, key) {
-        activeSlice = key;
-        startY = e.clientY || e.touches[0].clientY;
-        startVal = configs[key].current;
-        document.querySelectorAll('.hex-slice').forEach(s => s.classList.remove('active'));
-        document.getElementById('slice-' + key).classList.add('active');
-        e.preventDefault();
-      }
-
-      ['speed', 'brightness', 'distance'].forEach(key => {
-        const el = document.getElementById('slice-' + key);
-        el.addEventListener('mousedown', e => onPointerDown(e, key));
-        el.addEventListener('touchstart', e => onPointerDown(e, key), {passive:false});
-      });
-
-      window.addEventListener('mousemove', e => {
-        if (!activeSlice) return;
-        const y = e.clientY;
-        const delta = (startY - y) * 0.01;
-        const cfg = configs[activeSlice];
-        cfg.current = Math.max(cfg.min, Math.min(cfg.max, startVal + delta));
-        cfg.setter(cfg.current);
-        updateUI(activeSlice);
-      });
-
-      window.addEventListener('touchmove', e => {
-        if (!activeSlice) return;
-        const y = e.touches[0].clientY;
-        const delta = (startY - y) * 0.01;
-        const cfg = configs[activeSlice];
-        cfg.current = Math.max(cfg.min, Math.min(cfg.max, startVal + delta));
-        cfg.setter(cfg.current);
-        updateUI(activeSlice);
-      }, {passive:false});
-
-      window.addEventListener('mouseup', () => { activeSlice = null; document.querySelectorAll('.hex-slice').forEach(s => s.classList.remove('active')); });
-      window.addEventListener('touchend', () => { activeSlice = null; document.querySelectorAll('.hex-slice').forEach(s => s.classList.remove('active')); });
-
-      let isOpen = false;
-      toggle.addEventListener('click', e => {
+      toggleBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        isOpen = !isOpen;
-        toggle.classList.toggle('active', isOpen);
-        menu.classList.toggle('open', isOpen);
+        const isOpen = wrapper.classList.toggle('open');
+        toggleBtn.classList.toggle('active', isOpen);
+        if (!isOpen) {
+          items.forEach(it => it.classList.remove('active'));
+        }
       });
 
-      document.addEventListener('click', e => {
-        if (isOpen && !menu.contains(e.target) && e.target !== toggle) {
-          isOpen = false;
-          toggle.classList.remove('active');
-          menu.classList.remove('open');
+      items.forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const wasActive = item.classList.contains('active');
+          items.forEach(it => it.classList.remove('active'));
+          if (!wasActive) item.classList.add('active');
+        });
+
+        const slider = item.querySelector('.s-slider');
+        const valText = item.querySelector('.s-val');
+        const target = item.getAttribute('data-target');
+
+        slider.addEventListener('input', () => {
+          const val = parseFloat(slider.value);
+          valText.textContent = val.toFixed(1);
+          if (target === 'speed') manualSpeedFactor = val;
+          if (target === 'brightness') manualBrightnessFactor = val;
+          if (target === 'distance') manualDistanceFactor = val;
+        });
+
+        slider.addEventListener('click', e => e.stopPropagation());
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!wrapper.contains(e.target)) {
+          wrapper.classList.remove('open');
+          toggleBtn.classList.remove('active');
+          items.forEach(it => it.classList.remove('active'));
         }
       });
     }
