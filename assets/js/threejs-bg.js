@@ -11,49 +11,10 @@
     return x * x * (3 - 2 * x);
   }
 
-  function injectHUDStyles() {
-    const style = document.createElement('style');
-    style.textContent = `
-      @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-      :root{--cp-purple:#b289ef;--cp-font:'Share Tech Mono',monospace}
-      .cyber-settings-wrap{position:fixed;top:24px;right:14px;z-index:10001;display:flex;align-items:center;justify-content:center}
-      .settings-toggle{width:50px;height:50px;background:rgba(25,25,30,0.8);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.1);border-radius:50%;color:var(--cp-purple);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .4s;box-shadow:0 8px 30px rgba(0,0,0,0.5);z-index:2;padding:0}
-      .settings-toggle:hover{transform:scale(1.1);border-color:var(--cp-purple);color:#fff}
-      .settings-toggle.active{transform:rotate(90deg);color:#fff;border-color:var(--cp-purple)}
-      .settings-toggle svg{width:26px;height:26px}
-      .settings-menu{position:absolute;top:0;right:0;width:50px;height:50px;pointer-events:none}
-      .settings-item{position:absolute;width:40px;height:40px;background:rgba(20,20,25,0.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(178,137,239,0.4);border-radius:20px;color:var(--cp-purple);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transform:scale(0.5);transition:all .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);box-shadow:0 5px 15px rgba(0,0,0,0.3);overflow:hidden}
-      .cyber-settings-wrap.open .settings-item{opacity:1;pointer-events:auto}
-      .settings-item.active{border-color:#fff;box-shadow:0 0 20px rgba(178,137,239,0.3);z-index:10}
-      .settings-item svg{width:18px;height:18px;flex-shrink:0}
-      .settings-slider-wrap{opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:center;gap:8px;width:0;overflow:hidden}
-      .settings-item.active .settings-slider-wrap{opacity:1;pointer-events:auto;width:auto}
-      .s-slider{appearance:none;-webkit-appearance:none;background:rgba(255,255,255,0.15);height:3px;border-radius:2px;outline:none;width:80px}
-      .s-slider::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:12px;height:12px;background:#fff;border-radius:50%;cursor:pointer}
-      .s-val{font-family:var(--cp-font);font-size:10px;color:#fff;min-width:20px}
-      @media (min-width:769px){
-        .cyber-settings-wrap.open #s-item-speed{transform:scale(1) translate(-85px, 10px)}
-        .cyber-settings-wrap.open #s-item-brightness{transform:scale(1) translate(-70px, 70px)}
-        .cyber-settings-wrap.open #s-item-distance{transform:scale(1) translate(-10px, 85px)}
-        .settings-item.active{width:180px;flex-direction:row-reverse;padding:0 12px;justify-content:space-between}
-        .settings-item.active .settings-slider-wrap{margin-right:10px}
-      }
-      @media (max-width:768px){
-        .cyber-settings-wrap{top:auto;bottom:24px;left:50%;right:auto;transform:translateX(-50%)}
-        .cyber-settings-wrap.open #s-item-speed{transform:scale(1) translate(-70px, -45px)}
-        .cyber-settings-wrap.open #s-item-brightness{transform:scale(1) translate(0px, -90px)}
-        .cyber-settings-wrap.open #s-item-distance{transform:scale(1) translate(70px, -45px)}
-        .settings-item.active{height:150px;flex-direction:column-reverse;padding:15px 0;width:40px;justify-content:space-between}
-        .settings-slider-wrap{flex-direction:column-reverse;width:auto;height:0;margin-bottom:10px}
-        .settings-item.active .settings-slider-wrap{height:auto}
-        .s-slider{width:70px;transform:rotate(-90deg);margin:35px 0}
-      }
-    `;
-    document.head.appendChild(style);
-  }
+
 
   function init() {
-    injectHUDStyles();
+
 
     const canvas = document.createElement('canvas');
     canvas.id = 'threejs-canvas';
@@ -455,41 +416,8 @@
     let manualDistanceFactor = 1.0;
 
     function initSettings3D() {
-      let wrapper = document.getElementById('cyber-settings-wrap');
-      if (wrapper) wrapper.remove();
-
-      wrapper = document.createElement('div');
-      wrapper.id = 'cyber-settings-wrap';
-      wrapper.className = 'cyber-settings-wrap';
-      wrapper.innerHTML = `
-        <button class="settings-toggle" id="settings-toggle">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        </button>
-        <div class="settings-menu">
-          <div class="settings-item" id="s-item-speed" data-target="speed">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-            <div class="settings-slider-wrap">
-              <input type="range" class="s-slider" id="s-slider-speed" min="0" max="4" step="0.05" value="${manualSpeedFactor}">
-              <span class="s-val" id="s-val-speed">${manualSpeedFactor.toFixed(1)}</span>
-            </div>
-          </div>
-          <div class="settings-item" id="s-item-brightness" data-target="brightness">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-            <div class="settings-slider-wrap">
-              <input type="range" class="s-slider" id="s-slider-brightness" min="0.1" max="3" step="0.05" value="${manualBrightnessFactor}">
-              <span class="s-val" id="s-val-brightness">${manualBrightnessFactor.toFixed(1)}</span>
-            </div>
-          </div>
-          <div class="settings-item" id="s-item-distance" data-target="distance">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="M9 21H3v-6"></path><path d="M21 3l-7 7"></path><path d="M3 21l7-7"></path></svg>
-            <div class="settings-slider-wrap">
-              <input type="range" class="s-slider" id="s-slider-distance" min="0.3" max="2" step="0.05" value="${manualDistanceFactor}">
-              <span class="s-val" id="s-val-distance">${manualDistanceFactor.toFixed(1)}</span>
-            </div>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(wrapper);
+      const wrapper = document.getElementById('cyber-settings-wrap');
+      if (!wrapper) return;
 
       const toggleBtn = wrapper.querySelector('.settings-toggle');
       const items = wrapper.querySelectorAll('.settings-item');
@@ -514,6 +442,12 @@
         const slider = item.querySelector('.s-slider');
         const valText = item.querySelector('.s-val');
         const target = item.getAttribute('data-target');
+
+        // Sync initial values if they exist
+        if (target === 'speed') slider.value = manualSpeedFactor;
+        if (target === 'brightness') slider.value = manualBrightnessFactor;
+        if (target === 'distance') slider.value = manualDistanceFactor;
+        valText.textContent = parseFloat(slider.value).toFixed(1);
 
         slider.addEventListener('input', () => {
           const val = parseFloat(slider.value);
