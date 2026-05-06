@@ -460,16 +460,6 @@
         }
     });
 
-    // ── Cyberpunk Settings & Controls ──
-    let manualSpeedFactor = 1.0;
-    let manualBrightnessFactor = 1.0;
-    let manualDistanceFactor = 1.0;
-
-    // ── 3D Settings Logic ──
-    let manualSpeedFactor = 1.0;
-    let manualBrightnessFactor = 1.0;
-    let manualDistanceFactor = 1.0;
-
     // ── 3D Settings Logic ──
     let manualSpeedFactor = 1.0;
     let manualBrightnessFactor = 1.0;
