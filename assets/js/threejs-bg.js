@@ -460,7 +460,7 @@
         }
     });
 
-    // ── 2.5D Settings Logic ──
+    // ── Obsidian 2.5D Settings ──
     let manualSpeedFactor = 1.0;
     let manualBrightnessFactor = 1.0;
     let manualDistanceFactor = 1.0;
@@ -475,88 +475,103 @@
         scene.add(pillarGroup);
         pillarGroup.visible = false;
 
-        const hexSize = 2.5;
+        const hexSize = 2.4;
         const hSpacing = hexSize * Math.sqrt(3);
         const vSpacing = hexSize * 1.5;
 
-        // Materials
-        const darkMat = new THREE.MeshPhysicalMaterial({
-            color: 0x0a0a0f,
-            metalness: 0.9,
-            roughness: 0.2,
-            envMapIntensity: 1
+        // Obsidian Material (High gloss, reflective edges)
+        const obsidianMat = new THREE.MeshPhysicalMaterial({
+            color: 0x020202,
+            metalness: 1.0,
+            roughness: 0.05,
+            clearcoat: 1.0,
+            clearcoatRoughness: 0.1,
+            envMapIntensity: 2
         });
 
-        const neonMat = new THREE.MeshPhysicalMaterial({
-            color: 0x220044,
+        const glowingMat = new THREE.MeshPhysicalMaterial({
+            color: 0x330066,
             emissive: 0x9900ff,
-            emissiveIntensity: 0.8,
-            metalness: 0.1,
+            emissiveIntensity: 1.2,
+            metalness: 0.5,
             roughness: 0.1,
-            transmission: 0.6,
-            thickness: 2,
+            transmission: 0.4,
             transparent: true,
             opacity: 0.9
         });
 
-        // Generate dense field
-        for (let r = -8; r <= 8; r++) {
-            for (let c = -10; c <= 10; c++) {
+        // Hexagon Shape for Extrusion (to get beveled edges)
+        const hexShape = new THREE.Shape();
+        for (let i = 0; i < 6; i++) {
+            const angle = (Math.PI / 3) * i;
+            const x = hexSize * Math.cos(angle);
+            const y = hexSize * Math.sin(angle);
+            if (i === 0) hexShape.moveTo(x, y);
+            else hexShape.lineTo(x, y);
+        }
+
+        // Generate Field
+        for (let r = -6; r <= 6; r++) {
+            for (let c = -8; c <= 8; c++) {
                 const x = c * hSpacing + (r % 2 === 0 ? 0 : hSpacing / 2);
                 const z = r * vSpacing;
                 
-                // Create a circular hole for the core
                 const dist = Math.sqrt(x*x + z*z);
-                if (dist < 12) continue;
+                if (dist < 10) continue;
 
-                const h = 2 + Math.random() * 8;
-                const geo = new THREE.CylinderGeometry(hexSize * 0.95, hexSize * 0.95, h, 6);
-                const mesh = new THREE.Mesh(geo, Math.random() > 0.9 ? neonMat : darkMat);
-                mesh.position.set(x, -20 - h / 2, z); // Start deep below
-                mesh.userData = { baseH: h, targetY: -10 - h / 2, type: 'bg' };
+                const h = 2 + Math.random() * 6;
+                const extrudeSettings = { depth: h, bevelEnabled: true, bevelThickness: 0.1, bevelSize: 0.1, bevelSegments: 2 };
+                const geo = new THREE.ExtrudeGeometry(hexShape, extrudeSettings);
+                const mesh = new THREE.Mesh(geo, Math.random() > 0.92 ? glowingMat : obsidianMat);
+                
+                mesh.rotation.x = -Math.PI / 2; // Lay flat
+                mesh.position.set(x, -25, z);
+                mesh.userData = { targetY: -8, type: 'bg' };
                 pillarGroup.add(mesh);
             }
         }
 
-        // Control Nodes (Foreground)
+        // Functional Pillars
         const funcConfigs = [
-            { id: 'speed', x: -hSpacing * 1.5, z: 20, label: 'SPEED' },
-            { id: 'brightness', x: 0, z: 22, label: 'LIGHT' },
-            { id: 'distance', x: hSpacing * 1.5, z: 20, label: 'DIST' }
+            { id: 'speed', x: -hSpacing * 1.5, z: 12, label: 'SPEED' },
+            { id: 'brightness', x: 0, z: 14, label: 'LIGHT' },
+            { id: 'distance', x: hSpacing * 1.5, z: 12, label: 'DIST' }
         ];
 
-        const funcMeshes = funcConfigs.map(cfg => {
-            const h = 15;
-            const geo = new THREE.CylinderGeometry(hexSize * 0.96, hexSize * 0.96, h, 6);
-            const mesh = new THREE.Mesh(geo, neonMat);
-            mesh.position.set(cfg.x, -20 - h/2, cfg.z);
-            mesh.userData = { id: cfg.id, baseH: h, targetY: -8 - h/2, type: 'btn' };
+        funcConfigs.forEach(cfg => {
+            const h = 12;
+            const extrudeSettings = { depth: h, bevelEnabled: true, bevelThickness: 0.15, bevelSize: 0.15, bevelSegments: 3 };
+            const geo = new THREE.ExtrudeGeometry(hexShape, extrudeSettings);
+            const mesh = new THREE.Mesh(geo, glowingMat);
+            mesh.rotation.x = -Math.PI / 2;
+            mesh.position.set(cfg.x, -25, cfg.z);
+            mesh.userData = { id: cfg.id, targetY: -6, type: 'btn' };
             pillarGroup.add(mesh);
 
-            // Floating Label
+            // Label
             const canvas = document.createElement('canvas');
             canvas.width = 256; canvas.height = 128;
             const cctx = canvas.getContext('2d');
             cctx.fillStyle = 'white';
-            cctx.font = 'bold 50px Orbitron';
+            cctx.font = 'bold 52px Orbitron';
             cctx.textAlign = 'center';
+            cctx.shadowColor = '#9900ff';
+            cctx.shadowBlur = 15;
             cctx.fillText(cfg.label, 128, 80);
             
             const texture = new THREE.CanvasTexture(canvas);
             const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false });
             const sprite = new THREE.Sprite(spriteMat);
-            sprite.position.set(cfg.x, 2, cfg.z); // Will be animated
+            sprite.position.set(cfg.x, 3, cfg.z);
             sprite.scale.set(6, 3, 1);
             sprite.visible = false;
             mesh.userData.sprite = sprite;
             pillarGroup.add(sprite);
-
-            return mesh;
         });
 
         let isActive = false;
         const origCamPos = new THREE.Vector3(0, 2, 18);
-        const settingsCamPos = new THREE.Vector3(0, 45, 50);
+        const settingsCamPos = new THREE.Vector3(0, 35, 40);
 
         toggle.onclick = (e) => {
             e.stopPropagation();
@@ -568,61 +583,40 @@
             if (isActive) {
                 pillarGroup.visible = true;
                 autoRotate = false;
-                
-                // Camera transition to 2.5D
                 gsap.to(camera.position, { x: settingsCamPos.x, y: settingsCamPos.y, z: settingsCamPos.z, duration: 1.5, ease: "power3.inOut" });
-                gsap.to(mainGroup.position, { y: 15, duration: 1.5, ease: "power3.inOut" });
+                gsap.to(mainGroup.position, { y: 4, duration: 1.5, ease: "power3.inOut" });
 
-                // Pillars rising
                 pillarGroup.children.forEach(child => {
                     if (child.userData.targetY !== undefined) {
-                        gsap.to(child.position, { 
-                            y: child.userData.targetY + 5, // Lift slightly more
-                            duration: 1 + Math.random() * 0.5, 
-                            delay: Math.random() * 0.3,
-                            ease: "back.out(1.7)" 
-                        });
+                        gsap.to(child.position, { y: child.userData.targetY, duration: 1.2, delay: Math.random() * 0.4, ease: "expo.out" });
                     }
                     if (child.userData.sprite) {
                         child.userData.sprite.visible = true;
-                        gsap.to(child.userData.sprite.position, { y: 12, duration: 1.5, delay: 0.5 });
+                        gsap.to(child.userData.sprite.position, { y: 8, duration: 1.5, delay: 0.6 });
                     }
                 });
             } else {
                 gsap.to(camera.position, { x: origCamPos.x, y: origCamPos.y, z: origCamPos.z, duration: 1.2, ease: "power3.inOut" });
                 gsap.to(mainGroup.position, { y: 0, duration: 1.2, ease: "power3.inOut" });
-
                 pillarGroup.children.forEach(child => {
-                    if (child.userData.targetY !== undefined) {
-                        gsap.to(child.position, { y: -30, duration: 1, ease: "power3.in" });
-                    }
-                    if (child.userData.sprite) {
-                        gsap.to(child.userData.sprite.position, { y: -10, duration: 0.5, onComplete: () => child.userData.sprite.visible = false });
-                    }
+                    if (child.userData.targetY !== undefined) gsap.to(child.position, { y: -30, duration: 0.8, ease: "power3.in" });
+                    if (child.userData.sprite) gsap.to(child.userData.sprite.position, { y: -10, duration: 0.5, onComplete: () => child.userData.sprite.visible = false });
                 });
                 autoRotate = true;
-                document.querySelectorAll('.cyber-slider-group').forEach(g => g.style.display = 'none');
             }
         };
 
-        // Click detection
         window.addEventListener('mousedown', (e) => {
             if (!isActive) return;
             mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
             raycaster.setFromCamera(mouse, camera);
-
             const intersects = raycaster.intersectObjects(pillarGroup.children);
-            if (intersects.length > 0) {
+            if (intersects.length > 0 && intersects[0].object.userData.type === 'btn') {
                 const obj = intersects[0].object;
-                if (obj.userData.type === 'btn') {
-                    document.querySelectorAll('.cyber-slider-group').forEach(g => g.style.display = 'none');
-                    document.getElementById(`group-${obj.userData.id}`).style.display = 'block';
-                    
-                    // Visual pop
-                    gsap.to(obj.scale, { x: 1.2, y: 1.1, z: 1.2, duration: 0.2, yoyo: true, repeat: 1 });
-                    gsap.to(obj.material, { emissiveIntensity: 2, duration: 0.2, yoyo: true, repeat: 1 });
-                }
+                document.querySelectorAll('.cyber-slider-group').forEach(g => g.style.display = 'none');
+                document.getElementById(`group-${obj.userData.id}`).style.display = 'block';
+                gsap.to(obj.scale, { x: 1.15, y: 1.15, duration: 0.2, yoyo: true, repeat: 1 });
             }
         });
     }
