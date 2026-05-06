@@ -35,6 +35,10 @@
     
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
+    renderer.outputEncoding = THREE.sRGBEncoding;
+
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -475,9 +479,13 @@
     if (settingsBtn) {
         settingsBtn.onclick = (e) => {
             e.stopPropagation();
-            settingsMenu.classList.toggle('expanded');
+            const isExpanded = settingsMenu.classList.toggle('expanded');
+            if (!isExpanded) {
+                functionalSliderContainer.classList.remove('active');
+            }
         };
     }
+
 
     const setMode = (mode) => {
         currentMode = mode;
@@ -528,9 +536,13 @@
 
     document.addEventListener('click', (e) => {
         if (settingsMenu && !settingsMenu.contains(e.target) && !functionalSliderContainer.contains(e.target)) {
-            settingsMenu.classList.remove('expanded');
+            if (settingsMenu.classList.contains('expanded')) {
+                settingsMenu.classList.remove('expanded');
+                functionalSliderContainer.classList.remove('active');
+            }
         }
     });
+
 
     const style = document.createElement('style');
     style.textContent = `

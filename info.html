@@ -196,13 +196,14 @@
     /* ── Settings Menu ── */
     .settings-menu {
       position: fixed;
-      top: 24px;
-      right: 14px;
+      top: 20px;
+      right: 20px;
       z-index: 10000;
       display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 12px;
+      align-items: center;
+      justify-content: center;
+      width: 54px;
+      height: 54px;
     }
 
     .settings-toggle {
@@ -222,12 +223,14 @@
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
       padding: 0;
       outline: none;
+      position: relative;
+      z-index: 2;
     }
 
     .settings-menu.expanded .settings-toggle {
       background: var(--accent);
       color: #fff;
-      transform: rotate(90deg);
+      transform: rotate(45deg); /* Like music button */
     }
 
     .settings-toggle:hover {
@@ -235,25 +238,25 @@
       box-shadow: 0 0 30px rgba(178, 137, 239, 0.3);
     }
 
+    .settings-menu.expanded .settings-toggle:hover { transform: rotate(45deg) scale(1.1); }
+
     .settings-toggle svg { width: 24px; height: 24px; }
 
     .settings-options {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 54px;
+      height: 54px;
       display: flex;
-      flex-direction: column;
-      gap: 10px;
+      align-items: center;
+      justify-content: center;
       pointer-events: none;
-      opacity: 0;
-      transform: translateY(-20px) scale(0.8);
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    .settings-menu.expanded .settings-options {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateY(0) scale(1);
+      z-index: 1;
     }
 
     .settings-opt {
+      position: absolute;
       width: 46px;
       height: 46px;
       border-radius: 50%;
@@ -266,13 +269,24 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      opacity: 0;
+      transform: scale(0.5) translate(0, 0);
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-      position: relative;
     }
 
+    .settings-menu.expanded .settings-opt {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Arc expansion (top-right to bottom-left) */
+    .settings-menu.expanded #opt-speed      { transform: scale(1) translate(-110px, 0px);   transition-delay: 0.1s; }
+    .settings-menu.expanded #opt-brightness { transform: scale(1) translate(-85px, 85px);  transition-delay: 0.15s; }
+    .settings-menu.expanded #opt-distance   { transform: scale(1) translate(0px, 110px);  transition-delay: 0.2s; }
+
     .settings-opt:hover {
-      transform: scale(1.1);
+      transform: scale(1.1) !important;
       background: var(--surface-hover);
       color: #fff;
     }
@@ -287,25 +301,33 @@
 
     .settings-opt span {
       position: absolute;
-      right: 60px;
       background: rgba(0, 0, 0, 0.8);
       padding: 6px 12px;
       border-radius: 8px;
-      font-size: 0.75rem;
-      font-weight: 600;
+      font-size: 0.7rem;
+      font-weight: 700;
       color: #fff;
       white-space: nowrap;
       opacity: 0;
-      transform: translateX(10px);
       transition: all 0.3s;
       pointer-events: none;
       font-family: 'Syne', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
+    
+    #opt-speed span, #opt-brightness span { right: 60px; top: 50%; transform: translateY(-50%) translateX(10px); }
+    #opt-distance span { top: 60px; left: 50%; transform: translateX(-50%) translateY(-10px); }
 
     .settings-opt:hover span {
       opacity: 1;
-      transform: translateX(0);
+      transform: translate(0, 0) !important;
+      right: 60px; /* Reset for those that use right */
     }
+    #opt-distance:hover span {
+        transform: translateX(-50%) translateY(0) !important;
+    }
+
 
     /* Functional Slider styling */
     #functional-slider-container {
@@ -331,16 +353,21 @@
 
     #functional-slider-container .slider-label {
       font-family: 'Syne', sans-serif;
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.15em;
       color: #fff;
-      writing-mode: vertical-lr;
-      transform: rotate(180deg);
-      margin-bottom: 10px;
-      text-shadow: 0 0 10px rgba(0,0,0,0.5);
+      white-space: nowrap;
+      position: absolute;
+      left: -130px;
+      top: 50%;
+      transform: translateY(-50%) rotate(-90deg);
+      text-shadow: 0 0 15px rgba(0,0,0,0.8);
+      width: 250px;
+      text-align: center;
     }
+
 
     .f-slider-wrapper {
       height: 250px;
@@ -353,13 +380,35 @@
     #f-slider {
       appearance: none;
       width: 250px;
-      height: 4px;
-      background: rgba(255,255,255,0.1);
+      height: 2px;
+      background: rgba(255,255,255,0.15);
       border-radius: 10px;
       outline: none;
       transform: rotate(-90deg);
       cursor: pointer;
+      position: relative;
+      z-index: 2;
     }
+
+    .f-slider-markers {
+      position: absolute;
+      width: 250px;
+      height: 100%;
+      transform: rotate(-90deg);
+      pointer-events: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2px;
+      z-index: 1;
+    }
+
+    .f-slider-marker {
+      width: 1px;
+      height: 8px;
+      background: rgba(255,255,255,0.3);
+    }
+
 
     #f-slider::-webkit-slider-thumb {
       appearance: none;
@@ -447,8 +496,17 @@
   <div id="functional-slider-container">
     <div class="slider-label" id="f-slider-label">Tốc độ</div>
     <div class="f-slider-wrapper">
+      <div class="f-slider-markers">
+        <div class="f-slider-marker"></div>
+        <div class="f-slider-marker"></div>
+        <div class="f-slider-marker"></div>
+        <div class="f-slider-marker"></div>
+        <div class="f-slider-marker"></div>
+        <div class="f-slider-marker"></div>
+      </div>
       <input type="range" id="f-slider" min="0" max="5" step="0.01" value="1">
     </div>
+
   </div>
 
 
