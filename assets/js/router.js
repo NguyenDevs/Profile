@@ -227,7 +227,6 @@ export function loadPage(url, push) {
 
         cleanupPageSpecificResources();
         injectStyles(doc);
-        injectScripts(doc);
         applyPageBodyStyles(url);
 
         const liveContent = document.querySelector('.wrapper')
@@ -240,6 +239,7 @@ export function loadPage(url, push) {
         }
 
         liveContent.parentElement.replaceChild(newContent, liveContent);
+        injectScripts(doc);
         newContent.style.opacity = '0';
         newContent.offsetHeight;
         newContent.style.transition = 'opacity 0.4s ease';
