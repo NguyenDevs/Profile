@@ -465,11 +465,6 @@
     let manualBrightnessFactor = 1.0;
     let manualDistanceFactor = 1.0;
 
-    // ── Cyberpunk Settings & Controls ──
-    let manualSpeedFactor = 1.0;
-    let manualBrightnessFactor = 1.0;
-    let manualDistanceFactor = 1.0;
-
     function initCyberSettings() {
         const gridContainer = document.getElementById('hex-grid');
         const canvas = document.getElementById('hex-canvas');
