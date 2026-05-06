@@ -15,35 +15,25 @@
     const style = document.createElement('style');
     style.textContent = `
       @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-      :root{--cp-purple:#b289ef;--cp-pink:#ff2d9b;--cp-cyan:#00ffe7;--cp-dark:rgba(8,2,18,0.94);--cp-border:rgba(178,137,239,0.45);--cp-font:'Share Tech Mono',monospace}
-      .cyber-hud-toggle{position:fixed;top:24px;right:14px;z-index:10001;width:54px;height:54px;background:rgba(25,25,30,0.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.12);border-radius:50%;color:var(--cp-purple);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:all .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);box-shadow:0 10px 40px rgba(0,0,0,0.5)}
+      :root{--cp-purple:#b289ef;--cp-cyan:#00ffe7;--cp-font:'Share Tech Mono',monospace}
+      .cyber-hud-toggle{position:fixed;top:24px;right:14px;z-index:10001;width:54px;height:54px;background:rgba(25,25,30,0.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.12);border-radius:50%;color:var(--cp-purple);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);box-shadow:0 10px 40px rgba(0,0,0,0.5)}
       .cyber-hud-toggle:hover{background:rgba(178,137,239,0.2);border-color:#b289ef;color:#fff;transform:scale(1.1);box-shadow:0 0 25px rgba(178,137,239,0.5)}
       .cyber-hud-toggle svg{width:24px;height:24px;transition:transform .6s cubic-bezier(0.34, 1.56, 0.64, 1)}
-      .cyber-hud-toggle.active{background:rgba(176,79,255,0.15);border-color:var(--cp-purple);color:#fff;box-shadow:0 0 30px var(--cp-purple),inset 0 0 15px rgba(176,79,255,0.2);transform:rotate(90deg)}
-      .cyber-hud-toggle.active svg{filter:drop-shadow(0 0 8px var(--cp-purple))}
-      #cyber-hud-menu{position:fixed;top:88px;right:14px;z-index:10000;width:280px;background:rgba(15,15,20,0.9);backdrop-filter:blur(20px);border:1px solid var(--cp-border);border-radius:24px;padding:12px;display:flex;flex-direction:column;gap:6px;transform:translateY(-15px);opacity:0;pointer-events:none;transition:all .4s cubic-bezier(0.165, 0.84, 0.44, 1);font-family:var(--cp-font);box-shadow:0 20px 50px rgba(0,0,0,0.5)}
-      #cyber-hud-menu.open{transform:translateY(0);opacity:1;pointer-events:all}
-      .hud-menu-item{padding:14px 18px;border-radius:16px;background:rgba(176,79,255,0.05);border:1px solid transparent;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .25s;color:var(--cp-cyan);font-size:11px;letter-spacing:2px;text-transform:uppercase}
-      .hud-menu-item:hover{background:rgba(176,79,255,0.12);border-color:rgba(176,79,255,0.3)}
-      .hud-menu-item.active{background:rgba(176,79,255,0.18);border-color:var(--cp-purple);color:#fff}
-      .hud-slider-container{max-height:0;overflow:hidden;transition:all .4s cubic-bezier(0.4, 0, 0.2, 1);padding:0 10px;opacity:0}
-      .hud-slider-container.visible{max-height:100px;padding:12px 10px 20px;opacity:1}
-      .hud-label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-      .hud-label-text{font-size:9px;color:rgba(176,79,255,0.8);letter-spacing:1px}
-      .hud-value-text{font-size:12px;color:var(--cp-cyan)}
-      .hud-slider-wrap{position:relative;display:flex;align-items:center}
-      .hud-track-bg{position:absolute;left:0;top:50%;transform:translateY(-50%);height:3px;background:linear-gradient(to right,var(--cp-cyan),var(--cp-purple));pointer-events:none;border-radius:2px}
-      .hud-slider{-webkit-appearance:none;appearance:none;width:100%;height:3px;background:rgba(176,79,255,0.2);outline:none;cursor:pointer;position:relative;z-index:1}
-      .hud-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--cp-purple);cursor:pointer;box-shadow:0 0 10px var(--cp-purple);transition:all .2s;border:2px solid #fff}
-      .hud-slider::-webkit-slider-thumb:hover{transform:scale(1.2);background:var(--cp-cyan);box-shadow:0 0 15px var(--cp-cyan)}
-      .hud-reset-btn{width:100%;background:transparent;border:1px solid rgba(255,45,155,0.3);color:var(--cp-pink);font-family:var(--cp-font);font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:10px;border-radius:12px;cursor:pointer;margin-top:4px;transition:all .2s}
-      .hud-reset-btn:hover{background:rgba(255,45,155,0.1);border-color:var(--cp-pink)}
+      .cyber-hud-toggle.active{background:rgba(176,79,255,0.15);border-color:var(--cp-purple);color:#fff;box-shadow:0 0 30px var(--cp-purple);transform:rotate(90deg)}
+      #cyber-hex-menu{position:fixed;top:90px;right:14px;z-index:10000;width:300px;height:300px;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:all .5s cubic-bezier(0.19, 1, 0.22, 1);transform:scale(0.8) rotate(-10deg)}
+      #cyber-hex-menu.open{opacity:1;pointer-events:all;transform:scale(1) rotate(0deg)}
+      .hex-svg{width:100%;height:100%;filter:drop-shadow(0 0 20px rgba(0,0,0,0.5))}
+      .hex-slice{fill:rgba(15,15,20,0.8);stroke:rgba(178,137,239,0.3);stroke-width:1;cursor:pointer;transition:all .3s}
+      .hex-slice:hover{fill:rgba(178,137,239,0.15);stroke:var(--cp-purple)}
+      .hex-slice.active{fill:rgba(178,137,239,0.25);stroke:var(--cp-purple);filter:url(#hex-glow)}
+      .hex-icon-group{pointer-events:none}
+      .hex-label{font-family:var(--cp-font);font-size:10px;fill:var(--cp-purple);text-transform:uppercase;letter-spacing:1px}
+      .hex-value{font-family:var(--cp-font);font-size:14px;fill:var(--cp-cyan);font-weight:bold}
+      .knob-indicator{fill:none;stroke:var(--cp-cyan);stroke-width:2;stroke-linecap:round;stroke-dasharray:100;transition:stroke-dashoffset 0.1s}
       @media (max-width:768px){
-        .cyber-hud-toggle{top:auto;bottom:24px;left:50%;right:auto;transform:translateX(-50%)}
-        .cyber-hud-toggle.active{transform:translateX(-50%) rotate(90deg)}
-        .cyber-hud-toggle:hover{transform:translateX(-50%) scale(1.1)}
-        #cyber-hud-menu{top:auto;bottom:88px;left:50%;right:auto;transform:translate(-50%,15px)}
-        #cyber-hud-menu.open{transform:translate(-50%,0)}
+        .cyber-hud-toggle{top:auto;bottom:24px;left:50%;transform:translateX(-50%)}
+        #cyber-hex-menu{top:auto;bottom:100px;left:50%;transform:translateX(-50%) scale(0.8)}
+        #cyber-hex-menu.open{transform:translateX(-50%) scale(1)}
       }
     `;
     document.head.appendChild(style);
@@ -457,90 +447,107 @@
         toggle = document.createElement('button');
         toggle.id = 'cyber-toggle';
         toggle.className = 'cyber-hud-toggle';
-        toggle.setAttribute('aria-label', 'Settings');
         toggle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
         document.body.appendChild(toggle);
-      } else {
-        toggle.className = 'cyber-hud-toggle';
-        toggle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
       }
 
       const menu = document.createElement('div');
-      menu.id = 'cyber-hud-menu';
+      menu.id = 'cyber-hex-menu';
       menu.innerHTML = `
-        <div class="hud-menu-item" data-target="speed">
-          <span>Orbit Speed</span>
-          <span class="hud-value-text" id="val-speed">1.0x</span>
-        </div>
-        <div class="hud-slider-container" id="container-speed">
-          <div class="hud-slider-wrap">
-            <div class="hud-track-bg" id="track-speed" style="width:25%"></div>
-            <input type="range" class="hud-slider" id="slider-speed" min="0" max="4" step="0.05" value="1">
-          </div>
-        </div>
-
-        <div class="hud-menu-item" data-target="brightness">
-          <span>Exposure</span>
-          <span class="hud-value-text" id="val-brightness">0.5x</span>
-        </div>
-        <div class="hud-slider-container" id="container-brightness">
-          <div class="hud-slider-wrap">
-            <div class="hud-track-bg" id="track-brightness" style="width:13.8%"></div>
-            <input type="range" class="hud-slider" id="slider-brightness" min="0.1" max="3" step="0.05" value="0.5">
-          </div>
-        </div>
-
-        <div class="hud-menu-item" data-target="distance">
-          <span>Ring Scale</span>
-          <span class="hud-value-text" id="val-distance">1.0x</span>
-        </div>
-        <div class="hud-slider-container" id="container-distance">
-          <div class="hud-slider-wrap">
-            <div class="hud-track-bg" id="track-distance" style="width:41%"></div>
-            <input type="range" class="hud-slider" id="slider-distance" min="0.3" max="2" step="0.05" value="1">
-          </div>
-        </div>
-
-        <button class="hud-reset-btn" id="hud-reset-btn">⟳ Reset Defaults</button>
+        <svg class="hex-svg" viewBox="0 0 300 300">
+          <defs>
+            <filter id="hex-glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="5" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+          <g transform="translate(150, 150)">
+            <path class="hex-slice" id="slice-speed" d="M 0,0 L 0,-130 L 112,-65 L 112,65 Z" transform="rotate(0)" />
+            <path class="hex-slice" id="slice-brightness" d="M 0,0 L 0,-130 L 112,-65 L 112,65 Z" transform="rotate(120)" />
+            <path class="hex-slice" id="slice-distance" d="M 0,0 L 0,-130 L 112,-65 L 112,65 Z" transform="rotate(240)" />
+            
+            <g class="hex-icon-group" transform="translate(50, 0)">
+              <text class="hex-label" x="0" y="-15" text-anchor="middle">SPEED</text>
+              <text class="hex-value" id="hex-val-speed" x="0" y="10" text-anchor="middle">1.0</text>
+              <circle class="knob-indicator" id="knob-speed" cx="0" cy="0" r="35" transform="rotate(-90)" />
+            </g>
+            <g class="hex-icon-group" transform="rotate(120) translate(50, 0) rotate(-120)">
+              <text class="hex-label" x="0" y="-15" text-anchor="middle">EXPOSURE</text>
+              <text class="hex-value" id="hex-val-brightness" x="0" y="10" text-anchor="middle">0.5</text>
+              <circle class="knob-indicator" id="knob-brightness" cx="0" cy="0" r="35" transform="rotate(-90)" />
+            </g>
+            <g class="hex-icon-group" transform="rotate(240) translate(50, 0) rotate(-240)">
+              <text class="hex-label" x="0" y="-15" text-anchor="middle">SCALE</text>
+              <text class="hex-value" id="hex-val-distance" x="0" y="10" text-anchor="middle">1.0</text>
+              <circle class="knob-indicator" id="knob-distance" cx="0" cy="0" r="35" transform="rotate(-90)" />
+            </g>
+          </g>
+        </svg>
       `;
       document.body.appendChild(menu);
 
-      const configs = [
-        { id: 'speed',      min: 0,   max: 4, defaultVal: 1, setter: v => { manualSpeedFactor = v; } },
-        { id: 'brightness', min: 0.1, max: 3, defaultVal: 0.5, setter: v => { manualBrightnessFactor = v; } },
-        { id: 'distance',   min: 0.3, max: 2, defaultVal: 1, setter: v => { manualDistanceFactor = v; } },
-      ];
+      const configs = {
+        speed:      { id: 'speed',      min: 0,   max: 4, defaultVal: 1.0, current: 1.0, setter: v => { manualSpeedFactor = v; } },
+        brightness: { id: 'brightness', min: 0.1, max: 3, defaultVal: 0.5, current: 0.5, setter: v => { manualBrightnessFactor = v; } },
+        distance:   { id: 'distance',   min: 0.3, max: 2, defaultVal: 1.0, current: 1.0, setter: v => { manualDistanceFactor = v; } },
+      };
 
-      function updateTrack(id, val, min, max) {
-        const pct = ((val - min) / (max - min)) * 100;
-        const track = document.getElementById('track-' + id);
-        if (track) track.style.width = pct + '%';
+      function updateUI(key) {
+        const cfg = configs[key];
+        const valEl = document.getElementById('hex-val-' + cfg.id);
+        const knob = document.getElementById('knob-' + cfg.id);
+        if (valEl) valEl.textContent = cfg.current.toFixed(1);
+        if (knob) {
+          const pct = (cfg.current - cfg.min) / (cfg.max - cfg.min);
+          const dash = 220;
+          knob.style.strokeDasharray = dash;
+          knob.style.strokeDashoffset = dash * (1 - pct);
+        }
       }
 
-      configs.forEach(cfg => {
-        const slider = document.getElementById('slider-' + cfg.id);
-        const valEl  = document.getElementById('val-' + cfg.id);
-        if (slider) {
-          slider.addEventListener('input', () => {
-            const v = parseFloat(slider.value);
-            cfg.setter(v);
-            valEl.textContent = v.toFixed(1) + 'x';
-            updateTrack(cfg.id, v, cfg.min, cfg.max);
-          });
-        }
-        updateTrack(cfg.id, cfg.defaultVal, cfg.min, cfg.max);
+      Object.keys(configs).forEach(updateUI);
+
+      let activeSlice = null;
+      let startY = 0;
+      let startVal = 0;
+
+      function onPointerDown(e, key) {
+        activeSlice = key;
+        startY = e.clientY || e.touches[0].clientY;
+        startVal = configs[key].current;
+        document.querySelectorAll('.hex-slice').forEach(s => s.classList.remove('active'));
+        document.getElementById('slice-' + key).classList.add('active');
+        e.preventDefault();
+      }
+
+      ['speed', 'brightness', 'distance'].forEach(key => {
+        const el = document.getElementById('slice-' + key);
+        el.addEventListener('mousedown', e => onPointerDown(e, key));
+        el.addEventListener('touchstart', e => onPointerDown(e, key), {passive:false});
       });
 
-      document.getElementById('hud-reset-btn').addEventListener('click', () => {
-        configs.forEach(cfg => {
-          const slider = document.getElementById('slider-' + cfg.id);
-          const valEl  = document.getElementById('val-' + cfg.id);
-          cfg.setter(cfg.defaultVal);
-          slider.value = cfg.defaultVal;
-          valEl.textContent = cfg.defaultVal.toFixed(1) + 'x';
-          updateTrack(cfg.id, cfg.defaultVal, cfg.min, cfg.max);
-        });
+      window.addEventListener('mousemove', e => {
+        if (!activeSlice) return;
+        const y = e.clientY;
+        const delta = (startY - y) * 0.01;
+        const cfg = configs[activeSlice];
+        cfg.current = Math.max(cfg.min, Math.min(cfg.max, startVal + delta));
+        cfg.setter(cfg.current);
+        updateUI(activeSlice);
       });
+
+      window.addEventListener('touchmove', e => {
+        if (!activeSlice) return;
+        const y = e.touches[0].clientY;
+        const delta = (startY - y) * 0.01;
+        const cfg = configs[activeSlice];
+        cfg.current = Math.max(cfg.min, Math.min(cfg.max, startVal + delta));
+        cfg.setter(cfg.current);
+        updateUI(activeSlice);
+      }, {passive:false});
+
+      window.addEventListener('mouseup', () => { activeSlice = null; document.querySelectorAll('.hex-slice').forEach(s => s.classList.remove('active')); });
+      window.addEventListener('touchend', () => { activeSlice = null; document.querySelectorAll('.hex-slice').forEach(s => s.classList.remove('active')); });
 
       let isOpen = false;
       toggle.addEventListener('click', e => {
@@ -548,25 +555,6 @@
         isOpen = !isOpen;
         toggle.classList.toggle('active', isOpen);
         menu.classList.toggle('open', isOpen);
-        if (!isOpen) {
-          document.querySelectorAll('.hud-menu-item').forEach(el => el.classList.remove('active'));
-          document.querySelectorAll('.hud-slider-container').forEach(el => el.classList.remove('visible'));
-        }
-      });
-
-      menu.querySelectorAll('.hud-menu-item').forEach(item => {
-        item.addEventListener('click', e => {
-          e.stopPropagation();
-          const target = item.getAttribute('data-target');
-          const container = document.getElementById('container-' + target);
-          const wasActive = item.classList.contains('active');
-          document.querySelectorAll('.hud-menu-item').forEach(el => el.classList.remove('active'));
-          document.querySelectorAll('.hud-slider-container').forEach(el => el.classList.remove('visible'));
-          if (!wasActive) {
-            item.classList.add('active');
-            container.classList.add('visible');
-          }
-        });
       });
 
       document.addEventListener('click', e => {
@@ -574,8 +562,6 @@
           isOpen = false;
           toggle.classList.remove('active');
           menu.classList.remove('open');
-          document.querySelectorAll('.hud-menu-item').forEach(el => el.classList.remove('active'));
-          document.querySelectorAll('.hud-slider-container').forEach(el => el.classList.remove('visible'));
         }
       });
     }
