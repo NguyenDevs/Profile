@@ -2315,7 +2315,7 @@ body.is-mobile .music-toggle {
     backdrop-filter: blur(2px);
     -webkit-backdrop-filter: blur(10px);
     align-items: flex-start;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.02);
     padding: 2.5rem;
     border-radius: 24px;
     padding-left: 2rem;
