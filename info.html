@@ -37,9 +37,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=Rubik:wght@600;700;800&family=Orbitron:wght@400;500;600;700;800;900&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
 
   <style>
@@ -353,9 +351,57 @@
 <body>
 
   <div class="coming-soon">
-    <div class="info-label" aria-label="Info page">
-      <div class="info-label__eyebrow" id="time-lived-display">NguyenDevs &middot; calculating...</div>
-      <h1 class="info-label__title">INFO</h1>
+    <div class="timer-wrap">
+      <div class="timer-label-top">Thời gian đã trôi qua</div>
+      
+      <div class="timer-units">
+        <div class="timer-unit">
+          <div class="timer-num" id="y">--</div>
+          <div class="timer-unit-label">Năm</div>
+        </div>
+        <div class="timer-sep">:</div>
+        <div class="timer-unit">
+          <div class="timer-num" id="mo">--</div>
+          <div class="timer-unit-label">Tháng</div>
+        </div>
+        <div class="timer-sep">:</div>
+        <div class="timer-unit">
+          <div class="timer-num" id="d">--</div>
+          <div class="timer-unit-label">Ngày</div>
+        </div>
+        <div class="timer-sep">:</div>
+        <div class="timer-unit">
+          <div class="timer-num" id="h">--</div>
+          <div class="timer-unit-label">Giờ</div>
+        </div>
+        <div class="timer-sep">:</div>
+        <div class="timer-unit">
+          <div class="timer-num" id="m">--</div>
+          <div class="timer-unit-label">Phút</div>
+        </div>
+        <div class="timer-sep">:</div>
+        <div class="timer-unit">
+          <div class="timer-num" id="s">--</div>
+          <div class="timer-unit-label">Giây</div>
+        </div>
+      </div>
+
+      <div class="timer-progress-wrap">
+        <div class="timer-progress-bg">
+          <div class="timer-progress-fill" id="prog" style="width:0%"></div>
+        </div>
+        <div class="timer-progress-meta">
+          <span id="year-label">Năm thứ --</span>
+          <span id="pct">0%</span>
+        </div>
+      </div>
+
+      <div class="timer-divider"></div>
+
+      <div class="timer-total">
+        <div class="timer-total-num" id="total-s">0</div>
+        <div class="timer-total-label">TỔNG SỐ GIÂY ĐÃ SỐNG</div>
+      </div>
     </div>
 
     <div class="cyber-settings-wrap" id="cyber-settings-wrap">
@@ -593,9 +639,23 @@
   <script src="assets/js/endsky-bg.js"></script>
 
   <script>
+    let prevS = -1, prevM = -1, prevH = -1, prevD = -1;
+
+    function fmt(n) { return String(n).padStart(2, '0'); }
+
+    function flash(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add('flash');
+      setTimeout(() => el.classList.remove('flash'), 300);
+    }
+
     function updateLivedTime() {
       const birthDate = new Date("2004-07-04T09:00:00+07:00");
       const now = new Date();
+      
+      const diffMs = now - birthDate;
+      const totalSecs = Math.floor(diffMs / 1000);
 
       let years = now.getFullYear() - birthDate.getFullYear();
       let months = now.getMonth() - birthDate.getMonth();
@@ -604,33 +664,54 @@
       let minutes = now.getMinutes() - birthDate.getMinutes();
       let seconds = now.getSeconds() - birthDate.getSeconds();
 
-      if (seconds < 0) {
-        seconds += 60;
-        minutes--;
-      }
-      if (minutes < 0) {
-        minutes += 60;
-        hours--;
-      }
-      if (hours < 0) {
-        hours += 24;
-        days--;
-      }
+      if (seconds < 0) { seconds += 60; minutes--; }
+      if (minutes < 0) { minutes += 60; hours--; }
+      if (hours < 0) { hours += 24; days--; }
       if (days < 0) {
         const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
         days += prevMonth.getDate();
         months--;
       }
-      if (months < 0) {
-        months += 12;
-        years--;
-      }
+      if (months < 0) { months += 12; years--; }
 
-      const display = document.getElementById("time-lived-display");
-      if (display) {
-        display.innerHTML = `NguyenDevs has lived for ${years} years, ${months} months, ${days} days, ${hours} hours, ${minutes} minutes and ${seconds} seconds.`;
-      }
+      const els = {
+        y: document.getElementById('y'),
+        mo: document.getElementById('mo'),
+        d: document.getElementById('d'),
+        h: document.getElementById('h'),
+        m: document.getElementById('m'),
+        s: document.getElementById('s'),
+        total: document.getElementById('total-s'),
+        prog: document.getElementById('prog'),
+        pct: document.getElementById('pct'),
+        yearLabel: document.getElementById('year-label')
+      };
+
+      if (els.y) els.y.textContent = years;
+      if (els.mo) els.mo.textContent = fmt(months);
+      if (els.d) els.d.textContent = fmt(days);
+      if (els.h) els.h.textContent = fmt(hours);
+      if (els.m) els.m.textContent = fmt(minutes);
+      if (els.s) els.s.textContent = fmt(seconds);
+      if (els.total) els.total.textContent = totalSecs.toLocaleString();
+      if (els.yearLabel) els.yearLabel.textContent = `Năm thứ ${years + 1}`;
+
+      if (seconds !== prevS) { flash('s'); prevS = seconds; }
+      if (minutes !== prevM) { flash('m'); prevM = minutes; }
+      if (hours !== prevH) { flash('h'); prevH = hours; }
+      if (days !== prevD) { flash('d'); prevD = days; }
+
+      const daysInYear = (years % 4 === 0 && (years % 100 !== 0 || years % 400 === 0)) ? 366 : 365;
+      const startOfYear = new Date(now.getFullYear(), birthDate.getMonth(), birthDate.getDate(), birthDate.getHours(), birthDate.getMinutes(), birthDate.getSeconds());
+      if (now < startOfYear) startOfYear.setFullYear(now.getFullYear() - 1);
+      
+      const yearDiffMs = now - startOfYear;
+      const yearPct = Math.min(100, (yearDiffMs / (daysInYear * 86400000)) * 100).toFixed(1);
+
+      if (els.prog) els.prog.style.width = yearPct + '%';
+      if (els.pct) els.pct.textContent = yearPct + '%';
     }
+
     window._livedTimeInterval = setInterval(updateLivedTime, 1000);
     updateLivedTime();
   </script>
