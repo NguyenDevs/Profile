@@ -16,9 +16,9 @@
     style.textContent = `
       @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
       :root{--cp-purple:#b04fff;--cp-pink:#ff2d9b;--cp-cyan:#00ffe7;--cp-dark:rgba(8,2,18,0.94);--cp-border:rgba(176,79,255,0.45);--cp-font:'Share Tech Mono',monospace}
-      .cyber-hud-toggle{position:fixed;bottom:28px;right:28px;z-index:100;width:48px;height:48px;background:transparent;border:1.5px solid var(--cp-purple);color:var(--cp-purple);font-size:22px;line-height:1;cursor:pointer;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);transition:background .2s,color .2s,box-shadow .2s;font-family:var(--cp-font);display:flex;align-items:center;justify-content:center;padding:0}
-      .cyber-hud-toggle:hover,.cyber-hud-toggle.active{background:var(--cp-purple);color:#fff;box-shadow:0 0 18px var(--cp-purple),0 0 40px rgba(176,79,255,.3)}
-      #cyber-hud-panel{position:fixed;bottom:90px;right:28px;z-index:99;width:300px;background:var(--cp-dark);border:1px solid var(--cp-border);font-family:var(--cp-font);color:var(--cp-cyan);clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));transform:translateY(20px);opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease}
+      .cyber-hud-toggle{position:fixed;top:28px;right:28px;z-index:10001;width:52px;height:52px;background:rgba(8,2,18,0.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--cp-purple);color:var(--cp-purple);font-size:24px;line-height:1;cursor:pointer;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);transition:all .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);font-family:var(--cp-font);display:flex;align-items:center;justify-content:center;padding:0;box-shadow:0 0 15px rgba(176,79,255,0.2)}
+      .cyber-hud-toggle:hover,.cyber-hud-toggle.active{background:var(--cp-purple);color:#fff;box-shadow:0 0 25px var(--cp-purple);transform:scale(1.1) rotate(60deg)}
+      #cyber-hud-panel{position:fixed;top:95px;right:28px;z-index:10000;width:300px;background:var(--cp-dark);border:1px solid var(--cp-border);font-family:var(--cp-font);color:var(--cp-cyan);clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));transform:translateY(-20px);opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease}
       #cyber-hud-panel.open{opacity:1;transform:translateY(0);pointer-events:all}
       #cyber-hud-panel::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,231,.015) 3px,rgba(0,255,231,.015) 4px);pointer-events:none;z-index:1}
       #cyber-hud-panel::after{content:'';position:absolute;top:0;right:0;width:16px;height:16px;background:var(--cp-purple);clip-path:polygon(0 0,100% 100%,100% 0);opacity:.7}
@@ -458,6 +458,7 @@
         document.body.appendChild(toggle);
       } else {
         toggle.className = 'cyber-hud-toggle';
+        toggle.textContent = '⬡';
       }
 
       const panel = document.createElement('div');
