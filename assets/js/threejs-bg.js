@@ -465,78 +465,98 @@
     let manualBrightnessFactor = 1.0;
     let manualDistanceFactor = 1.0;
 
+    // ── Cyberpunk Settings & Controls ──
+    let manualSpeedFactor = 1.0;
+    let manualBrightnessFactor = 1.0;
+    let manualDistanceFactor = 1.0;
+
     function initCyberSettings() {
-        const grid = document.getElementById('hex-grid');
+        const gridContainer = document.getElementById('hex-grid');
+        const canvas = document.getElementById('hex-canvas');
         const overlay = document.getElementById('cyber-settings');
         const toggle = document.getElementById('cyber-toggle');
         
-        if (!grid || !toggle) return;
+        if (!canvas || !toggle) return;
 
-        // Precise Grid Generation
-        grid.innerHTML = '';
-        const hexW = 100;
-        const hexH = 115;
-        const hSpacing = hexW + 4;
-        const vSpacing = hexH * 0.75 + 4;
-        
-        const rows = Math.ceil((window.innerHeight * 1.5) / vSpacing);
-        const cols = Math.ceil((window.innerWidth * 1.5) / hSpacing);
+        const ctx = canvas.getContext('2d');
+        const hexSize = 58;
+        const hexW = hexSize * Math.sqrt(3);
+        const hexH = hexSize * 2;
+        const hSpacing = hexW;
+        const vSpacing = hexH * 0.75;
 
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // Trail logic
+        let trails = [];
+        function createTrail() {
+            const rows = Math.ceil(canvas.height / vSpacing) + 1;
+            const cols = Math.ceil(canvas.width / hSpacing) + 1;
+            const r = Math.floor(Math.random() * rows);
+            const c = Math.floor(Math.random() * cols);
+            const x = c * hSpacing + (r % 2 === 0 ? 0 : hSpacing / 2);
+            const y = r * vSpacing;
+            return {
+                x, y, 
+                angle: Math.floor(Math.random() * 6) * (Math.PI / 3),
+                life: 1.0,
+                speed: 2 + Math.random() * 3
+            };
+        }
+
+        function drawHex(px, py, color, width = 1) {
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI / 3) * i - (Math.PI / 2);
+                const x = px + hexSize * Math.cos(angle);
+                const y = py + hexSize * Math.sin(angle);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.stroke();
+        }
+
+        // Functional Hexagons
         const icons = [
             { id: 'hex-speed', label: 'SPEED', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' },
             { id: 'hex-bright', label: 'LIGHT', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>' },
             { id: 'hex-dist', label: 'DIST', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 8 12 3 17 8"/><polyline points="7 16 12 21 17 16"/><line x1="12" y1="3" x2="12" y2="21"/></svg>' }
         ];
 
-        let iconIdx = 0;
-        const centerR = Math.floor(rows / 2);
-        const centerC = Math.floor(cols / 4);
+        const centerR = Math.floor(canvas.height / 2 / vSpacing);
+        const centerC = Math.floor(canvas.width / 4 / hSpacing);
 
-        for (let r = 0; r < rows; r++) {
-            for (let c = 0; c < cols; c++) {
-                const hex = document.createElement('div');
-                hex.className = 'hex-item';
-                
-                const x = c * hSpacing + (r % 2 === 0 ? 0 : hSpacing / 2);
-                const y = r * vSpacing;
-                
-                hex.style.left = `${x}px`;
-                hex.style.top = `${y}px`;
-                hex.style.transitionDelay = `${(r + c) * 0.02}s`;
-
-                // Place functional icons in a cluster
-                const isFunctional = (r === centerR && c === centerC) || 
-                                     (r === centerR + 1 && c === centerC) || 
-                                     (r === centerR - 1 && c === centerC + (centerR % 2 === 0 ? 0 : 1));
-
-                if (isFunctional && iconIdx < icons.length) {
-                    const info = icons[iconIdx++];
-                    hex.classList.add('active-hex');
-                    hex.innerHTML = `
-                        <div class="hex-icon">${info.icon}</div>
-                        <div class="hex-label">${info.label}</div>
-                        <svg class="hex-border-svg" viewBox="0 0 100 115">
-                            <path class="hex-path" d="M50 0 L100 25 L100 75 L50 100 L0 75 L0 25 Z" style="stroke: #fff; stroke-width: 3; stroke-dasharray: 50 250;" />
-                        </svg>
-                    `;
-                } else if (Math.random() > 0.9) {
-                    hex.innerHTML = `
-                        <svg class="hex-border-svg" viewBox="0 0 100 115">
-                            <path class="hex-path" d="M50 0 L100 25 L100 75 L50 100 L0 75 L0 25 Z" />
-                        </svg>
-                    `;
-                }
-                
-                grid.appendChild(hex);
-            }
-        }
+        icons.forEach((info, i) => {
+            const hex = document.createElement('div');
+            hex.className = 'hex-item active-hex';
+            const r = centerR + (i - 1);
+            const c = centerC;
+            const x = c * hSpacing + (r % 2 === 0 ? 0 : hSpacing / 2);
+            const y = r * vSpacing;
+            hex.style.left = `${x - hexW/2}px`;
+            hex.style.top = `${y - hexH/2}px`;
+            hex.style.opacity = '1';
+            hex.style.transform = 'scale(1)';
+            hex.innerHTML = `
+                <div class="hex-icon">${info.icon}</div>
+                <div class="hex-label">${info.label}</div>
+            `;
+            gridContainer.appendChild(hex);
+        });
 
         toggle.onclick = (e) => {
             e.stopPropagation();
             overlay.classList.toggle('active');
         };
 
-        // Sliders Logic
         const rSpeed = document.getElementById('range-speed');
         const rBrightness = document.getElementById('range-brightness');
         const rDistance = document.getElementById('range-distance');
@@ -557,13 +577,52 @@
             vDistance.innerText = manualDistanceFactor.toFixed(1);
         };
 
-        // Close on escape
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') overlay.classList.remove('active');
-        });
+        function animateCanvas() {
+            if (overlay.classList.contains('active')) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw static background grid
+                ctx.strokeStyle = 'rgba(178, 137, 239, 0.04)';
+                ctx.lineWidth = 1;
+                const rows = Math.ceil(canvas.height / vSpacing) + 1;
+                const cols = Math.ceil(canvas.width / hSpacing) + 1;
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        const x = c * hSpacing + (r % 2 === 0 ? 0 : hSpacing / 2);
+                        const y = r * vSpacing;
+                        drawHex(x, y, ctx.strokeStyle);
+                    }
+                }
+
+                // Draw trails
+                if (trails.length < 8) trails.push(createTrail());
+                trails.forEach((t, i) => {
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#b289ef';
+                    ctx.lineWidth = 3;
+                    ctx.globalAlpha = t.life;
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = '#b289ef';
+                    ctx.moveTo(t.x, t.y);
+                    t.x += Math.cos(t.angle) * t.speed;
+                    t.y += Math.sin(t.angle) * t.speed;
+                    ctx.lineTo(t.x, t.y);
+                    ctx.stroke();
+                    t.life -= 0.008;
+                    if (t.life <= 0) trails.splice(i, 1);
+                });
+                ctx.shadowBlur = 0;
+                ctx.globalAlpha = 1;
+            }
+            requestAnimationFrame(animateCanvas);
+        }
+        animateCanvas();
+
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') overlay.classList.remove('active'); });
     }
 
     initCyberSettings();
+
 
 
     
