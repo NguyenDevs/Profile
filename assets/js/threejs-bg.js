@@ -16,10 +16,12 @@
     style.textContent = `
       @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
       :root{--cp-purple:#b04fff;--cp-pink:#ff2d9b;--cp-cyan:#00ffe7;--cp-dark:rgba(8,2,18,0.94);--cp-border:rgba(176,79,255,0.45);--cp-font:'Share Tech Mono',monospace}
-      .cyber-hud-toggle{position:fixed;top:28px;right:28px;z-index:10001;width:48px;height:48px;background:rgba(8,2,18,0.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1.5px solid var(--cp-purple);border-radius:50%;color:var(--cp-purple);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:all .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);box-shadow:0 10px 30px rgba(0,0,0,0.3)}
-      .cyber-hud-toggle svg{width:22px;height:22px;transition:transform .6s cubic-bezier(0.34, 1.56, 0.64, 1)}
-      .cyber-hud-toggle.active{background:var(--cp-purple);color:#fff;box-shadow:0 0 20px var(--cp-purple);transform:rotate(90deg)}
-      #cyber-hud-menu{position:fixed;top:90px;right:28px;z-index:10000;width:280px;background:rgba(8,2,18,0.88);backdrop-filter:blur(15px);border:1px solid var(--cp-border);border-radius:24px;padding:12px;display:flex;flex-direction:column;gap:6px;transform:translateY(-15px);opacity:0;pointer-events:none;transition:all .4s cubic-bezier(0.165, 0.84, 0.44, 1);font-family:var(--cp-font);box-shadow:0 20px 50px rgba(0,0,0,0.5)}
+      .cyber-hud-toggle{position:fixed;top:24px;right:14px;z-index:10001;width:54px;height:54px;background:rgba(25,25,30,0.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.12);border-radius:50%;color:var(--cp-purple);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:all .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);box-shadow:0 10px 40px rgba(0,0,0,0.5)}
+      .cyber-hud-toggle:hover{background:rgba(176,79,255,0.25);border-color:#d4a8ff;color:#fff;transform:scale(1.1);box-shadow:0 0 30px rgba(176,79,255,0.3)}
+      .cyber-hud-toggle svg{width:24px;height:24px;transition:transform .6s cubic-bezier(0.34, 1.56, 0.64, 1)}
+      .cyber-hud-toggle.active{background:rgba(176,79,255,0.15);border-color:var(--cp-purple);color:#fff;box-shadow:0 0 30px var(--cp-purple),inset 0 0 15px rgba(176,79,255,0.2);transform:rotate(90deg)}
+      .cyber-hud-toggle.active svg{filter:drop-shadow(0 0 8px var(--cp-purple))}
+      #cyber-hud-menu{position:fixed;top:88px;right:14px;z-index:10000;width:280px;background:rgba(15,15,20,0.9);backdrop-filter:blur(20px);border:1px solid var(--cp-border);border-radius:24px;padding:12px;display:flex;flex-direction:column;gap:6px;transform:translateY(-15px);opacity:0;pointer-events:none;transition:all .4s cubic-bezier(0.165, 0.84, 0.44, 1);font-family:var(--cp-font);box-shadow:0 20px 50px rgba(0,0,0,0.5)}
       #cyber-hud-menu.open{transform:translateY(0);opacity:1;pointer-events:all}
       .hud-menu-item{padding:14px 18px;border-radius:16px;background:rgba(176,79,255,0.05);border:1px solid transparent;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .25s;color:var(--cp-cyan);font-size:11px;letter-spacing:2px;text-transform:uppercase}
       .hud-menu-item:hover{background:rgba(176,79,255,0.12);border-color:rgba(176,79,255,0.3)}
