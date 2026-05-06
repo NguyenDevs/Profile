@@ -460,7 +460,7 @@
         }
     });
 
-    // ── 3D Settings Logic ──
+    // ── 2.5D Settings Logic ──
     let manualSpeedFactor = 1.0;
     let manualBrightnessFactor = 1.0;
     let manualDistanceFactor = 1.0;
@@ -473,74 +473,64 @@
 
         const pillarGroup = new THREE.Group();
         scene.add(pillarGroup);
-        pillarGroup.position.y = -15; 
         pillarGroup.visible = false;
 
-        // Dynamic light for glass reflections
-        const hoverLight = new THREE.PointLight(0xb289ef, 0, 15);
-        scene.add(hoverLight);
-
-        const hexSize = 2.0;
+        const hexSize = 2.5;
         const hSpacing = hexSize * Math.sqrt(3);
         const vSpacing = hexSize * 1.5;
-        
+
         // Materials
-        const glassMat = new THREE.MeshPhysicalMaterial({
-            color: 0x1a0a33,
-            metalness: 0.1,
-            roughness: 0.05,
-            transmission: 0.95,
-            thickness: 1.5,
-            ior: 1.4,
-            transparent: true,
-            opacity: 0.8,
+        const darkMat = new THREE.MeshPhysicalMaterial({
+            color: 0x0a0a0f,
+            metalness: 0.9,
+            roughness: 0.2,
             envMapIntensity: 1
         });
 
-        const activeMat = new THREE.MeshPhysicalMaterial({
-            color: 0xcc00ff,
-            emissive: 0x6600ff,
-            emissiveIntensity: 0.5,
-            metalness: 0.2,
+        const neonMat = new THREE.MeshPhysicalMaterial({
+            color: 0x220044,
+            emissive: 0x9900ff,
+            emissiveIntensity: 0.8,
+            metalness: 0.1,
             roughness: 0.1,
-            transmission: 0.7,
+            transmission: 0.6,
             thickness: 2,
             transparent: true,
             opacity: 0.9
         });
 
-        // Generate Grid (with a 'hole' in the center for the Core)
-        for (let r = -6; r <= 6; r++) {
-            for (let c = -7; c <= 7; c++) {
+        // Generate dense field
+        for (let r = -8; r <= 8; r++) {
+            for (let c = -10; c <= 10; c++) {
                 const x = c * hSpacing + (r % 2 === 0 ? 0 : hSpacing / 2);
                 const z = r * vSpacing;
                 
-                // Skip the center area to keep the Core visible
-                const distToCenter = Math.sqrt(x*x + z*z);
-                if (distToCenter < 7) continue;
+                // Create a circular hole for the core
+                const dist = Math.sqrt(x*x + z*z);
+                if (dist < 12) continue;
 
-                const height = 2 + Math.random() * 6;
-                const geo = new THREE.CylinderGeometry(hexSize * 0.92, hexSize * 0.92, height, 6);
-                const mesh = new THREE.Mesh(geo, glassMat);
-                mesh.position.set(x, height / 2, z);
-                mesh.userData = { baseH: height, type: 'bg' };
+                const h = 2 + Math.random() * 8;
+                const geo = new THREE.CylinderGeometry(hexSize * 0.95, hexSize * 0.95, h, 6);
+                const mesh = new THREE.Mesh(geo, Math.random() > 0.9 ? neonMat : darkMat);
+                mesh.position.set(x, -20 - h / 2, z); // Start deep below
+                mesh.userData = { baseH: h, targetY: -10 - h / 2, type: 'bg' };
                 pillarGroup.add(mesh);
             }
         }
 
-        // Functional Pillars (Positioned in front/side of the Core)
+        // Control Nodes (Foreground)
         const funcConfigs = [
-            { id: 'speed', x: -hSpacing * 1.5, z: 8, label: 'SPEED' },
-            { id: 'brightness', x: 0, z: 10, label: 'LIGHT' },
-            { id: 'distance', x: hSpacing * 1.5, z: 8, label: 'DIST' }
+            { id: 'speed', x: -hSpacing * 1.5, z: 20, label: 'SPEED' },
+            { id: 'brightness', x: 0, z: 22, label: 'LIGHT' },
+            { id: 'distance', x: hSpacing * 1.5, z: 20, label: 'DIST' }
         ];
 
-        funcConfigs.forEach(cfg => {
-            const height = 12;
-            const geo = new THREE.CylinderGeometry(hexSize * 0.95, hexSize * 0.95, height, 6);
-            const mesh = new THREE.Mesh(geo, activeMat);
-            mesh.position.set(cfg.x, height / 2, cfg.z);
-            mesh.userData = { id: cfg.id, baseH: height, type: 'btn', label: cfg.label };
+        const funcMeshes = funcConfigs.map(cfg => {
+            const h = 15;
+            const geo = new THREE.CylinderGeometry(hexSize * 0.96, hexSize * 0.96, h, 6);
+            const mesh = new THREE.Mesh(geo, neonMat);
+            mesh.position.set(cfg.x, -20 - h/2, cfg.z);
+            mesh.userData = { id: cfg.id, baseH: h, targetY: -8 - h/2, type: 'btn' };
             pillarGroup.add(mesh);
 
             // Floating Label
@@ -548,106 +538,93 @@
             canvas.width = 256; canvas.height = 128;
             const cctx = canvas.getContext('2d');
             cctx.fillStyle = 'white';
-            cctx.font = 'bold 48px Orbitron';
+            cctx.font = 'bold 50px Orbitron';
             cctx.textAlign = 'center';
-            cctx.shadowColor = 'rgba(178, 137, 239, 0.8)';
-            cctx.shadowBlur = 15;
             cctx.fillText(cfg.label, 128, 80);
             
             const texture = new THREE.CanvasTexture(canvas);
             const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false });
             const sprite = new THREE.Sprite(spriteMat);
-            sprite.position.set(cfg.x, height + 1.8, cfg.z);
-            sprite.scale.set(4, 2, 1);
+            sprite.position.set(cfg.x, 2, cfg.z); // Will be animated
+            sprite.scale.set(6, 3, 1);
+            sprite.visible = false;
+            mesh.userData.sprite = sprite;
             pillarGroup.add(sprite);
+
+            return mesh;
         });
 
         let isActive = false;
+        const origCamPos = new THREE.Vector3(0, 2, 18);
+        const settingsCamPos = new THREE.Vector3(0, 45, 50);
+
         toggle.onclick = (e) => {
             e.stopPropagation();
             isActive = !isActive;
             toggle.classList.toggle('active', isActive);
             document.body.classList.toggle('settings-3d-active', isActive);
             controlsUI.classList.toggle('active', isActive);
-            
+
             if (isActive) {
                 pillarGroup.visible = true;
-                gsap.to(pillarGroup.position, { y: -3, duration: 1.5, ease: "expo.out" });
-                gsap.to(mainGroup.position, { y: 3, duration: 1.5, ease: "expo.out" });
-                gsap.to(hoverLight, { intensity: 5, duration: 1 });
                 autoRotate = false;
+                
+                // Camera transition to 2.5D
+                gsap.to(camera.position, { x: settingsCamPos.x, y: settingsCamPos.y, z: settingsCamPos.z, duration: 1.5, ease: "power3.inOut" });
+                gsap.to(mainGroup.position, { y: 15, duration: 1.5, ease: "power3.inOut" });
+
+                // Pillars rising
+                pillarGroup.children.forEach(child => {
+                    if (child.userData.targetY !== undefined) {
+                        gsap.to(child.position, { 
+                            y: child.userData.targetY + 5, // Lift slightly more
+                            duration: 1 + Math.random() * 0.5, 
+                            delay: Math.random() * 0.3,
+                            ease: "back.out(1.7)" 
+                        });
+                    }
+                    if (child.userData.sprite) {
+                        child.userData.sprite.visible = true;
+                        gsap.to(child.userData.sprite.position, { y: 12, duration: 1.5, delay: 0.5 });
+                    }
+                });
             } else {
-                gsap.to(pillarGroup.position, { y: -15, duration: 1.2, ease: "expo.in", onComplete: () => pillarGroup.visible = false });
-                gsap.to(mainGroup.position, { y: 0, duration: 1.2, ease: "expo.in" });
-                gsap.to(hoverLight, { intensity: 0, duration: 1 });
+                gsap.to(camera.position, { x: origCamPos.x, y: origCamPos.y, z: origCamPos.z, duration: 1.2, ease: "power3.inOut" });
+                gsap.to(mainGroup.position, { y: 0, duration: 1.2, ease: "power3.inOut" });
+
+                pillarGroup.children.forEach(child => {
+                    if (child.userData.targetY !== undefined) {
+                        gsap.to(child.position, { y: -30, duration: 1, ease: "power3.in" });
+                    }
+                    if (child.userData.sprite) {
+                        gsap.to(child.userData.sprite.position, { y: -10, duration: 0.5, onComplete: () => child.userData.sprite.visible = false });
+                    }
+                });
                 autoRotate = true;
                 document.querySelectorAll('.cyber-slider-group').forEach(g => g.style.display = 'none');
             }
         };
 
-        // Interaction & Hover
-        window.addEventListener('mousemove', (e) => {
+        // Click detection
+        window.addEventListener('mousedown', (e) => {
             if (!isActive) return;
             mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-            
             raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(pillarGroup.children);
-            
-            if (intersects.length > 0) {
-                const obj = intersects[0].object;
-                hoverLight.position.copy(intersects[0].point).y += 2;
-                if (obj.userData.type === 'btn') {
-                    document.body.style.cursor = 'pointer';
-                } else {
-                    document.body.style.cursor = 'default';
-                }
-            } else {
-                document.body.style.cursor = 'default';
-            }
-        });
 
-        window.addEventListener('mousedown', (e) => {
-            if (!isActive) return;
-            raycaster.setFromCamera(mouse, camera);
             const intersects = raycaster.intersectObjects(pillarGroup.children);
-            
             if (intersects.length > 0) {
                 const obj = intersects[0].object;
                 if (obj.userData.type === 'btn') {
                     document.querySelectorAll('.cyber-slider-group').forEach(g => g.style.display = 'none');
-                    const group = document.getElementById(`group-${obj.userData.id}`);
-                    if (group) group.style.display = 'block';
+                    document.getElementById(`group-${obj.userData.id}`).style.display = 'block';
                     
-                    // Bounce effect
-                    gsap.to(obj.position, { y: (obj.userData.baseH / 2) + 0.8, duration: 0.2, yoyo: true, repeat: 1 });
-                    
-                    // Glow pulse
-                    gsap.to(obj.material, { emissiveIntensity: 1.5, duration: 0.2, yoyo: true, repeat: 1 });
+                    // Visual pop
+                    gsap.to(obj.scale, { x: 1.2, y: 1.1, z: 1.2, duration: 0.2, yoyo: true, repeat: 1 });
+                    gsap.to(obj.material, { emissiveIntensity: 2, duration: 0.2, yoyo: true, repeat: 1 });
                 }
             }
         });
-
-        // Sync Sliders
-        const rSpeed = document.getElementById('range-speed');
-        const rBrightness = document.getElementById('range-brightness');
-        const rDistance = document.getElementById('range-distance');
-        const vSpeed = document.getElementById('val-speed');
-        const vBrightness = document.getElementById('val-brightness');
-        const vDistance = document.getElementById('val-distance');
-
-        if (rSpeed) rSpeed.oninput = (e) => {
-            manualSpeedFactor = parseFloat(e.target.value);
-            vSpeed.innerText = manualSpeedFactor.toFixed(1) + 'x';
-        };
-        if (rBrightness) rBrightness.oninput = (e) => {
-            manualBrightnessFactor = parseFloat(e.target.value);
-            vBrightness.innerText = manualBrightnessFactor.toFixed(1);
-        };
-        if (rDistance) rDistance.oninput = (e) => {
-            manualDistanceFactor = parseFloat(e.target.value);
-            vDistance.innerText = manualDistanceFactor.toFixed(1);
-        };
     }
 
     initSettings3D();
