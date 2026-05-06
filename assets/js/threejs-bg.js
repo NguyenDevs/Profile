@@ -456,150 +456,91 @@
         }
     });
 
-    if (document.getElementById('speed-slider-container')) {
-        document.getElementById('speed-slider-container').remove();
+    // ── Settings & Controls Logic ──
+    let manualSpeedFactor = 1.0;
+    let manualBrightnessFactor = 1.0;
+    let manualDistanceFactor = 1.0;
+
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsMenu = document.getElementById('settings-menu');
+    const functionalSliderContainer = document.getElementById('functional-slider-container');
+    const functionalSlider = document.getElementById('f-slider');
+    const functionalLabel = document.getElementById('f-slider-label');
+    const optSpeed = document.getElementById('opt-speed');
+    const optBrightness = document.getElementById('opt-brightness');
+    const optDistance = document.getElementById('opt-distance');
+
+    let currentMode = 'speed';
+
+    if (settingsBtn) {
+        settingsBtn.onclick = (e) => {
+            e.stopPropagation();
+            settingsMenu.classList.toggle('expanded');
+        };
     }
 
-    const sliderContainer = document.createElement('div');
-    sliderContainer.id = 'speed-slider-container';
-    Object.assign(sliderContainer.style, {
-        position: 'fixed', right: '15px', top: '50%', transform: 'translateY(-50%)',
-        width: '60px', height: '350px', zIndex: '1000', display: 'flex',
-        flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)'
+    const setMode = (mode) => {
+        currentMode = mode;
+        document.querySelectorAll('.settings-opt').forEach(opt => opt.classList.remove('active'));
+        functionalSliderContainer.classList.add('active');
+        
+        if (mode === 'speed') {
+            optSpeed.classList.add('active');
+            functionalLabel.innerText = `Tốc độ: ${manualSpeedFactor.toFixed(1)}x`;
+            functionalSlider.min = 0; functionalSlider.max = 5; functionalSlider.step = 0.01;
+            functionalSlider.value = manualSpeedFactor;
+            document.documentElement.style.setProperty('--accent-slider', '#cc00ff');
+        } else if (mode === 'brightness') {
+            optBrightness.classList.add('active');
+            functionalLabel.innerText = `Độ sáng: ${manualBrightnessFactor.toFixed(1)}`;
+            functionalSlider.min = 0.1; functionalSlider.max = 2.5; functionalSlider.step = 0.01;
+            functionalSlider.value = manualBrightnessFactor;
+            document.documentElement.style.setProperty('--accent-slider', '#ffcc00');
+        } else if (mode === 'distance') {
+            optDistance.classList.add('active');
+            functionalLabel.innerText = `Khoảng cách: ${manualDistanceFactor.toFixed(1)}`;
+            functionalSlider.min = 0.5; functionalSlider.max = 2.5; functionalSlider.step = 0.01;
+            functionalSlider.value = manualDistanceFactor;
+            document.documentElement.style.setProperty('--accent-slider', '#00ccff');
+        }
+    };
+
+    if (optSpeed) optSpeed.onclick = (e) => { e.stopPropagation(); setMode('speed'); };
+    if (optBrightness) optBrightness.onclick = (e) => { e.stopPropagation(); setMode('brightness'); };
+    if (optDistance) optDistance.onclick = (e) => { e.stopPropagation(); setMode('distance'); };
+
+    if (functionalSlider) {
+        functionalSlider.oninput = (e) => {
+            const val = parseFloat(e.target.value);
+            if (currentMode === 'speed') {
+                manualSpeedFactor = val;
+                functionalLabel.innerText = `Tốc độ: ${val.toFixed(1)}x`;
+            } else if (currentMode === 'brightness') {
+                manualBrightnessFactor = val;
+                functionalLabel.innerText = `Độ sáng: ${val.toFixed(1)}`;
+            } else if (currentMode === 'distance') {
+                manualDistanceFactor = val;
+                functionalLabel.innerText = `Khoảng cách: ${val.toFixed(1)}`;
+            }
+        };
+    }
+
+
+    document.addEventListener('click', (e) => {
+        if (settingsMenu && !settingsMenu.contains(e.target) && !functionalSliderContainer.contains(e.target)) {
+            settingsMenu.classList.remove('expanded');
+        }
     });
-    
-    const speedSlider = document.createElement('input');
-    speedSlider.id = 'speed-slider';
-    speedSlider.type = 'range'; speedSlider.min = '0'; speedSlider.max = '5'; speedSlider.step = '0.01'; speedSlider.value = '1';
-
-    const btnDown = document.createElement('button');
-    btnDown.id = 'speed-down-btn';
-    btnDown.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 13H5v-2h14v2z"/></svg>';
-    
-    const btnUp = document.createElement('button');
-    btnUp.id = 'speed-up-btn';
-    btnUp.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 13h-6V7h-2v6H5v2h6v6h2v-6h6v-2z"/></svg>';
-
-    const markerTrack = document.createElement('div');
-    markerTrack.id = 'speed-marker-track';
-    
-    const markers = [
-        { v: 0, l: '0x' }, { v: 1, l: '1x' }, { v: 2, l: '2x' }, { v: 3, l: '3x' }, { v: 4, l: '4x' }, { v: 5, l: '5x' }
-    ];
-    markers.forEach(m => {
-        const div = document.createElement('div');
-        div.className = 'slider-marker';
-        div.innerHTML = `<span>${m.l}</span>`;
-        div.style.position = 'absolute';
-        markerTrack.appendChild(div);
-    });
-
-    sliderContainer.appendChild(btnDown);
-    sliderContainer.appendChild(speedSlider);
-    sliderContainer.appendChild(btnUp);
-    sliderContainer.appendChild(markerTrack);
 
     const style = document.createElement('style');
     style.textContent = `
-        #speed-slider-container {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        #speed-slider-container button {
-            display: none; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
-            color: var(--accent3, #cc00ff); width: 27.6px; height: 27.6px; border-radius: 50%;
-            align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;
-            flex-shrink: 0; padding: 0; outline: none; z-index: 10;
-        }
-        #speed-slider-container button:active { transform: scale(0.9); background: #cc00ff; color: #fff; }
-
-        #speed-slider {
-            appearance: none; width: 250px; height: 2px; 
-            background: rgba(204,0,255,0.2);
-            outline: none; cursor: crosshair; transform: rotate(-90deg);
-            position: relative; z-index: 5; padding: 0; margin: 0;
-        }
-        #speed-slider::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 14px; height: 14px; 
-            background: #cc00ff; border: 2px solid #fff; border-radius: 50%;
-            cursor: pointer; box-shadow: 0 0 15px #cc00ff, 0 0 5px #fff;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        #speed-slider::-moz-range-thumb {
-            width: 14px; height: 14px; background: #cc00ff; border: 2px solid #fff;
-            border-radius: 50%; cursor: pointer; box-shadow: 0 0 15px #cc00ff;
-        }
-
-        #speed-marker-track {
-            position: absolute; width: 250px; height: 1px; pointer-events: none;
-            transform: rotate(-90deg); z-index: 4;
-        }
-        .slider-marker {
-            width: 1px; height: 6px; background: rgba(255,255,255,0.3);
-            transform: translateY(-50%);
-        }
-        .slider-marker span {
-            position: absolute; left: 8px; top: 50%; transform: translateY(-50%) rotate(90deg);
-            font-size: 10px; font-weight: bold; color: rgba(255,255,255,0.4);
-            width: 25px; text-align: left; white-space: nowrap; line-height: 1;
-        }
-
-        body.playlist-is-expanded #speed-slider-container,
-        body.mobile-player-expanded #speed-slider-container,
-        body.modal-is-open #speed-slider-container {
-            opacity: 0 !important; pointer-events: none !important;
-            transform: translateY(-50%) translateX(20px) !important;
-        }
-
-        @media (max-width: 768px) {
-            #speed-slider-container {
-                right: 0 !important; left: 50% !important; top: auto !important; bottom: 24px !important;
-                transform: translateX(-50%) !important; width: calc(100% - 150px) !important;
-                height: 54px !important; flex-direction: row !important;
-                background: rgba(20, 20, 25, 0.7); backdrop-filter: blur(12px);
-                border-radius: 18px; padding: 0 12px; border: 1px solid rgba(255,255,255,0.1);
-                gap: 12px;
-            }
-            #speed-slider-container button { display: flex; width: 27.6px !important; height: 27.6px !important; }
-            #speed-slider { width: 100% !important; transform: rotate(0deg) !important; height: 3px !important; }
-            #speed-marker-track { display: none !important; }
-            body.mobile-player-expanded #speed-slider-container {
-                transform: translateX(-50%) translateY(40px) !important; opacity: 0 !important;
-            }
+        #f-slider::-webkit-slider-thumb {
+            border-color: var(--accent-slider, #cc00ff) !important;
+            box-shadow: 0 0 15px var(--accent-slider, #cc00ff), 0 0 5px #fff !important;
         }
     `;
-    style.dataset.spaInjected = '1';
     document.head.appendChild(style);
 
-    document.body.appendChild(sliderContainer);
-
-    function updateMarkerPos() {
-        markers.forEach((m, i) => {
-            const div = markerTrack.children[i];
-            if (div) {
-                div.style.left = `${(m.v / 5) * 100}%`;
-                if (m.v === 1) div.querySelector('span').style.color = '#fff';
-            }
-        });
-    }
-    window.addEventListener('resize', updateMarkerPos);
-    updateMarkerPos();
-
-    btnDown.onclick = (e) => {
-        e.stopPropagation();
-        speedSlider.value = Math.max(0, Math.floor(parseFloat(speedSlider.value) * 2 - 1) / 2);
-        speedSlider.dispatchEvent(new Event('input'));
-    };
-    btnUp.onclick = (e) => {
-        e.stopPropagation();
-        speedSlider.value = Math.min(5, Math.ceil(parseFloat(speedSlider.value) * 2 + 1) / 2);
-        speedSlider.dispatchEvent(new Event('input'));
-    };
-
-    let manualSpeedFactor = 1.0;
-    speedSlider.addEventListener('input', (e) => {
-        manualSpeedFactor = parseFloat(e.target.value);
-    });
 
     
     let t = 0; const _q = new THREE.Quaternion();
@@ -770,7 +711,7 @@
           r.obj.rotateX(0.002 * manualSpeedFactor * ringIntro);
           r.obj.rotateZ(0.001 * manualSpeedFactor * ringIntro);
           
-          r.obj.scale.setScalar((1 + zf * (0.15 + i * 0.08)) * ringIntro);
+          r.obj.scale.setScalar((1 + zf * (0.15 + i * 0.08)) * ringIntro * manualDistanceFactor);
       });
 
       debrisGroup.children.forEach((rock, i) => {
@@ -784,6 +725,7 @@
       pSystem.material.opacity = 0.4 + Math.sin(t * 4) * 0.2;
 
       if (corePointsMat.userData.shader) corePointsMat.userData.shader.uniforms.uTime.value = t;
+      renderer.toneMappingExposure = manualBrightnessFactor;
       renderer.render(scene, camera);
     }
     animate();
