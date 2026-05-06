@@ -16,31 +16,26 @@
     style.textContent = `
       @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
       :root{--cp-purple:#b04fff;--cp-pink:#ff2d9b;--cp-cyan:#00ffe7;--cp-dark:rgba(8,2,18,0.94);--cp-border:rgba(176,79,255,0.45);--cp-font:'Share Tech Mono',monospace}
-      .cyber-hud-toggle{position:fixed;top:28px;right:28px;z-index:10001;width:52px;height:52px;background:rgba(8,2,18,0.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--cp-purple);color:var(--cp-purple);font-size:24px;line-height:1;cursor:pointer;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);transition:all .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);font-family:var(--cp-font);display:flex;align-items:center;justify-content:center;padding:0;box-shadow:0 0 15px rgba(176,79,255,0.2)}
-      .cyber-hud-toggle:hover,.cyber-hud-toggle.active{background:var(--cp-purple);color:#fff;box-shadow:0 0 25px var(--cp-purple);transform:scale(1.1) rotate(60deg)}
-      #cyber-hud-panel{position:fixed;top:95px;right:28px;z-index:10000;width:300px;background:var(--cp-dark);border:1px solid var(--cp-border);font-family:var(--cp-font);color:var(--cp-cyan);clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));transform:translateY(-20px);opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease}
-      #cyber-hud-panel.open{opacity:1;transform:translateY(0);pointer-events:all}
-      #cyber-hud-panel::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,231,.015) 3px,rgba(0,255,231,.015) 4px);pointer-events:none;z-index:1}
-      #cyber-hud-panel::after{content:'';position:absolute;top:0;right:0;width:16px;height:16px;background:var(--cp-purple);clip-path:polygon(0 0,100% 100%,100% 0);opacity:.7}
-      .hud-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 8px;border-bottom:1px solid var(--cp-border)}
-      .hud-title{font-size:11px;letter-spacing:3px;color:var(--cp-purple);text-transform:uppercase}
-      .hud-status{font-size:9px;letter-spacing:1.5px;color:var(--cp-pink);animation:hud-blink 1.6s step-end infinite}
-      @keyframes hud-blink{50%{opacity:0}}
-      .hud-body{padding:14px 16px 16px;position:relative;z-index:2}
-      .hud-row{margin-bottom:16px}
-      .hud-row:last-child{margin-bottom:0}
-      .hud-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-      .hud-label-text{font-size:10px;letter-spacing:2px;color:rgba(176,79,255,.8);text-transform:uppercase}
-      .hud-value{font-size:13px;color:var(--cp-cyan);min-width:36px;text-align:right}
+      .cyber-hud-toggle{position:fixed;top:28px;right:28px;z-index:10001;width:48px;height:48px;background:rgba(8,2,18,0.7);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1.5px solid var(--cp-purple);border-radius:50%;color:var(--cp-purple);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:all .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);box-shadow:0 10px 30px rgba(0,0,0,0.3)}
+      .cyber-hud-toggle svg{width:22px;height:22px;transition:transform .6s cubic-bezier(0.34, 1.56, 0.64, 1)}
+      .cyber-hud-toggle.active{background:var(--cp-purple);color:#fff;box-shadow:0 0 20px var(--cp-purple);transform:rotate(90deg)}
+      #cyber-hud-menu{position:fixed;top:90px;right:28px;z-index:10000;width:280px;background:rgba(8,2,18,0.88);backdrop-filter:blur(15px);border:1px solid var(--cp-border);border-radius:24px;padding:12px;display:flex;flex-direction:column;gap:6px;transform:translateY(-15px);opacity:0;pointer-events:none;transition:all .4s cubic-bezier(0.165, 0.84, 0.44, 1);font-family:var(--cp-font);box-shadow:0 20px 50px rgba(0,0,0,0.5)}
+      #cyber-hud-menu.open{transform:translateY(0);opacity:1;pointer-events:all}
+      .hud-menu-item{padding:14px 18px;border-radius:16px;background:rgba(176,79,255,0.05);border:1px solid transparent;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .25s;color:var(--cp-cyan);font-size:11px;letter-spacing:2px;text-transform:uppercase}
+      .hud-menu-item:hover{background:rgba(176,79,255,0.12);border-color:rgba(176,79,255,0.3)}
+      .hud-menu-item.active{background:rgba(176,79,255,0.18);border-color:var(--cp-purple);color:#fff}
+      .hud-slider-container{max-height:0;overflow:hidden;transition:all .4s cubic-bezier(0.4, 0, 0.2, 1);padding:0 10px;opacity:0}
+      .hud-slider-container.visible{max-height:100px;padding:12px 10px 20px;opacity:1}
+      .hud-label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+      .hud-label-text{font-size:9px;color:rgba(176,79,255,0.8);letter-spacing:1px}
+      .hud-value-text{font-size:12px;color:var(--cp-cyan)}
       .hud-slider-wrap{position:relative;display:flex;align-items:center}
       .hud-track-bg{position:absolute;left:0;top:50%;transform:translateY(-50%);height:3px;background:linear-gradient(to right,var(--cp-cyan),var(--cp-purple));pointer-events:none;border-radius:2px}
-      .hud-slider{-webkit-appearance:none;appearance:none;width:100%;height:3px;background:rgba(176,79,255,.2);outline:none;cursor:pointer;position:relative;z-index:1}
-      .hud-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);background:var(--cp-purple);cursor:pointer;box-shadow:0 0 8px var(--cp-purple);transition:background .15s}
-      .hud-slider::-webkit-slider-thumb:hover{background:var(--cp-cyan);box-shadow:0 0 12px var(--cp-cyan)}
-      .hud-slider::-moz-range-thumb{width:14px;height:14px;border:none;background:var(--cp-purple);cursor:pointer}
-      .hud-divider{border:none;border-top:1px solid var(--cp-border);margin:14px 0}
-      .hud-reset{width:100%;background:transparent;border:1px solid rgba(255,45,155,.4);color:var(--cp-pink);font-family:var(--cp-font);font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:7px 0;cursor:pointer;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);transition:background .15s,box-shadow .15s}
-      .hud-reset:hover{background:rgba(255,45,155,.12);box-shadow:0 0 12px rgba(255,45,155,.3)}
+      .hud-slider{-webkit-appearance:none;appearance:none;width:100%;height:3px;background:rgba(176,79,255,0.2);outline:none;cursor:pointer;position:relative;z-index:1}
+      .hud-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--cp-purple);cursor:pointer;box-shadow:0 0 10px var(--cp-purple);transition:all .2s;border:2px solid #fff}
+      .hud-slider::-webkit-slider-thumb:hover{transform:scale(1.2);background:var(--cp-cyan);box-shadow:0 0 15px var(--cp-cyan)}
+      .hud-reset-btn{width:100%;background:transparent;border:1px solid rgba(255,45,155,0.3);color:var(--cp-pink);font-family:var(--cp-font);font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:10px;border-radius:12px;cursor:pointer;margin-top:4px;transition:all .2s}
+      .hud-reset-btn:hover{background:rgba(255,45,155,0.1);border-color:var(--cp-pink)}
     `;
     document.head.appendChild(style);
   }
@@ -454,56 +449,52 @@
         toggle.id = 'cyber-toggle';
         toggle.className = 'cyber-hud-toggle';
         toggle.setAttribute('aria-label', 'Settings');
-        toggle.textContent = '⬡';
+        toggle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
         document.body.appendChild(toggle);
       } else {
         toggle.className = 'cyber-hud-toggle';
-        toggle.textContent = '⬡';
+        toggle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
       }
 
-      const panel = document.createElement('div');
-      panel.id = 'cyber-hud-panel';
-      panel.innerHTML = `
-        <div class="hud-header">
-          <span class="hud-title">// SYS_CONFIG</span>
-          <span class="hud-status">● ONLINE</span>
+      const menu = document.createElement('div');
+      menu.id = 'cyber-hud-menu';
+      menu.innerHTML = `
+        <div class="hud-menu-item" data-target="speed">
+          <span>Orbit Speed</span>
+          <span class="hud-value-text" id="val-speed">1.0x</span>
         </div>
-        <div class="hud-body">
-          <div class="hud-row">
-            <div class="hud-label">
-              <span class="hud-label-text">ORBIT SPEED</span>
-              <span class="hud-value" id="val-speed">1.0x</span>
-            </div>
-            <div class="hud-slider-wrap">
-              <div class="hud-track-bg" id="track-speed" style="width:25%"></div>
-              <input type="range" class="hud-slider" id="slider-speed" min="0" max="4" step="0.05" value="1">
-            </div>
+        <div class="hud-slider-container" id="container-speed">
+          <div class="hud-slider-wrap">
+            <div class="hud-track-bg" id="track-speed" style="width:25%"></div>
+            <input type="range" class="hud-slider" id="slider-speed" min="0" max="4" step="0.05" value="1">
           </div>
-          <div class="hud-row">
-            <div class="hud-label">
-              <span class="hud-label-text">EXPOSURE</span>
-              <span class="hud-value" id="val-brightness">1.0x</span>
-            </div>
-            <div class="hud-slider-wrap">
-              <div class="hud-track-bg" id="track-brightness" style="width:33%"></div>
-              <input type="range" class="hud-slider" id="slider-brightness" min="0.1" max="3" step="0.05" value="1">
-            </div>
-          </div>
-          <div class="hud-row">
-            <div class="hud-label">
-              <span class="hud-label-text">RING SCALE</span>
-              <span class="hud-value" id="val-distance">1.0x</span>
-            </div>
-            <div class="hud-slider-wrap">
-              <div class="hud-track-bg" id="track-distance" style="width:41%"></div>
-              <input type="range" class="hud-slider" id="slider-distance" min="0.3" max="2" step="0.05" value="1">
-            </div>
-          </div>
-          <hr class="hud-divider">
-          <button class="hud-reset" id="hud-reset-btn">⟳ RESET DEFAULTS</button>
         </div>
+
+        <div class="hud-menu-item" data-target="brightness">
+          <span>Exposure</span>
+          <span class="hud-value-text" id="val-brightness">1.0x</span>
+        </div>
+        <div class="hud-slider-container" id="container-brightness">
+          <div class="hud-slider-wrap">
+            <div class="hud-track-bg" id="track-brightness" style="width:33%"></div>
+            <input type="range" class="hud-slider" id="slider-brightness" min="0.1" max="3" step="0.05" value="1">
+          </div>
+        </div>
+
+        <div class="hud-menu-item" data-target="distance">
+          <span>Ring Scale</span>
+          <span class="hud-value-text" id="val-distance">1.0x</span>
+        </div>
+        <div class="hud-slider-container" id="container-distance">
+          <div class="hud-slider-wrap">
+            <div class="hud-track-bg" id="track-distance" style="width:41%"></div>
+            <input type="range" class="hud-slider" id="slider-distance" min="0.3" max="2" step="0.05" value="1">
+          </div>
+        </div>
+
+        <button class="hud-reset-btn" id="hud-reset-btn">⟳ Reset Defaults</button>
       `;
-      document.body.appendChild(panel);
+      document.body.appendChild(menu);
 
       const configs = [
         { id: 'speed',      min: 0,   max: 4, defaultVal: 1, setter: v => { manualSpeedFactor = v; } },
@@ -520,13 +511,14 @@
       configs.forEach(cfg => {
         const slider = document.getElementById('slider-' + cfg.id);
         const valEl  = document.getElementById('val-' + cfg.id);
-        if (!slider) return;
-        slider.addEventListener('input', () => {
-          const v = parseFloat(slider.value);
-          cfg.setter(v);
-          valEl.textContent = v.toFixed(1) + 'x';
-          updateTrack(cfg.id, v, cfg.min, cfg.max);
-        });
+        if (slider) {
+          slider.addEventListener('input', () => {
+            const v = parseFloat(slider.value);
+            cfg.setter(v);
+            valEl.textContent = v.toFixed(1) + 'x';
+            updateTrack(cfg.id, v, cfg.min, cfg.max);
+          });
+        }
         updateTrack(cfg.id, cfg.defaultVal, cfg.min, cfg.max);
       });
 
@@ -546,14 +538,35 @@
         e.stopPropagation();
         isOpen = !isOpen;
         toggle.classList.toggle('active', isOpen);
-        panel.classList.toggle('open', isOpen);
+        menu.classList.toggle('open', isOpen);
+        if (!isOpen) {
+          document.querySelectorAll('.hud-menu-item').forEach(el => el.classList.remove('active'));
+          document.querySelectorAll('.hud-slider-container').forEach(el => el.classList.remove('visible'));
+        }
+      });
+
+      menu.querySelectorAll('.hud-menu-item').forEach(item => {
+        item.addEventListener('click', e => {
+          e.stopPropagation();
+          const target = item.getAttribute('data-target');
+          const container = document.getElementById('container-' + target);
+          const wasActive = item.classList.contains('active');
+          document.querySelectorAll('.hud-menu-item').forEach(el => el.classList.remove('active'));
+          document.querySelectorAll('.hud-slider-container').forEach(el => el.classList.remove('visible'));
+          if (!wasActive) {
+            item.classList.add('active');
+            container.classList.add('visible');
+          }
+        });
       });
 
       document.addEventListener('click', e => {
-        if (isOpen && !panel.contains(e.target) && e.target !== toggle) {
+        if (isOpen && !menu.contains(e.target) && e.target !== toggle) {
           isOpen = false;
           toggle.classList.remove('active');
-          panel.classList.remove('open');
+          menu.classList.remove('open');
+          document.querySelectorAll('.hud-menu-item').forEach(el => el.classList.remove('active'));
+          document.querySelectorAll('.hud-slider-container').forEach(el => el.classList.remove('visible'));
         }
       });
     }
@@ -739,5 +752,5 @@
     });
   }
 
-  boot();
-})();
+  init();
+})();
