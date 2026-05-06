@@ -309,14 +309,14 @@
       position: fixed;
       top: 28px;
       right: 28px;
-      width: 52px;
-      height: 52px;
+      width: 54px;
+      height: 54px;
       z-index: 10001;
       background: rgba(8, 2, 18, 0.7);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       border: 1px solid rgba(178, 137, 239, 0.4);
-      border-radius: 14px;
+      border-radius: 50%;
       color: #b289ef;
       cursor: pointer;
       display: flex;
@@ -336,30 +336,6 @@
     }
 
     .cyber-toggle-btn svg { width: 24px; height: 24px; transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
-    .cyber-settings.active + .cyber-toggle-btn svg { transform: rotate(180deg) scale(0.8); }
-
-    .cyber-toggle-btn::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
-      transform: translateX(-100%);
-      transition: transform 0.6s;
-    }
-    .cyber-toggle-btn:hover::before { transform: translateX(100%); }
-
-    .cyber-toggle-btn::after {
-      content: 'SETTINGS';
-      position: absolute;
-      bottom: 4px;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 6px;
-      font-weight: 900;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: all 0.3s;
-    }
-    .cyber-toggle-btn:hover::after { opacity: 0.6; transform: translateY(0); }
 
     @media (max-width: 768px) {
       .cyber-controls {
@@ -368,11 +344,6 @@
         bottom: 80px;
         transform: translateX(50%);
         width: calc(100% - 60px);
-      }
-      .hex-grid {
-        grid-template-columns: repeat(8, 60px);
-        grid-auto-rows: 70px;
-        transform: scale(0.6);
       }
     }
     </style>
@@ -387,40 +358,6 @@
   </div>
 
   <div class="info-noise"></div>
-
-  <div class="cyber-controls-3d" id="cyber-controls-3d">
-    <div class="cyber-slider-group" id="group-speed" style="display:none">
-      <div class="cyber-label-wrap">
-        <span class="cyber-label">Rotation Speed</span>
-        <span class="cyber-value" id="val-speed">1.0x</span>
-      </div>
-      <div class="cyber-range-wrap">
-        <input type="range" class="cyber-range" id="range-speed" min="0" max="5" step="0.01" value="1">
-      </div>
-    </div>
-
-    <div class="cyber-slider-group" id="group-brightness" style="display:none">
-      <div class="cyber-label-wrap">
-        <span class="cyber-label">Global Brightness</span>
-        <span class="cyber-value" id="val-brightness">1.0</span>
-      </div>
-      <div class="cyber-range-wrap">
-        <input type="range" class="cyber-range" id="range-brightness" min="0.1" max="2.5" step="0.01" value="1">
-      </div>
-    </div>
-
-    <div class="cyber-slider-group" id="group-distance" style="display:none">
-      <div class="cyber-label-wrap">
-        <span class="cyber-label">Ring Distance</span>
-        <span class="cyber-value" id="val-distance">1.0</span>
-      </div>
-      <div class="cyber-range-wrap">
-        <input type="range" class="cyber-range" id="range-distance" min="0.5" max="2.5" step="0.01" value="1">
-      </div>
-    </div>
-  </div>
-
-
 
   <button class="cyber-toggle-btn" id="cyber-toggle" aria-label="Toggle Settings">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
