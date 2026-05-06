@@ -15,9 +15,9 @@
     const style = document.createElement('style');
     style.textContent = `
       @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-      :root{--cp-purple:#b04fff;--cp-pink:#ff2d9b;--cp-cyan:#00ffe7;--cp-dark:rgba(8,2,18,0.94);--cp-border:rgba(176,79,255,0.45);--cp-font:'Share Tech Mono',monospace}
+      :root{--cp-purple:#b289ef;--cp-pink:#ff2d9b;--cp-cyan:#00ffe7;--cp-dark:rgba(8,2,18,0.94);--cp-border:rgba(178,137,239,0.45);--cp-font:'Share Tech Mono',monospace}
       .cyber-hud-toggle{position:fixed;top:24px;right:14px;z-index:10001;width:54px;height:54px;background:rgba(25,25,30,0.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.12);border-radius:50%;color:var(--cp-purple);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:all .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);box-shadow:0 10px 40px rgba(0,0,0,0.5)}
-      .cyber-hud-toggle:hover{background:rgba(176,79,255,0.25);border-color:#d4a8ff;color:#fff;transform:scale(1.1);box-shadow:0 0 30px rgba(176,79,255,0.3)}
+      .cyber-hud-toggle:hover{background:rgba(178,137,239,0.2);border-color:#b289ef;color:#fff;transform:scale(1.1);box-shadow:0 0 25px rgba(178,137,239,0.5)}
       .cyber-hud-toggle svg{width:24px;height:24px;transition:transform .6s cubic-bezier(0.34, 1.56, 0.64, 1)}
       .cyber-hud-toggle.active{background:rgba(176,79,255,0.15);border-color:var(--cp-purple);color:#fff;box-shadow:0 0 30px var(--cp-purple),inset 0 0 15px rgba(176,79,255,0.2);transform:rotate(90deg)}
       .cyber-hud-toggle.active svg{filter:drop-shadow(0 0 8px var(--cp-purple))}
@@ -38,6 +38,13 @@
       .hud-slider::-webkit-slider-thumb:hover{transform:scale(1.2);background:var(--cp-cyan);box-shadow:0 0 15px var(--cp-cyan)}
       .hud-reset-btn{width:100%;background:transparent;border:1px solid rgba(255,45,155,0.3);color:var(--cp-pink);font-family:var(--cp-font);font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:10px;border-radius:12px;cursor:pointer;margin-top:4px;transition:all .2s}
       .hud-reset-btn:hover{background:rgba(255,45,155,0.1);border-color:var(--cp-pink)}
+      @media (max-width:768px){
+        .cyber-hud-toggle{top:auto;bottom:24px;left:50%;right:auto;transform:translateX(-50%)}
+        .cyber-hud-toggle.active{transform:translateX(-50%) rotate(90deg)}
+        .cyber-hud-toggle:hover{transform:translateX(-50%) scale(1.1)}
+        #cyber-hud-menu{top:auto;bottom:88px;left:50%;right:auto;transform:translate(-50%,15px)}
+        #cyber-hud-menu.open{transform:translate(-50%,0)}
+      }
     `;
     document.head.appendChild(style);
   }
@@ -441,7 +448,7 @@
     });
 
     let manualSpeedFactor = 1.0;
-    let manualBrightnessFactor = 1.0;
+    let manualBrightnessFactor = 0.5;
     let manualDistanceFactor = 1.0;
 
     function initSettings3D() {
@@ -474,12 +481,12 @@
 
         <div class="hud-menu-item" data-target="brightness">
           <span>Exposure</span>
-          <span class="hud-value-text" id="val-brightness">1.0x</span>
+          <span class="hud-value-text" id="val-brightness">0.5x</span>
         </div>
         <div class="hud-slider-container" id="container-brightness">
           <div class="hud-slider-wrap">
-            <div class="hud-track-bg" id="track-brightness" style="width:33%"></div>
-            <input type="range" class="hud-slider" id="slider-brightness" min="0.1" max="3" step="0.05" value="1">
+            <div class="hud-track-bg" id="track-brightness" style="width:13.8%"></div>
+            <input type="range" class="hud-slider" id="slider-brightness" min="0.1" max="3" step="0.05" value="0.5">
           </div>
         </div>
 
@@ -500,7 +507,7 @@
 
       const configs = [
         { id: 'speed',      min: 0,   max: 4, defaultVal: 1, setter: v => { manualSpeedFactor = v; } },
-        { id: 'brightness', min: 0.1, max: 3, defaultVal: 1, setter: v => { manualBrightnessFactor = v; } },
+        { id: 'brightness', min: 0.1, max: 3, defaultVal: 0.5, setter: v => { manualBrightnessFactor = v; } },
         { id: 'distance',   min: 0.3, max: 2, defaultVal: 1, setter: v => { manualDistanceFactor = v; } },
       ];
 
