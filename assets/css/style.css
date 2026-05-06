@@ -1181,8 +1181,8 @@ html { scroll-behavior: smooth; }
 
 .mobile-ctrl {
   position: absolute;
-  width: 46px;
-  height: 46px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: rgba(20, 20, 25, 0.85);
   backdrop-filter: blur(12px);
@@ -1206,10 +1206,10 @@ html { scroll-behavior: smooth; }
   pointer-events: auto;
 }
 
-.music-player.expanded #mobile-playlist   { transform: scale(1) translate(-100px, 0px);   transition-delay: 0.1s; }
-.music-player.expanded #mobile-prev       { transform: scale(1) translate(-85px, -55px);  transition-delay: 0.15s; }
-.music-player.expanded #mobile-play-pause { transform: scale(1) translate(-50px, -95px);  transition-delay: 0.2s; }
-.music-player.expanded #mobile-next       { transform: scale(1) translate(0px, -110px);   transition-delay: 0.25s; }
+.music-player.expanded #mobile-playlist   { transform: scale(1) translate(-85px, 0px);   transition-delay: 0.1s; }
+.music-player.expanded #mobile-prev       { transform: scale(1) translate(-75px, -45px);  transition-delay: 0.15s; }
+.music-player.expanded #mobile-play-pause { transform: scale(1) translate(-45px, -75px);  transition-delay: 0.2s; }
+.music-player.expanded #mobile-next       { transform: scale(1) translate(0px, -85px);   transition-delay: 0.25s; }
 
 .mobile-ctrl:active {
   transform: scale(0.9) !important;
@@ -2155,8 +2155,8 @@ body.is-mobile .music-toggle {
 }
 
 .settings-toggle {
-  width: 50px;
-  height: 50px;
+  width: 54px;
+  height: 54px;
   background: rgba(25, 25, 30, 0.8);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -2199,8 +2199,8 @@ body.is-mobile .music-toggle {
   position: absolute;
   top: 0;
   right: 0;
-  width: 50px;
-  height: 50px;
+  width: 54px;
+  height: 54px;
   pointer-events: none;
 }
 
@@ -2331,34 +2331,72 @@ body.is-mobile .music-toggle {
     left: 50%;
     right: auto;
     transform: translateX(-50%);
+    width: 54px;
+    height: 54px;
+  }
+
+  .settings-menu {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 54px;
+    height: 54px;
   }
 
   .cyber-settings-wrap.open #s-item-speed { transform: scale(1) translate(-70px, -45px); }
   .cyber-settings-wrap.open #s-item-brightness { transform: scale(1) translate(0px, -90px); }
   .cyber-settings-wrap.open #s-item-distance { transform: scale(1) translate(70px, -45px); }
 
+  .settings-item {
+    right: 7px;
+    bottom: 7px;
+  }
+
   .settings-item.active {
-    height: 150px;
+    height: 155px;
+    width: 44px;
     flex-direction: column-reverse;
-    padding: 15px 0;
-    width: 40px;
+    padding: 12px 0;
     justify-content: space-between;
+    align-items: center;
+  }
+
+  .settings-item svg {
+    width: 20px;
+    height: 20px;
+    margin: 0 auto;
   }
 
   .settings-slider-wrap {
     flex-direction: column-reverse;
-    width: auto;
+    width: 100%;
     height: 0;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-end;
   }
 
   .settings-item.active .settings-slider-wrap {
-    height: auto;
+    height: 105px; /* Fixed height for the expanded part */
+    opacity: 1;
   }
 
   .s-slider {
-    width: 70px;
+    width: 65px;
+    height: 3px;
     transform: rotate(-90deg);
-    margin: 35px 0;
+    margin: 32px 0; /* Align rotated slider */
+    flex-shrink: 0;
+  }
+
+  .s-val {
+    min-width: 0;
+    text-align: center;
+    width: 100%;
+    font-size: 10px;
+    font-weight: 700;
+    margin-bottom: 5px;
   }
 }
