@@ -19,32 +19,31 @@
       .cyber-settings-wrap{position:fixed;top:24px;right:14px;z-index:10001;display:flex;align-items:center;justify-content:center}
       .settings-toggle{width:54px;height:54px;background:rgba(25,25,30,0.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.12);border-radius:50%;color:var(--cp-purple);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);box-shadow:0 10px 40px rgba(0,0,0,0.5);z-index:2}
       .settings-toggle:hover{background:rgba(178,137,239,0.2);border-color:#b289ef;color:#fff;transform:scale(1.1);box-shadow:0 0 25px rgba(178,137,239,0.5)}
-      .settings-toggle.active{transform:rotate(90deg);background:rgba(176,79,255,0.15);border-color:var(--cp-purple);color:#fff;box-shadow:0 0 30px var(--cp-purple)}
+      .settings-toggle.active{transform:rotate(90deg);background:var(--cp-purple);color:#fff;border-color:#fff;box-shadow:0 0 30px var(--cp-purple)}
       .settings-menu{position:absolute;top:0;right:0;width:54px;height:54px;pointer-events:none}
       .settings-item{position:absolute;width:46px;height:46px;background:rgba(20,20,25,0.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(178,137,239,0.3);border-radius:23px;color:var(--cp-cyan);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transform:scale(0.5);transition:all .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);box-shadow:0 8px 25px rgba(0,0,0,0.4);overflow:hidden}
       .cyber-settings-wrap.open .settings-item{opacity:1;pointer-events:auto}
-      .settings-item.active{background:var(--cp-purple);color:#fff;border-color:#fff}
-      .settings-item svg{width:20px;height:20px;flex-shrink:0}
+      .settings-item.active{background:var(--cp-purple);color:#fff;border-color:#fff;z-index:10}
+      .settings-item svg{width:20px;height:20px;flex-shrink:0;transition:opacity 0.3s}
       .settings-slider-wrap{position:absolute;opacity:0;pointer-events:none;transition:all .4s;display:flex;align-items:center;gap:10px}
       .settings-item.active .settings-slider-wrap{opacity:1;pointer-events:auto}
-      .settings-item.active svg{opacity:0.5}
       .s-slider{appearance:none;-webkit-appearance:none;background:rgba(255,255,255,0.2);height:4px;border-radius:2px;outline:none}
       .s-slider::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:14px;height:14px;background:#fff;border-radius:50%;cursor:pointer;box-shadow:0 0 10px var(--cp-cyan)}
       .s-val{font-family:var(--cp-font);font-size:10px;min-width:25px}
       @media (min-width:769px){
-        .cyber-settings-wrap.open #s-item-speed{transform:scale(1) translate(-70px, 70px)}
-        .cyber-settings-wrap.open #s-item-brightness{transform:scale(1) translate(-130px, 130px)}
-        .cyber-settings-wrap.open #s-item-distance{transform:scale(1) translate(-190px, 190px)}
-        .settings-item.active{width:220px;transform:scale(1) translate(-244px, 0) !important}
+        .cyber-settings-wrap.open #s-item-speed{transform:scale(1) translate(-90px, 10px)}
+        .cyber-settings-wrap.open #s-item-brightness{transform:scale(1) translate(-75px, 75px)}
+        .cyber-settings-wrap.open #s-item-distance{transform:scale(1) translate(-10px, 90px)}
+        .settings-item.active{width:220px;border-radius:25px;transform:translate(-244px, 0) scale(1) !important}
         .settings-slider-wrap{left:50px;right:15px}
         .s-slider{width:110px}
       }
       @media (max-width:768px){
         .cyber-settings-wrap{top:auto;bottom:24px;left:50%;right:auto;transform:translateX(-50%)}
-        .cyber-settings-wrap.open #s-item-speed{transform:scale(1) translateY(-70px)}
-        .cyber-settings-wrap.open #s-item-brightness{transform:scale(1) translateY(-130px)}
-        .cyber-settings-wrap.open #s-item-distance{transform:scale(1) translateY(-190px)}
-        .settings-item.active{height:180px;transform:scale(1) translateY(-210px) !important;flex-direction:column;padding:20px 0}
+        .cyber-settings-wrap.open #s-item-speed{transform:scale(1) translate(-75px, -45px)}
+        .cyber-settings-wrap.open #s-item-brightness{transform:scale(1) translate(0px, -90px)}
+        .cyber-settings-wrap.open #s-item-distance{transform:scale(1) translate(75px, -45px)}
+        .settings-item.active{height:180px;border-radius:25px;transform:translate(0, -210px) scale(1) !important;flex-direction:column;padding:20px 0}
         .settings-slider-wrap{flex-direction:column-reverse;bottom:50px;left:0;right:0;top:15px}
         .s-slider{width:100px;transform:rotate(-90deg)}
         .settings-item.active svg{margin-top:auto}
