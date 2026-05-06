@@ -2308,7 +2308,7 @@ body.is-mobile .music-toggle {
   
   .timer-wrap {
     position: absolute;
-    left: 24px;
+    left: 70px;
     top: 50%;
     transform: translateY(-50%);
     align-items: flex-start;
