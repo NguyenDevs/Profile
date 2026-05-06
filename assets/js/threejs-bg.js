@@ -509,13 +509,17 @@
             opacity: 0.9
         });
 
-        // Generate Grid
-        for (let r = -5; r <= 5; r++) {
-            for (let c = -6; c <= 6; c++) {
+        // Generate Grid (with a 'hole' in the center for the Core)
+        for (let r = -6; r <= 6; r++) {
+            for (let c = -7; c <= 7; c++) {
                 const x = c * hSpacing + (r % 2 === 0 ? 0 : hSpacing / 2);
                 const z = r * vSpacing;
                 
-                const height = 1.5 + Math.random() * 5;
+                // Skip the center area to keep the Core visible
+                const distToCenter = Math.sqrt(x*x + z*z);
+                if (distToCenter < 7) continue;
+
+                const height = 2 + Math.random() * 6;
                 const geo = new THREE.CylinderGeometry(hexSize * 0.92, hexSize * 0.92, height, 6);
                 const mesh = new THREE.Mesh(geo, glassMat);
                 mesh.position.set(x, height / 2, z);
@@ -524,16 +528,16 @@
             }
         }
 
-        // Functional Pillars
+        // Functional Pillars (Positioned in front/side of the Core)
         const funcConfigs = [
-            { id: 'speed', x: 0, z: 0, label: 'SPEED' },
-            { id: 'brightness', x: hSpacing, z: 0, label: 'LIGHT' },
-            { id: 'distance', x: -hSpacing/2, z: vSpacing, label: 'DIST' }
+            { id: 'speed', x: -hSpacing * 1.5, z: 8, label: 'SPEED' },
+            { id: 'brightness', x: 0, z: 10, label: 'LIGHT' },
+            { id: 'distance', x: hSpacing * 1.5, z: 8, label: 'DIST' }
         ];
 
         funcConfigs.forEach(cfg => {
-            const height = 9;
-            const geo = new THREE.CylinderGeometry(hexSize * 0.92, hexSize * 0.92, height, 6);
+            const height = 12;
+            const geo = new THREE.CylinderGeometry(hexSize * 0.95, hexSize * 0.95, height, 6);
             const mesh = new THREE.Mesh(geo, activeMat);
             mesh.position.set(cfg.x, height / 2, cfg.z);
             mesh.userData = { id: cfg.id, baseH: height, type: 'btn', label: cfg.label };
@@ -547,13 +551,13 @@
             cctx.font = 'bold 48px Orbitron';
             cctx.textAlign = 'center';
             cctx.shadowColor = 'rgba(178, 137, 239, 0.8)';
-            cctx.shadowBlur = 10;
+            cctx.shadowBlur = 15;
             cctx.fillText(cfg.label, 128, 80);
             
             const texture = new THREE.CanvasTexture(canvas);
-            const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
+            const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false });
             const sprite = new THREE.Sprite(spriteMat);
-            sprite.position.set(cfg.x, height + 1.5, cfg.z);
+            sprite.position.set(cfg.x, height + 1.8, cfg.z);
             sprite.scale.set(4, 2, 1);
             pillarGroup.add(sprite);
         });
