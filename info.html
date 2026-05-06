@@ -5,12 +5,10 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 
-  <!-- ── Primary Meta ── -->
   <title>NGUYENDEVS — INFO</title>
   <meta name="description" content="Information and about NguyenDevs. Member of MixelArt.">
   <meta name="theme-color" content="#0b0b0f">
 
-  <!-- ── Canonical ── -->
   <link rel="canonical" href="./info.html">
 
   <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon/apple-touch-icon.png">
@@ -21,7 +19,6 @@
   <meta name="msapplication-TileColor" content="#0b0b0f">
   <meta name="theme-color" content="#0b0b0f">
 
-  <!-- ── Open Graph ── -->
   <meta property="og:title"       content="NGUYENDEVS — INFO">
   <meta property="og:description" content="Information and about NguyenDevs. Member of MixelArt.">
   <meta property="og:image"       content="assets/images/og-image.png">
@@ -32,13 +29,11 @@
   <meta property="og:site_name"   content="NguyenDevs Profile">
   <meta property="fb:app_id"      content="797683330612487">
 
-  <!-- ── Twitter Card ── -->
   <meta name="twitter:card"        content="summary_large_image">
   <meta name="twitter:title"       content="NGUYENDEVS — INFO">
   <meta name="twitter:description" content="Information and about NguyenDevs. Member of MixelArt.">
   <meta name="twitter:image"       content="assets/images/og-image.png">
 
-  <!-- ── Google Fonts ── -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=Rubik:wght@600;700;800&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -50,7 +45,6 @@
       overflow: hidden;
     }
 
-    /* Floating minimal label */
     .info-label {
       position: fixed;
       top: 28px;
@@ -79,7 +73,6 @@
       text-transform: uppercase;
     }
 
-    /* Grain noise overlay */
     .info-noise {
       position: fixed;
       inset: 0;
@@ -90,7 +83,6 @@
       background-size: 180px;
     }
 
-    /* ── Cyberpunk Settings UI ── */
     .cyber-settings {
       position: fixed;
       inset: 0;
@@ -117,7 +109,6 @@
       z-index: -1;
     }
 
-    /* ── 3D Settings UI Integration ── */
     .cyber-controls-3d {
       position: fixed;
       right: 50px;
@@ -135,7 +126,6 @@
       right: 80px;
     }
 
-    /* Hide standard UI when settings active */
     body.settings-3d-active .music-player,
     body.settings-3d-active .menu-btn-wrap {
       opacity: 0 !important;
@@ -151,9 +141,6 @@
       box-shadow: 0 0 30px var(--accent);
     }
 
-
-    /* Staggered animation */
-    /* Generation of nth-child delays in CSS is tedious, we'll do it via JS or small set here */
     .hex-item:nth-child(5n) { transition-delay: 0.1s; }
     .hex-item:nth-child(5n+1) { transition-delay: 0.2s; }
     .hex-item:nth-child(5n+2) { transition-delay: 0.3s; }
@@ -198,7 +185,6 @@
       color: inherit;
     }
 
-    /* Moving border animation using SVG */
     .hex-border-svg {
       position: absolute;
       inset: 0;
@@ -223,7 +209,6 @@
       to { stroke-dashoffset: 0; }
     }
 
-    /* Control Panel */
     .cyber-controls {
       position: absolute;
       right: 10%;
@@ -320,60 +305,61 @@
       background: rgba(255, 255, 255, 0.15);
     }
 
-    /* Settings Toggle in Page (Top Right) */
     .cyber-toggle-btn {
       position: fixed;
-      top: 24px;
-      right: 24px;
-      width: 50px;
-      height: 50px;
+      top: 28px;
+      right: 28px;
+      width: 52px;
+      height: 52px;
       z-index: 10001;
-      background: rgba(20, 20, 25, 0.8);
-      border: 1px solid rgba(178, 137, 239, 0.3);
-      border-radius: 12px;
-      color: var(--accent3);
+      background: rgba(8, 2, 18, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(178, 137, 239, 0.4);
+      border-radius: 14px;
+      color: #b289ef;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.4s;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       overflow: hidden;
+      box-shadow: 0 0 15px rgba(178, 137, 239, 0.2);
     }
 
     .cyber-toggle-btn:hover {
-      background: var(--accent);
+      background: #b289ef;
       color: #fff;
       border-color: #fff;
-      box-shadow: 0 0 20px rgba(178, 137, 239, 0.5);
-      transform: translateY(-2px);
+      box-shadow: 0 0 25px rgba(178, 137, 239, 0.6);
+      transform: scale(1.1);
     }
 
-    .cyber-toggle-btn svg { width: 22px; height: 22px; transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .cyber-toggle-btn svg { width: 24px; height: 24px; transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
     .cyber-settings.active + .cyber-toggle-btn svg { transform: rotate(180deg) scale(0.8); }
 
     .cyber-toggle-btn::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
       transform: translateX(-100%);
       transition: transform 0.6s;
     }
     .cyber-toggle-btn:hover::before { transform: translateX(100%); }
 
-    /* Close text on hover */
     .cyber-toggle-btn::after {
-      content: 'CLOSE';
+      content: 'SETTINGS';
       position: absolute;
-      bottom: 2px;
+      bottom: 4px;
       font-family: 'Orbitron', sans-serif;
-      font-size: 7px;
+      font-size: 6px;
       font-weight: 900;
       opacity: 0;
       transform: translateY(10px);
       transition: all 0.3s;
     }
-    .cyber-settings.active + .cyber-toggle-btn::after { opacity: 1; transform: translateY(0); }
+    .cyber-toggle-btn:hover::after { opacity: 0.6; transform: translateY(0); }
 
     @media (max-width: 768px) {
       .cyber-controls {
@@ -393,7 +379,6 @@
 </head>
 <body>
 
-  <!-- SPA content wrapper for info page -->
   <div class="coming-soon">
     <div class="info-label" aria-label="Info page">
       <div class="info-label__eyebrow" id="time-lived-display">NguyenDevs &middot; calculating...</div>
@@ -403,9 +388,7 @@
 
   <div class="info-noise"></div>
 
-  <!-- ── 3D Settings Controls ── -->
   <div class="cyber-controls-3d" id="cyber-controls-3d">
-    <!-- Sliders only appear when their specific pillar is clicked -->
     <div class="cyber-slider-group" id="group-speed" style="display:none">
       <div class="cyber-label-wrap">
         <span class="cyber-label">Rotation Speed</span>
@@ -439,16 +422,13 @@
 
 
 
-  <!-- Toggle Button (Persistent) -->
   <button class="cyber-toggle-btn" id="cyber-toggle" aria-label="Toggle Settings">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
   </button>
 
-  <!-- ── Music Player ── -->
   <div class="music-player mini-player-mode" id="mobile-music-player" aria-label="Music Player">
     <audio id="bg-music" preload="auto"></audio>
     
-    <!-- Expanded Desktop Content -->
     <div class="player-container mini-player-ui">
       <div class="player-info">
         <div class="track-name" id="player-track-name">Select a track</div>
@@ -490,12 +470,10 @@
 
       <div class="player-playlist" id="player-playlist">
         <div class="playlist-inner" id="player-playlist-inner">
-          <!-- Playlist items will be injected by JS -->
         </div>
       </div>
     </div>
 
-    <!-- Mobile Controls -->
     <div class="mobile-controls" id="mobile-controls">
       <button class="mobile-ctrl" id="mobile-playlist" title="Playlist">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
@@ -512,7 +490,6 @@
       </button>
     </div>
 
-    <!-- The Toggle Button -->
     <button class="music-toggle playing" id="music-btn" aria-label="Toggle Music" title="Music Menu">
       <div class="music-icon-wrap">
         <div class="music-waves" id="music-waves"><span></span><span></span><span></span></div>
@@ -523,7 +500,6 @@
     </button>
   </div>
 
-  <!-- ── Bottom Navigation ── -->
   <nav class="bottom-nav" id="bottom-nav" aria-label="Main Navigation">
     <button class="nav-toggle" id="nav-toggle" aria-label="Toggle Menu">
       <div class="hamburger">
@@ -548,7 +524,6 @@
     </div>
   </nav>
 
-  <!-- ── Mobile Playlist Popup ── -->
   <div class="mobile-playlist-modal" id="mobile-playlist-modal" aria-hidden="true">
     <div class="modal-overlay" id="modal-overlay"></div>
     <div class="modal-content">
@@ -562,16 +537,12 @@
         </button>
       </div>
       <div class="modal-body" id="mobile-playlist-list">
-        <!-- Playlist items injected by JS -->
       </div>
     </div>
   </div>
 
-  <!-- ── Scripts ── -->
   <script src="assets/js/main.js" type="module"></script>
-  <!-- Three.js + particle background (info.html only) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <!-- GSAP for smooth 3D animations -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="assets/js/threejs-bg.js"></script>
   <script src="assets/js/endsky-bg.js"></script>
