@@ -346,7 +346,7 @@
     const rotQ = new THREE.Quaternion();
     const drag = { active: false, px: 0, py: 0 };
     let velocity = { x: 0, y: 0 };
-    let zoom = 22.0, autoRotate = true;
+    let zoom = 100.0, autoRotate = true;
     let autoRotateTimeout = null;
     let introProgress = 0;
 
