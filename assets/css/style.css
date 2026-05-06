@@ -1247,8 +1247,9 @@ html { scroll-behavior: smooth; }
 
 .music-toggle:hover {
   transform: scale(1.1);
-  background: rgba(30, 30, 35, 0.95);
-  border-color: var(--accent);
+  background: rgba(178, 137, 239, 0.25);
+  border-color: #d4a8ff;
+  color: #fff;
   box-shadow: 0 0 30px rgba(178, 137, 239, 0.3);
 }
 
@@ -1306,9 +1307,11 @@ html { scroll-behavior: smooth; }
 
 .music-toggle.playing {
   border-color: var(--accent);
-  background: rgba(178, 137, 239, 0.12);
+  background: rgba(178, 137, 239, 0.15);
   color: #fff;
+  box-shadow: 0 0 30px var(--accent), inset 0 0 15px rgba(178, 137, 239, 0.2);
 }
+.music-toggle.playing .music-icon-wrap { filter: drop-shadow(0 0 8px var(--accent)); }
 .music-toggle.playing .music-waves { display: flex; }
 .music-toggle.playing .icon-muted  { display: none; }
 
