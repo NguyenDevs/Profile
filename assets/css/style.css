@@ -2303,17 +2303,20 @@ body.is-mobile .music-toggle {
 
 @media (min-width: 769px) {
   .coming-soon {
-    justify-content: flex-start;
-    padding-left: 24px;
-    padding-top: 100px;
+    display: block; /* Disable flex for precise absolute positioning of child */
   }
   
   .timer-wrap {
+    position: absolute;
+    left: 24px;
+    top: 50%;
+    transform: translateY(-50%);
     align-items: flex-start;
     background: transparent;
     backdrop-filter: none;
     border: none;
     padding-left: 0;
+    max-width: 600px;
   }
 
   .timer-units {
