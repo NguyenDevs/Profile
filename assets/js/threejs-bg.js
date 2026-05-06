@@ -472,46 +472,64 @@
         
         if (!grid || !toggle) return;
 
-        // Clear and Generate Grid
+        // Precise Grid Generation
         grid.innerHTML = '';
-        const hexCount = window.innerWidth > 768 ? 160 : 60;
+        const hexW = 100;
+        const hexH = 115;
+        const hSpacing = hexW + 4;
+        const vSpacing = hexH * 0.75 + 4;
         
-        for (let i = 0; i < hexCount; i++) {
-            const hex = document.createElement('div');
-            hex.className = 'hex-item';
-            
-            // Randomly add moving borders to background hexes
-            if (Math.random() > 0.85) {
-                hex.innerHTML = `
-                    <svg class="hex-border-svg" viewBox="0 0 100 115">
-                        <path class="hex-path" d="M50 0 L100 25 L100 75 L50 100 L0 75 L0 25 Z" />
-                    </svg>
-                `;
-            }
-            grid.appendChild(hex);
-        }
+        const rows = Math.ceil((window.innerHeight * 1.5) / vSpacing);
+        const cols = Math.ceil((window.innerWidth * 1.5) / hSpacing);
 
-        // Functional Hexagons (Identify 3 hexes to act as icons)
-        const activeIndices = window.innerWidth > 768 ? [42, 43, 44] : [10, 11, 12];
         const icons = [
             { id: 'hex-speed', label: 'SPEED', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' },
             { id: 'hex-bright', label: 'LIGHT', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>' },
             { id: 'hex-dist', label: 'DIST', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 8 12 3 17 8"/><polyline points="7 16 12 21 17 16"/><line x1="12" y1="3" x2="12" y2="21"/></svg>' }
         ];
 
-        activeIndices.forEach((idx, i) => {
-            const hex = grid.children[idx];
-            if (hex) {
-                hex.classList.add('active-hex');
-                hex.innerHTML = `
-                    <div class="hex-icon">${icons[i].icon}</div>
-                    <div class="hex-label">${icons[i].label}</div>
-                    <svg class="hex-border-svg" viewBox="0 0 100 115">
-                        <path class="hex-path" d="M50 0 L100 25 L100 75 L50 100 L0 75 L0 25 Z" style="stroke: #fff; stroke-width: 3; stroke-dasharray: 50 250;" />
-                    </svg>
-                `;
+        let iconIdx = 0;
+        const centerR = Math.floor(rows / 2);
+        const centerC = Math.floor(cols / 4);
+
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                const hex = document.createElement('div');
+                hex.className = 'hex-item';
+                
+                const x = c * hSpacing + (r % 2 === 0 ? 0 : hSpacing / 2);
+                const y = r * vSpacing;
+                
+                hex.style.left = `${x}px`;
+                hex.style.top = `${y}px`;
+                hex.style.transitionDelay = `${(r + c) * 0.02}s`;
+
+                // Place functional icons in a cluster
+                const isFunctional = (r === centerR && c === centerC) || 
+                                     (r === centerR + 1 && c === centerC) || 
+                                     (r === centerR - 1 && c === centerC + (centerR % 2 === 0 ? 0 : 1));
+
+                if (isFunctional && iconIdx < icons.length) {
+                    const info = icons[iconIdx++];
+                    hex.classList.add('active-hex');
+                    hex.innerHTML = `
+                        <div class="hex-icon">${info.icon}</div>
+                        <div class="hex-label">${info.label}</div>
+                        <svg class="hex-border-svg" viewBox="0 0 100 115">
+                            <path class="hex-path" d="M50 0 L100 25 L100 75 L50 100 L0 75 L0 25 Z" style="stroke: #fff; stroke-width: 3; stroke-dasharray: 50 250;" />
+                        </svg>
+                    `;
+                } else if (Math.random() > 0.9) {
+                    hex.innerHTML = `
+                        <svg class="hex-border-svg" viewBox="0 0 100 115">
+                            <path class="hex-path" d="M50 0 L100 25 L100 75 L50 100 L0 75 L0 25 Z" />
+                        </svg>
+                    `;
+                }
+                
+                grid.appendChild(hex);
             }
-        });
+        }
 
         toggle.onclick = (e) => {
             e.stopPropagation();
