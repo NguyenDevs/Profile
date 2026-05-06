@@ -465,93 +465,176 @@
     let manualBrightnessFactor = 1.0;
     let manualDistanceFactor = 1.0;
 
-    function initCyberSettings() {
-        const gridContainer = document.getElementById('hex-grid');
-        const canvas = document.getElementById('hex-canvas');
-        const overlay = document.getElementById('cyber-settings');
+    // ── 3D Settings Logic ──
+    let manualSpeedFactor = 1.0;
+    let manualBrightnessFactor = 1.0;
+    let manualDistanceFactor = 1.0;
+
+    // ── 3D Settings Logic ──
+    let manualSpeedFactor = 1.0;
+    let manualBrightnessFactor = 1.0;
+    let manualDistanceFactor = 1.0;
+
+    function initSettings3D() {
         const toggle = document.getElementById('cyber-toggle');
+        const controlsUI = document.getElementById('cyber-controls-3d');
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        const pillarGroup = new THREE.Group();
+        scene.add(pillarGroup);
+        pillarGroup.position.y = -15; 
+        pillarGroup.visible = false;
+
+        // Dynamic light for glass reflections
+        const hoverLight = new THREE.PointLight(0xb289ef, 0, 15);
+        scene.add(hoverLight);
+
+        const hexSize = 2.0;
+        const hSpacing = hexSize * Math.sqrt(3);
+        const vSpacing = hexSize * 1.5;
         
-        if (!canvas || !toggle) return;
-
-        const ctx = canvas.getContext('2d');
-        const hexSize = 58;
-        const hexW = hexSize * Math.sqrt(3);
-        const hexH = hexSize * 2;
-        const hSpacing = hexW;
-        const vSpacing = hexH * 0.75;
-
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resize);
-        resize();
-
-        // Trail logic
-        let trails = [];
-        function createTrail() {
-            const rows = Math.ceil(canvas.height / vSpacing) + 1;
-            const cols = Math.ceil(canvas.width / hSpacing) + 1;
-            const r = Math.floor(Math.random() * rows);
-            const c = Math.floor(Math.random() * cols);
-            const x = c * hSpacing + (r % 2 === 0 ? 0 : hSpacing / 2);
-            const y = r * vSpacing;
-            return {
-                x, y, 
-                angle: Math.floor(Math.random() * 6) * (Math.PI / 3),
-                life: 1.0,
-                speed: 2 + Math.random() * 3
-            };
-        }
-
-        function drawHex(px, py, color, width = 1) {
-            ctx.beginPath();
-            ctx.strokeStyle = color;
-            ctx.lineWidth = width;
-            for (let i = 0; i < 6; i++) {
-                const angle = (Math.PI / 3) * i - (Math.PI / 2);
-                const x = px + hexSize * Math.cos(angle);
-                const y = py + hexSize * Math.sin(angle);
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            }
-            ctx.closePath();
-            ctx.stroke();
-        }
-
-        // Functional Hexagons
-        const icons = [
-            { id: 'hex-speed', label: 'SPEED', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' },
-            { id: 'hex-bright', label: 'LIGHT', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>' },
-            { id: 'hex-dist', label: 'DIST', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 8 12 3 17 8"/><polyline points="7 16 12 21 17 16"/><line x1="12" y1="3" x2="12" y2="21"/></svg>' }
-        ];
-
-        const centerR = Math.floor(canvas.height / 2 / vSpacing);
-        const centerC = Math.floor(canvas.width / 4 / hSpacing);
-
-        icons.forEach((info, i) => {
-            const hex = document.createElement('div');
-            hex.className = 'hex-item active-hex';
-            const r = centerR + (i - 1);
-            const c = centerC;
-            const x = c * hSpacing + (r % 2 === 0 ? 0 : hSpacing / 2);
-            const y = r * vSpacing;
-            hex.style.left = `${x - hexW/2}px`;
-            hex.style.top = `${y - hexH/2}px`;
-            hex.style.opacity = '1';
-            hex.style.transform = 'scale(1)';
-            hex.innerHTML = `
-                <div class="hex-icon">${info.icon}</div>
-                <div class="hex-label">${info.label}</div>
-            `;
-            gridContainer.appendChild(hex);
+        // Materials
+        const glassMat = new THREE.MeshPhysicalMaterial({
+            color: 0x1a0a33,
+            metalness: 0.1,
+            roughness: 0.05,
+            transmission: 0.95,
+            thickness: 1.5,
+            ior: 1.4,
+            transparent: true,
+            opacity: 0.8,
+            envMapIntensity: 1
         });
 
+        const activeMat = new THREE.MeshPhysicalMaterial({
+            color: 0xcc00ff,
+            emissive: 0x6600ff,
+            emissiveIntensity: 0.5,
+            metalness: 0.2,
+            roughness: 0.1,
+            transmission: 0.7,
+            thickness: 2,
+            transparent: true,
+            opacity: 0.9
+        });
+
+        // Generate Grid
+        for (let r = -5; r <= 5; r++) {
+            for (let c = -6; c <= 6; c++) {
+                const x = c * hSpacing + (r % 2 === 0 ? 0 : hSpacing / 2);
+                const z = r * vSpacing;
+                
+                const height = 1.5 + Math.random() * 5;
+                const geo = new THREE.CylinderGeometry(hexSize * 0.92, hexSize * 0.92, height, 6);
+                const mesh = new THREE.Mesh(geo, glassMat);
+                mesh.position.set(x, height / 2, z);
+                mesh.userData = { baseH: height, type: 'bg' };
+                pillarGroup.add(mesh);
+            }
+        }
+
+        // Functional Pillars
+        const funcConfigs = [
+            { id: 'speed', x: 0, z: 0, label: 'SPEED' },
+            { id: 'brightness', x: hSpacing, z: 0, label: 'LIGHT' },
+            { id: 'distance', x: -hSpacing/2, z: vSpacing, label: 'DIST' }
+        ];
+
+        funcConfigs.forEach(cfg => {
+            const height = 9;
+            const geo = new THREE.CylinderGeometry(hexSize * 0.92, hexSize * 0.92, height, 6);
+            const mesh = new THREE.Mesh(geo, activeMat);
+            mesh.position.set(cfg.x, height / 2, cfg.z);
+            mesh.userData = { id: cfg.id, baseH: height, type: 'btn', label: cfg.label };
+            pillarGroup.add(mesh);
+
+            // Floating Label
+            const canvas = document.createElement('canvas');
+            canvas.width = 256; canvas.height = 128;
+            const cctx = canvas.getContext('2d');
+            cctx.fillStyle = 'white';
+            cctx.font = 'bold 48px Orbitron';
+            cctx.textAlign = 'center';
+            cctx.shadowColor = 'rgba(178, 137, 239, 0.8)';
+            cctx.shadowBlur = 10;
+            cctx.fillText(cfg.label, 128, 80);
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
+            const sprite = new THREE.Sprite(spriteMat);
+            sprite.position.set(cfg.x, height + 1.5, cfg.z);
+            sprite.scale.set(4, 2, 1);
+            pillarGroup.add(sprite);
+        });
+
+        let isActive = false;
         toggle.onclick = (e) => {
             e.stopPropagation();
-            overlay.classList.toggle('active');
+            isActive = !isActive;
+            toggle.classList.toggle('active', isActive);
+            document.body.classList.toggle('settings-3d-active', isActive);
+            controlsUI.classList.toggle('active', isActive);
+            
+            if (isActive) {
+                pillarGroup.visible = true;
+                gsap.to(pillarGroup.position, { y: -3, duration: 1.5, ease: "expo.out" });
+                gsap.to(mainGroup.position, { y: 3, duration: 1.5, ease: "expo.out" });
+                gsap.to(hoverLight, { intensity: 5, duration: 1 });
+                autoRotate = false;
+            } else {
+                gsap.to(pillarGroup.position, { y: -15, duration: 1.2, ease: "expo.in", onComplete: () => pillarGroup.visible = false });
+                gsap.to(mainGroup.position, { y: 0, duration: 1.2, ease: "expo.in" });
+                gsap.to(hoverLight, { intensity: 0, duration: 1 });
+                autoRotate = true;
+                document.querySelectorAll('.cyber-slider-group').forEach(g => g.style.display = 'none');
+            }
         };
 
+        // Interaction & Hover
+        window.addEventListener('mousemove', (e) => {
+            if (!isActive) return;
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+            
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(pillarGroup.children);
+            
+            if (intersects.length > 0) {
+                const obj = intersects[0].object;
+                hoverLight.position.copy(intersects[0].point).y += 2;
+                if (obj.userData.type === 'btn') {
+                    document.body.style.cursor = 'pointer';
+                } else {
+                    document.body.style.cursor = 'default';
+                }
+            } else {
+                document.body.style.cursor = 'default';
+            }
+        });
+
+        window.addEventListener('mousedown', (e) => {
+            if (!isActive) return;
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(pillarGroup.children);
+            
+            if (intersects.length > 0) {
+                const obj = intersects[0].object;
+                if (obj.userData.type === 'btn') {
+                    document.querySelectorAll('.cyber-slider-group').forEach(g => g.style.display = 'none');
+                    const group = document.getElementById(`group-${obj.userData.id}`);
+                    if (group) group.style.display = 'block';
+                    
+                    // Bounce effect
+                    gsap.to(obj.position, { y: (obj.userData.baseH / 2) + 0.8, duration: 0.2, yoyo: true, repeat: 1 });
+                    
+                    // Glow pulse
+                    gsap.to(obj.material, { emissiveIntensity: 1.5, duration: 0.2, yoyo: true, repeat: 1 });
+                }
+            }
+        });
+
+        // Sync Sliders
         const rSpeed = document.getElementById('range-speed');
         const rBrightness = document.getElementById('range-brightness');
         const rDistance = document.getElementById('range-distance');
@@ -571,52 +654,9 @@
             manualDistanceFactor = parseFloat(e.target.value);
             vDistance.innerText = manualDistanceFactor.toFixed(1);
         };
-
-        function animateCanvas() {
-            if (overlay.classList.contains('active')) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                // Draw static background grid
-                ctx.strokeStyle = 'rgba(178, 137, 239, 0.04)';
-                ctx.lineWidth = 1;
-                const rows = Math.ceil(canvas.height / vSpacing) + 1;
-                const cols = Math.ceil(canvas.width / hSpacing) + 1;
-                for (let r = 0; r < rows; r++) {
-                    for (let c = 0; c < cols; c++) {
-                        const x = c * hSpacing + (r % 2 === 0 ? 0 : hSpacing / 2);
-                        const y = r * vSpacing;
-                        drawHex(x, y, ctx.strokeStyle);
-                    }
-                }
-
-                // Draw trails
-                if (trails.length < 8) trails.push(createTrail());
-                trails.forEach((t, i) => {
-                    ctx.beginPath();
-                    ctx.strokeStyle = '#b289ef';
-                    ctx.lineWidth = 3;
-                    ctx.globalAlpha = t.life;
-                    ctx.shadowBlur = 10;
-                    ctx.shadowColor = '#b289ef';
-                    ctx.moveTo(t.x, t.y);
-                    t.x += Math.cos(t.angle) * t.speed;
-                    t.y += Math.sin(t.angle) * t.speed;
-                    ctx.lineTo(t.x, t.y);
-                    ctx.stroke();
-                    t.life -= 0.008;
-                    if (t.life <= 0) trails.splice(i, 1);
-                });
-                ctx.shadowBlur = 0;
-                ctx.globalAlpha = 1;
-            }
-            requestAnimationFrame(animateCanvas);
-        }
-        animateCanvas();
-
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') overlay.classList.remove('active'); });
     }
 
-    initCyberSettings();
+    initSettings3D();
 
 
 
