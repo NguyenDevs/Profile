@@ -38,7 +38,7 @@
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const cameraX = window.innerWidth <= 768 ? 0 : -6.5;
+    const cameraX = window.innerWidth <= 768 ? 0 : -4.5;
     camera.position.set(cameraX, 2, 18);
 
     const mainGroup = new THREE.Group();
@@ -646,7 +646,7 @@
 
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
-      const cameraX = window.innerWidth <= 768 ? 0 : -6.5;
+      const cameraX = window.innerWidth <= 768 ? 0 : -4.5;
       camera.position.x = cameraX;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
@@ -654,4 +654,4 @@
   }
 
   init();
-})();
+})();
