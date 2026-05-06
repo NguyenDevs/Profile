@@ -2312,7 +2312,7 @@ body.is-mobile .music-toggle {
     top: 50%;
     transform: translateY(-50%);
     background: rgba(8, 8, 14, 0.3);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(2px);
     -webkit-backdrop-filter: blur(10px);
     align-items: flex-start;
     border: 1px solid rgba(255, 255, 255, 0.05);
