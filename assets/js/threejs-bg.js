@@ -460,98 +460,92 @@
         }
     });
 
-    // ── Settings & Controls Logic ──
+    // ── Cyberpunk Settings & Controls ──
     let manualSpeedFactor = 1.0;
     let manualBrightnessFactor = 1.0;
     let manualDistanceFactor = 1.0;
 
-    const settingsBtn = document.getElementById('settings-btn');
-    const settingsMenu = document.getElementById('settings-menu');
-    const functionalSliderContainer = document.getElementById('functional-slider-container');
-    const functionalSlider = document.getElementById('f-slider');
-    const functionalLabel = document.getElementById('f-slider-label');
-    const optSpeed = document.getElementById('opt-speed');
-    const optBrightness = document.getElementById('opt-brightness');
-    const optDistance = document.getElementById('opt-distance');
-
-    let currentMode = 'speed';
-
-    if (settingsBtn) {
-        settingsBtn.onclick = (e) => {
-            e.stopPropagation();
-            const isExpanded = settingsMenu.classList.toggle('expanded');
-            if (!isExpanded) {
-                functionalSliderContainer.classList.remove('active');
-            }
-        };
-    }
-
-
-    const setMode = (mode) => {
-        currentMode = mode;
-        document.querySelectorAll('.settings-opt').forEach(opt => opt.classList.remove('active'));
-        functionalSliderContainer.classList.add('active');
+    function initCyberSettings() {
+        const grid = document.getElementById('hex-grid');
+        const overlay = document.getElementById('cyber-settings');
+        const toggle = document.getElementById('cyber-toggle');
         
-        if (mode === 'speed') {
-            optSpeed.classList.add('active');
-            functionalLabel.innerText = `Tốc độ: ${manualSpeedFactor.toFixed(1)}x`;
-            functionalSlider.min = 0; functionalSlider.max = 5; functionalSlider.step = 0.01;
-            functionalSlider.value = manualSpeedFactor;
-            document.documentElement.style.setProperty('--accent-slider', '#cc00ff');
-        } else if (mode === 'brightness') {
-            optBrightness.classList.add('active');
-            functionalLabel.innerText = `Độ sáng: ${manualBrightnessFactor.toFixed(1)}`;
-            functionalSlider.min = 0.1; functionalSlider.max = 2.5; functionalSlider.step = 0.01;
-            functionalSlider.value = manualBrightnessFactor;
-            document.documentElement.style.setProperty('--accent-slider', '#ffcc00');
-        } else if (mode === 'distance') {
-            optDistance.classList.add('active');
-            functionalLabel.innerText = `Khoảng cách: ${manualDistanceFactor.toFixed(1)}`;
-            functionalSlider.min = 0.5; functionalSlider.max = 2.5; functionalSlider.step = 0.01;
-            functionalSlider.value = manualDistanceFactor;
-            document.documentElement.style.setProperty('--accent-slider', '#00ccff');
-        }
-    };
+        if (!grid || !toggle) return;
 
-    if (optSpeed) optSpeed.onclick = (e) => { e.stopPropagation(); setMode('speed'); };
-    if (optBrightness) optBrightness.onclick = (e) => { e.stopPropagation(); setMode('brightness'); };
-    if (optDistance) optDistance.onclick = (e) => { e.stopPropagation(); setMode('distance'); };
-
-    if (functionalSlider) {
-        functionalSlider.oninput = (e) => {
-            const val = parseFloat(e.target.value);
-            if (currentMode === 'speed') {
-                manualSpeedFactor = val;
-                functionalLabel.innerText = `Tốc độ: ${val.toFixed(1)}x`;
-            } else if (currentMode === 'brightness') {
-                manualBrightnessFactor = val;
-                functionalLabel.innerText = `Độ sáng: ${val.toFixed(1)}`;
-            } else if (currentMode === 'distance') {
-                manualDistanceFactor = val;
-                functionalLabel.innerText = `Khoảng cách: ${val.toFixed(1)}`;
+        // Clear and Generate Grid
+        grid.innerHTML = '';
+        const hexCount = window.innerWidth > 768 ? 160 : 60;
+        
+        for (let i = 0; i < hexCount; i++) {
+            const hex = document.createElement('div');
+            hex.className = 'hex-item';
+            
+            // Randomly add moving borders to background hexes
+            if (Math.random() > 0.85) {
+                hex.innerHTML = `
+                    <svg class="hex-border-svg" viewBox="0 0 100 115">
+                        <path class="hex-path" d="M50 0 L100 25 L100 75 L50 100 L0 75 L0 25 Z" />
+                    </svg>
+                `;
             }
+            grid.appendChild(hex);
+        }
+
+        // Functional Hexagons (Identify 3 hexes to act as icons)
+        const activeIndices = window.innerWidth > 768 ? [42, 43, 44] : [10, 11, 12];
+        const icons = [
+            { id: 'hex-speed', label: 'SPEED', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' },
+            { id: 'hex-bright', label: 'LIGHT', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>' },
+            { id: 'hex-dist', label: 'DIST', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 8 12 3 17 8"/><polyline points="7 16 12 21 17 16"/><line x1="12" y1="3" x2="12" y2="21"/></svg>' }
+        ];
+
+        activeIndices.forEach((idx, i) => {
+            const hex = grid.children[idx];
+            if (hex) {
+                hex.classList.add('active-hex');
+                hex.innerHTML = `
+                    <div class="hex-icon">${icons[i].icon}</div>
+                    <div class="hex-label">${icons[i].label}</div>
+                    <svg class="hex-border-svg" viewBox="0 0 100 115">
+                        <path class="hex-path" d="M50 0 L100 25 L100 75 L50 100 L0 75 L0 25 Z" style="stroke: #fff; stroke-width: 3; stroke-dasharray: 50 250;" />
+                    </svg>
+                `;
+            }
+        });
+
+        toggle.onclick = (e) => {
+            e.stopPropagation();
+            overlay.classList.toggle('active');
         };
+
+        // Sliders Logic
+        const rSpeed = document.getElementById('range-speed');
+        const rBrightness = document.getElementById('range-brightness');
+        const rDistance = document.getElementById('range-distance');
+        const vSpeed = document.getElementById('val-speed');
+        const vBrightness = document.getElementById('val-brightness');
+        const vDistance = document.getElementById('val-distance');
+
+        if (rSpeed) rSpeed.oninput = (e) => {
+            manualSpeedFactor = parseFloat(e.target.value);
+            vSpeed.innerText = manualSpeedFactor.toFixed(1) + 'x';
+        };
+        if (rBrightness) rBrightness.oninput = (e) => {
+            manualBrightnessFactor = parseFloat(e.target.value);
+            vBrightness.innerText = manualBrightnessFactor.toFixed(1);
+        };
+        if (rDistance) rDistance.oninput = (e) => {
+            manualDistanceFactor = parseFloat(e.target.value);
+            vDistance.innerText = manualDistanceFactor.toFixed(1);
+        };
+
+        // Close on escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') overlay.classList.remove('active');
+        });
     }
 
-
-    document.addEventListener('click', (e) => {
-        if (settingsMenu && !settingsMenu.contains(e.target) && !functionalSliderContainer.contains(e.target)) {
-            if (settingsMenu.classList.contains('expanded')) {
-                settingsMenu.classList.remove('expanded');
-                functionalSliderContainer.classList.remove('active');
-            }
-        }
-    });
-
-
-    const style = document.createElement('style');
-    style.textContent = `
-        #f-slider::-webkit-slider-thumb {
-            border-color: var(--accent-slider, #cc00ff) !important;
-            box-shadow: 0 0 15px var(--accent-slider, #cc00ff), 0 0 5px #fff !important;
-        }
-    `;
-    document.head.appendChild(style);
+    initCyberSettings();
 
 
     
