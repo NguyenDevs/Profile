@@ -2125,7 +2125,15 @@ body.is-mobile .music-toggle {
     min-height: 340px;
   }
 }
-/* ── Cyber HUD Settings (Migrated from JS) ── */
+.coming-soon {
+  position: relative;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.coming-soon > * {
+  pointer-events: auto;
+}
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
 :root {
@@ -2141,6 +2149,9 @@ body.is-mobile .music-toggle {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 52.400px;
+  height: 52.400px;
+  pointer-events: none;
 }
 
 .settings-toggle {
@@ -2161,6 +2172,7 @@ body.is-mobile .music-toggle {
   z-index: 2;
   padding: 0;
   overflow: hidden;
+  pointer-events: auto;
 }
 
 .settings-toggle:hover {
@@ -2212,6 +2224,7 @@ body.is-mobile .music-toggle {
   transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   overflow: hidden;
+  pointer-events: auto;
 }
 
 .cyber-settings-wrap.open .settings-item {
