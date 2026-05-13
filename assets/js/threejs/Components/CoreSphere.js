@@ -97,6 +97,25 @@ export class CoreSphere {
       );
       this.corePointsMat.userData.shader = shader;
     };
+
+    this.coreMeshWire.material.onBeforeCompile = (shader) => {
+      shader.vertexShader = shader.vertexShader.replace(
+        `#include <common>`,
+        `#include <common>\nvarying vec3 vViewPos;`
+      ).replace(
+        `#include <begin_vertex>`,
+        `#include <begin_vertex>\nvViewPos = (modelViewMatrix * vec4(position, 1.0)).xyz;`
+      );
+      shader.fragmentShader = shader.fragmentShader.replace(
+        `#include <common>`,
+        `#include <common>\nvarying vec3 vViewPos;`
+      ).replace(
+        `vec4 diffuseColor = vec4( diffuse, opacity );`,
+        `float depth = length(vViewPos);
+         float depthFactor = smoothstep(10.0, 25.0, depth);
+         vec4 diffuseColor = vec4( diffuse * (1.0 - depthFactor * 0.5), opacity * (1.0 - depthFactor * 0.8) );`
+      );
+    };
   }
 
   update(t, coreIntro, ringIntro, zf, manualSpeedFactor) {
