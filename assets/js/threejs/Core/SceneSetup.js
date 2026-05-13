@@ -26,6 +26,7 @@ export class SceneSetup {
     this.coreLight = new THREE.PointLight(0xcc00ff, 5, 25);
     this.coreLight.castShadow = true;
     this.coreLight.shadow.bias = -0.001;
+    this.scene.add(this.coreLight);
 
     this.dirLight = new THREE.DirectionalLight(0xdab3ff, 2.2);
     this.dirLight.position.set(10, 20, 15);
