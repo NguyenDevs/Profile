@@ -38,10 +38,9 @@ export class CoreSphere {
       blending: THREE.AdditiveBlending, map: getGlowTex('rgba(200,100,255,1)', 16), depthWrite: false
     });
 
-    this.initShaders();
-
     this.corePoints = new THREE.Points(this.coreGeo, this.corePointsMat);
     this.coreMeshWire = new THREE.Mesh(this.coreGeo, coreMat);
+    this.initShaders();
     this.coreMeshWire.castShadow = true;
 
     this.group.add(this.coreMeshWire);
@@ -110,10 +109,12 @@ export class CoreSphere {
         `#include <common>`,
         `#include <common>\nvarying vec3 vViewPos;`
       ).replace(
-        `vec4 diffuseColor = vec4( diffuse, opacity );`,
-        `float depth = length(vViewPos);
-         float depthFactor = smoothstep(10.0, 25.0, depth);
-         vec4 diffuseColor = vec4( diffuse * (1.0 - depthFactor * 0.5), opacity * (1.0 - depthFactor * 0.8) );`
+        `#include <dithering_fragment>`,
+        `#include <dithering_fragment>
+         float depth = length(vViewPos);
+         float depthFactor = smoothstep(10.0, 28.0, depth);
+         gl_FragColor.rgb *= (1.0 - depthFactor * 0.6);
+         gl_FragColor.a *= (1.0 - depthFactor * 0.8);`
       );
     };
   }
