@@ -1,8 +1,8 @@
-import { fetchTikTokStats } from './tiktok.js';
-import { initRouting } from './router.js';
-import { initDynamicBackground } from './background.js';
-import { initMusicPlayer, syncPlayerElements, updateUI } from './player.js';
-import { initNavigation, initProjectSlider, updateNavActiveState } from './ui.js';
+import { fetchTikTokStats } from './api/tiktok.js';
+import { initRouting } from './core/router.js';
+import { initDynamicBackground } from './core/background.js';
+import { initMusicPlayer, syncPlayerElements, updateUI } from './components/player.js';
+import { initNavigation, initProjectSlider, updateNavActiveState } from './core/ui.js';
 
 initMusicPlayer();
 initNavigation();
@@ -32,5 +32,5 @@ window.addEventListener('resize', detectMobile);
 window.app = {
   syncPlayerElements,
   updateUI,
-  loadPage: (url) => import('./router.js').then(m => m.loadPage(url, true))
+  loadPage: (url) => import('./core/router.js').then(m => m.loadPage(url, true))
 };

@@ -1,6 +1,6 @@
-import { fetchTikTokStats } from './tiktok.js';
+import { fetchTikTokStats } from '../api/tiktok.js';
 import { initProjectSlider, updateNavActiveState } from './ui.js';
-import { updateUI, syncPlayerElements } from './player.js';
+import { updateUI, syncPlayerElements } from '../components/player.js';
 
 let isTransitioning = false;
 let currentFetchController = null;
@@ -71,7 +71,7 @@ function applyPageBodyStyles(url) {
 
 function injectScripts(doc) {
   doc.querySelectorAll('script').forEach(script => {
-    if (script.type === 'module') return;
+    if (script.type === 'module' && script.getAttribute('src')?.includes('main.js')) return;
 
     const src = script.getAttribute('src');
     if (src) {
