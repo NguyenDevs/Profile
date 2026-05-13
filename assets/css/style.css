@@ -2282,7 +2282,12 @@ body.is-mobile .music-toggle {
   border-radius: 99px;
   overflow: hidden;
 }
-
+.ck-accent-line {
+  position: absolute;
+  top: 0; left: 2rem; right: 2rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(178,137,239,0.5), transparent);
+}
 .timer-progress-fill {
   height: 100%;
   border-radius: 99px;
