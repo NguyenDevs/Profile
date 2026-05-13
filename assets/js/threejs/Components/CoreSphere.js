@@ -174,7 +174,7 @@ export class CoreSphere {
     this.group.rotation.z = Math.sin(t * 0.5) * 0.2 * coreIntro;
     this.group.scale.setScalar((1 + zf * 0.2) * (0.25 + 0.75 * ringIntro));
 
-    this.glowOrb.scale.setScalar((6.5 + Math.sin(t * 3) * 0.8) * (0.2 + 0.8 * coreIntro));
+    this.glowOrb.scale.setScalar((6.0 + Math.sin(t * 3) * 0.8) * (0.2 + 0.8 * coreIntro));
     if (this.corePointsMat.userData.shader) this.corePointsMat.userData.shader.uniforms.uTime.value = t;
   }
 }
