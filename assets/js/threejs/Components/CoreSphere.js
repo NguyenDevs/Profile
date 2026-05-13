@@ -65,7 +65,7 @@ export class CoreSphere {
       map: getGlowTex('rgba(180,50,255,0.8)', 128),
       blending: THREE.AdditiveBlending, transparent: true, depthWrite: false
     }));
-    this.glowOrb.scale.setScalar(6.5);
+    this.glowOrb.scale.setScalar(6.0);
     this.group.add(this.glowOrb);
   }
 
