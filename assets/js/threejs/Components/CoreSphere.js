@@ -75,46 +75,52 @@ export class CoreSphere {
       shader.vertexShader = `
         attribute float aRandom;
         varying float vRandom;
+        varying float vNormalZ;
         uniform float uTime;
         ${shader.vertexShader}
       `.replace(
+        `void main() {`,
+        `void main() { 
+          vRandom = aRandom;
+          vNormalZ = (normalMatrix * normalize(position)).z;`
+      ).replace(
         `gl_PointSize = size;`,
         `float t = uTime * (2.0 + aRandom * 3.0) + aRandom * 100.0;
          float twinkle = 0.8 + 0.2 * sin(t);
-         gl_PointSize = size * twinkle;
-         vRandom = aRandom;`
+         gl_PointSize = size * twinkle;`
       );
       shader.fragmentShader = `
         varying float vRandom;
+        varying float vNormalZ;
         uniform float uTime;
         ${shader.fragmentShader}
       `.replace(
         `vec4 diffuseColor = vec4( diffuse, opacity );`,
         `float t = uTime * (2.0 + vRandom * 3.0) + vRandom * 100.0;
          float twinkle = 0.4 + 0.6 * pow(0.5 + 0.5 * sin(t), 2.0);
-         vec4 diffuseColor = vec4( diffuse, opacity * twinkle );`
+         float depthFade = smoothstep(-0.2, 0.8, vNormalZ);
+         vec4 diffuseColor = vec4( diffuse, opacity * twinkle * depthFade );`
       );
       this.corePointsMat.userData.shader = shader;
     };
 
     this.coreMeshWire.material.onBeforeCompile = (shader) => {
-      shader.vertexShader = shader.vertexShader.replace(
-        `#include <common>`,
-        `#include <common>\nvarying vec3 vViewPos;`
-      ).replace(
-        `#include <begin_vertex>`,
-        `#include <begin_vertex>\nvViewPos = (modelViewMatrix * vec4(position, 1.0)).xyz;`
+      shader.vertexShader = `
+        varying float vNormalZ;
+        ${shader.vertexShader}
+      `.replace(
+        `void main() {`,
+        `void main() { vNormalZ = (normalMatrix * normal).z;`
       );
-      shader.fragmentShader = shader.fragmentShader.replace(
-        `#include <common>`,
-        `#include <common>\nvarying vec3 vViewPos;`
-      ).replace(
-        `#include <dithering_fragment>`,
-        `#include <dithering_fragment>
-         float depth = length(vViewPos);
-         float depthFactor = smoothstep(10.0, 28.0, depth);
-         gl_FragColor.rgb *= (1.0 - depthFactor * 0.6);
-         gl_FragColor.a *= (1.0 - depthFactor * 0.8);`
+      shader.fragmentShader = `
+        varying float vNormalZ;
+        ${shader.fragmentShader}
+      `.replace(
+        `vec4 diffuseColor = vec4( diffuse, opacity );`,
+        `
+        float depthFade = smoothstep(-0.2, 0.8, vNormalZ);
+        vec4 diffuseColor = vec4( diffuse, opacity * depthFade );
+        `
       );
     };
   }
