@@ -5,7 +5,7 @@ export function initDynamicBackground() {
   const checkMobile = () => (window.innerWidth <= 1024) || (navigator.maxTouchPoints > 0);
   const isMobile = checkMobile();
 
-  const orbCount = isMobile ? 8 : 15;
+  const orbCount = isMobile ? 5 : 12;
   const orbColors = [
     'rgba(76, 29, 149, 0.3)',
     'rgba(88, 28, 135, 0.35)',
@@ -35,17 +35,21 @@ export function initDynamicBackground() {
   if (!isMobile) {
     const interBubble = document.querySelector('.interactive');
     if (interBubble) {
-      let curX = 0, curY = 0, tgX = 0, tgY = 0;
+      let curX = 0, curY = 0, tgX = 0, tgY = 0, rAfCount = 0, bgRafId = null;
       function move() {
-        curX += (tgX - curX) / 20;
-        curY += (tgY - curY) / 20;
-        interBubble.style.transform = `translate(${Math.round(curX)}px, ${Math.round(curY)}px)`;
-        requestAnimationFrame(move);
+        if (document.hidden) { bgRafId = requestAnimationFrame(move); return; }
+        rAfCount++;
+        if (rAfCount % 2 === 0) {
+          curX += (tgX - curX) / 20;
+          curY += (tgY - curY) / 20;
+          interBubble.style.transform = `translate(${Math.round(curX)}px, ${Math.round(curY)}px)`;
+        }
+        bgRafId = requestAnimationFrame(move);
       }
       window.addEventListener('mousemove', (e) => {
         tgX = e.clientX;
         tgY = e.clientY;
-      });
+      }, { passive: true });
       move();
     }
   }

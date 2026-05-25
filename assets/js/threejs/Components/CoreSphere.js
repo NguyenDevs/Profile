@@ -1,7 +1,8 @@
 import { smoothstep, getGlowTex } from '../Utils/Helpers.js';
 
 export class CoreSphere {
-  constructor(parent) {
+  constructor(parent, isLowPower) {
+    this.isLowPower = isLowPower;
     this.group = new THREE.Group();
     parent.add(this.group);
 
@@ -137,37 +138,40 @@ export class CoreSphere {
     this.group.userData.smoothM += (this.group.userData.targetM - this.group.userData.smoothM) * 0.04;
     const morphCycle = this.group.userData.smoothM;
 
-    const positions = this.coreGeo.attributes.position.array;
-    for (let i = 0; i < this.N; i++) {
-      const idx = i * 3, bx = this.basePos[idx], by = this.basePos[idx+1], bz = this.basePos[idx+2];
-      const theta = this.thetaArr[i], phi = this.phiArr[i];
-      const tectonic = Math.sin(6 * theta) * Math.cos(6 * phi);
-      const r1 = 1.0 + (tectonic > 0.3 ? 0.15 : (tectonic < -0.3 ? -0.1 : 0));
-      const tx1 = bx * r1, ty1 = by * r1, tz1 = bz * r1;
-      const r2 = 1.0 + 0.25 * Math.sin(3 * theta - t * 1.5) + 0.2 * Math.cos(4 * phi + t);
-      const tx2 = bx * r2, ty2 = by * r2, tz2 = bz * r2;
-      const r3 = 1.0 + 0.12 * Math.sin(8 * theta + t * 2) * Math.cos(t * 1.2) + 0.05 * Math.sin(phi * 6);
-      const tx3 = bx * r3, ty3 = by * r3, tz3 = bz * r3;
-      let tx, ty, tz;
-      if (morphCycle < 1) {
-        const lerp = smoothstep(morphCycle);
-        tx = bx + (tx1 - bx) * lerp; ty = by + (ty1 - by) * lerp; tz = bz + (tz1 - bz) * lerp;
-      } else if (morphCycle < 2) {
-        const lerp = smoothstep(morphCycle - 1);
-        tx = tx1 + (tx2 - tx1) * lerp; ty = ty1 + (ty2 - ty1) * lerp; tz = tz1 + (tz2 - tz1) * lerp;
-      } else if (morphCycle < 3) {
-        const lerp = smoothstep(morphCycle - 2);
-        tx = tx2 + (tx3 - tx2) * lerp; ty = ty2 + (ty3 - ty2) * lerp; tz = tz2 + (tz3 - tz2) * lerp;
-      } else {
-        const lerp = smoothstep(morphCycle - 3);
-        tx = tx3 + (bx - tx3) * lerp; ty = ty3 + (by - ty3) * lerp; tz = tz3 + (bz - tz3) * lerp;
+    if (!this.isLowPower || this._normFrame % 3 === 0) {
+      const positions = this.coreGeo.attributes.position.array;
+      for (let i = 0; i < this.N; i++) {
+        const idx = i * 3, bx = this.basePos[idx], by = this.basePos[idx+1], bz = this.basePos[idx+2];
+        const theta = this.thetaArr[i], phi = this.phiArr[i];
+        const tectonic = Math.sin(6 * theta) * Math.cos(6 * phi);
+        const r1 = 1.0 + (tectonic > 0.3 ? 0.15 : (tectonic < -0.3 ? -0.1 : 0));
+        const tx1 = bx * r1, ty1 = by * r1, tz1 = bz * r1;
+        const r2 = 1.0 + 0.25 * Math.sin(3 * theta - t * 1.5) + 0.2 * Math.cos(4 * phi + t);
+        const tx2 = bx * r2, ty2 = by * r2, tz2 = bz * r2;
+        const r3 = 1.0 + 0.12 * Math.sin(8 * theta + t * 2) * Math.cos(t * 1.2) + 0.05 * Math.sin(phi * 6);
+        const tx3 = bx * r3, ty3 = by * r3, tz3 = bz * r3;
+        let tx, ty, tz;
+        if (morphCycle < 1) {
+          const lerp = smoothstep(morphCycle);
+          tx = bx + (tx1 - bx) * lerp; ty = by + (ty1 - by) * lerp; tz = bz + (tz1 - bz) * lerp;
+        } else if (morphCycle < 2) {
+          const lerp = smoothstep(morphCycle - 1);
+          tx = tx1 + (tx2 - tx1) * lerp; ty = ty1 + (ty2 - ty1) * lerp; tz = tz1 + (tz2 - tz1) * lerp;
+        } else if (morphCycle < 3) {
+          const lerp = smoothstep(morphCycle - 2);
+          tx = tx2 + (tx3 - tx2) * lerp; ty = ty2 + (ty3 - ty2) * lerp; tz = tz2 + (tz3 - tz2) * lerp;
+        } else {
+          const lerp = smoothstep(morphCycle - 3);
+          tx = tx3 + (bx - tx3) * lerp; ty = ty3 + (by - ty3) * lerp; tz = tz3 + (bz - tz3) * lerp;
+        }
+        positions[idx]   = bx + (tx - bx) * coreIntro;
+        positions[idx+1] = by + (ty - by) * coreIntro;
+        positions[idx+2] = bz + (tz - bz) * coreIntro;
       }
-      positions[idx]   = bx + (tx - bx) * coreIntro;
-      positions[idx+1] = by + (ty - by) * coreIntro;
-      positions[idx+2] = bz + (tz - bz) * coreIntro;
+      this.coreGeo.attributes.position.needsUpdate = true;
+      this.coreGeo.computeVertexNormals();
     }
-    this.coreGeo.attributes.position.needsUpdate = true;
-    this.coreGeo.computeVertexNormals();
+    this._normFrame = (this._normFrame || 0) + 1;
 
     const coreRotSpeed = 0.01 * (0.1 + 0.3 * coreIntro) * (1 + zf * 2.0) * (0.5 + 0.5 * manualSpeedFactor);
     this.group.rotation.y += coreRotSpeed;

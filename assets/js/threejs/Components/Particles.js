@@ -1,8 +1,8 @@
 import { getGlowTex } from '../Utils/Helpers.js';
 
 export class ParticleSystem {
-  constructor(parent) {
-    const pCount = 5500;
+  constructor(parent, isLowPower) {
+    const pCount = isLowPower ? 1500 : 4000;
     const pGeo = new THREE.BufferGeometry();
     const pPos = new Float32Array(pCount * 3);
     for (let i = 0; i < pCount; i++) {

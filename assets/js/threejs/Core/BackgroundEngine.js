@@ -17,12 +17,16 @@ export class BackgroundEngine {
     this.mainGroup = new THREE.Group();
     this.sceneSetup.scene.add(this.mainGroup);
 
-    this.coreSphere = new CoreSphere(this.mainGroup);
+    this.isLowPower = window.innerWidth <= 768 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    this.frameInterval = this.isLowPower ? 2 : 1;
+    this.frameCount = 0;
+
+    this.coreSphere = new CoreSphere(this.mainGroup, this.isLowPower);
     this.filaments = new FilamentSystem(this.coreSphere.group);
     this.flares = new FlareSystem(this.coreSphere.group);
     this.rings = new RingSystem(this.mainGroup);
     this.debris = new DebrisSystem(this.mainGroup);
-    this.particles = new ParticleSystem(this.sceneSetup.scene);
+    this.particles = new ParticleSystem(this.sceneSetup.scene, this.isLowPower);
     
     this.interaction = new InteractionHandler(this.canvas);
     this.settings = new SettingsHandler();
@@ -31,6 +35,14 @@ export class BackgroundEngine {
     this.introProgress = 0;
     this.lastDispatchedZoom = this.interaction.zoom;
     this.lastDispatchedQ = { x: 0, y: 0, z: 0, w: 1 };
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        cancelAnimationFrame(window._threejsRafId);
+      } else {
+        this.animate();
+      }
+    });
 
     this.animate();
   }
@@ -42,6 +54,7 @@ export class BackgroundEngine {
       position: 'fixed', inset: '0', width: '100%', height: '100%',
       pointerEvents: 'auto', zIndex: '2', opacity: '0',
       transition: 'opacity 2s ease', cursor: 'grab', background: 'transparent',
+      touchAction: 'none'
     });
     document.body.insertBefore(this.canvas, document.body.firstChild);
     requestAnimationFrame(() => { this.canvas.style.opacity = '1'; });
@@ -53,8 +66,11 @@ export class BackgroundEngine {
   }
 
   animate() {
+    if (document.hidden) return;
     window._threejsRafId = requestAnimationFrame(() => this.animate());
-    this.t += 0.01;
+    this.frameCount++;
+    if (this.frameCount % this.frameInterval !== 0) return;
+    this.t += 0.01 * this.frameInterval;
 
     // Dispatch camera events
     if (Math.abs(this.interaction.zoom - this.lastDispatchedZoom) > 0.01 || this.quatChanged(this.interaction.rotQ, this.lastDispatchedQ)) {

@@ -33,7 +33,7 @@ export class InteractionHandler {
         if (speed > 0) this.rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(dy, dx, 0).normalize(), speed*0.005));
         this.drag.px = e.clientX; this.drag.py = e.clientY;
       }
-    });
+    }, { passive: true });
 
     window.addEventListener('wheel', e => this.zoom = Math.max(8, Math.min(35, this.zoom + e.deltaY*0.015)), {passive:true});
 
@@ -51,13 +51,11 @@ export class InteractionHandler {
 
     this.canvas.addEventListener('touchmove', e => {
       if (e.touches.length === 2 && this.initialPinchDist !== null) {
-        e.preventDefault();
         const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
         const delta = dist - this.initialPinchDist;
         this.zoom = Math.max(8, Math.min(35, this.zoom - delta * 0.05));
         this.initialPinchDist = dist;
       } else if (e.touches.length === 1 && this.lastT) {
-        e.preventDefault();
         const t = e.touches[0];
         const dx = t.clientX - this.lastT.clientX, dy = t.clientY - this.lastT.clientY;
         this.velocity.x = dx; this.velocity.y = dy;
@@ -65,7 +63,7 @@ export class InteractionHandler {
         if (speed > 0) this.rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(dy, dx, 0).normalize(), speed*0.005));
         this.lastT = t;
       }
-    }, { passive: false });
+    }, { passive: true });
 
     this.canvas.addEventListener('touchend', e => {
       if (e.touches.length < 2) this.initialPinchDist = null;

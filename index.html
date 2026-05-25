@@ -46,6 +46,7 @@
 
   <!-- ── Page Stylesheet ── -->
   <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="preload" as="image" href="assets/images/cover.jpg">
 </head>
 <body>
 
@@ -75,6 +76,9 @@
         <img class="cover-img"
              src="assets/images/cover.jpg"
              alt="Cover photo"
+             width="800"
+             height="220"
+             fetchpriority="high"
              onerror="this.style.background='linear-gradient(135deg,#1a0533,#0d0d1a)';this.style.display='block'">
         <div class="cover-overlay" aria-hidden="true"></div>
         <div class="cover-grid"   aria-hidden="true"></div>
@@ -87,6 +91,8 @@
           <img class="avatar-img"
                src="assets/avatar/avatar.png"
                alt="NguyenDevs avatar"
+               width="120"
+               height="120"
                onerror="this.src='assets/images/og-image.png'">
           <div class="avatar-status" title="Online" aria-label="Online"></div>
         </div>

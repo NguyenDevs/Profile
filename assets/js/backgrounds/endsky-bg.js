@@ -187,6 +187,7 @@
     }
 
     function render() {
+        if (document.hidden) { window._endskyRafId = requestAnimationFrame(render); return; }
         window._endskyRafId = requestAnimationFrame(render);
         const srcQ = window._threejsRotQ;
         if (srcQ) {
