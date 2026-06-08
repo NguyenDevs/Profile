@@ -171,7 +171,7 @@ function setupPlaylist(isInitialLoad) {
       currentTrackIndex = parseInt(savedTrack, 10);
       if (currentTrackIndex >= playlist.length) currentTrackIndex = 0;
     } else {
-      const defaultIndex = playlist.findIndex(t => t.file === 'Relaxing Medieval - Deep Focus for Study.mp3');
+      const defaultIndex = playlist.findIndex(t => t.file === 'VØJ x Narvent - Memory Reboot.mp3');
       currentTrackIndex = defaultIndex !== -1 ? defaultIndex : 0;
     }
     loadTrack(currentTrackIndex);
