@@ -1,6 +1,6 @@
 import { fetchTikTokStats } from './api/tiktok.js';
 import { initRouting } from './core/router.js';
-import { initDynamicBackground } from './core/background.js';
+import { initDynamicBackground, initBgTextStrip } from './core/background.js';
 import { initMusicPlayer, syncPlayerElements, updateUI } from './components/player.js';
 import { initNavigation, initProjectSlider, updateNavActiveState } from './core/ui.js';
 
@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   detectMobile();
   initRouting();
   initDynamicBackground();
+  initBgTextStrip();
   fetchTikTokStats();
   initProjectSlider();
   updateNavActiveState();
