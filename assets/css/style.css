@@ -205,6 +205,32 @@ body {
   }
 }
 
+/* Background Text Strip */
+.bg-text-strip {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.bg-text-strip-inner {
+  position: absolute;
+  left: 0;
+  bottom: -5%;
+  font-size: clamp(50px, 10vw, 120px);
+  font-weight: 800;
+  font-family: 'Syne', sans-serif;
+  letter-spacing: 0.15em;
+  color: rgba(15, 15, 20, 0.35);
+  white-space: nowrap;
+  user-select: none;
+  animation: stripScroll 30s linear infinite;
+}
+@keyframes stripScroll {
+  0%   { transform: rotate(-30deg) translateX(-60%); }
+  100% { transform: rotate(-30deg) translateX(60%); }
+}
+
 html { scroll-behavior: smooth; }
 @media (max-width: 1024px) { html { scroll-behavior: auto !important; } }
 
