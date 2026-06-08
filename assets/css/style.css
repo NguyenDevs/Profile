@@ -228,14 +228,16 @@ body {
     0 0 40px rgba(120, 80, 200, 0.08);
   white-space: nowrap;
   user-select: none;
-  animation: stripScroll 15s linear infinite;
+  animation: stripScroll 30s linear infinite;
 }
 @media (max-width: 768px) {
   .bg-text-strip { display: none; }
 }
 @keyframes stripScroll {
-  0%   { transform: rotate(-30deg) translateX(-60%); }
-  100% { transform: rotate(-30deg) translateX(60%); }
+  0%   { transform: rotate(-30deg) translateX(-120%); opacity: 0; }
+  80%  { transform: rotate(-30deg) translateX(-120%); opacity: 0; }
+  85%  { transform: rotate(-30deg) translateX(-120%); opacity: 1; }
+  100% { transform: rotate(-30deg) translateX(120%);  opacity: 0; }
 }
 
 html { scroll-behavior: smooth; }
