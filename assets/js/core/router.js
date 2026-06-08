@@ -21,51 +21,14 @@ function isSameUrl(a, b) {
   return normalizeUrl(a) === normalizeUrl(b);
 }
 
-function isInfoPage(url) {
-  return /\/info\/?$/.test(normalizeUrl(url));
-}
-
 function cleanupPageSpecificResources() {
-  if (window._livedTimeInterval) {
-    clearInterval(window._livedTimeInterval);
-    window._livedTimeInterval = null;
-  }
-  if (window._threejsRafId) {
-    cancelAnimationFrame(window._threejsRafId);
-    window._threejsRafId = null;
-  }
-  if (window._endskyRafId) {
-    cancelAnimationFrame(window._endskyRafId);
-    window._endskyRafId = null;
-  }
-
-  document
-      .querySelectorAll('#threejs-canvas, #endsky-canvas, #speed-slider-container, #cyber-toggle, #cyber-hud-menu, #cyber-hex-menu, #cyber-settings-wrap')
-      .forEach(el => el.remove());
-
-  document.querySelectorAll('script[src*="threejs-bg.js"], script[src*="endsky-bg.js"], script[src*="three.min.js"]')
-      .forEach(s => s.remove());
-
   document.querySelectorAll('style[data-spa-injected]').forEach(s => s.remove());
-
   document.querySelectorAll('script[data-spa-injected]').forEach(s => s.remove());
 }
 
-function applyPageBodyStyles(url) {
-  const gradientBg = document.querySelector('.gradient-bg');
-  const bgNoise = document.querySelector('.bg-noise');
-
-  if (isInfoPage(url)) {
-    document.body.style.background = '#08080e';
-    document.body.style.overflow = 'hidden';
-    gradientBg?.style.setProperty('display', 'none');
-    bgNoise?.style.setProperty('display', 'none');
-  } else {
-    document.body.style.background = '';
-    document.body.style.overflow = '';
-    if (gradientBg) { gradientBg.style.display = ''; gradientBg.style.visibility = 'visible'; }
-    if (bgNoise) { bgNoise.style.display = ''; bgNoise.style.visibility = 'visible'; }
-  }
+function applyPageBodyStyles() {
+  document.body.style.background = '';
+  document.body.style.overflow = '';
 }
 
 
@@ -150,8 +113,9 @@ export function initRouting() {
   });
 
   document.addEventListener('click', (e) => {
-    const link = e.target.closest('a');
-    if (!link || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    const link = e.target.nodeName === 'A' ? e.target : e.target.closest('a');
+    if (!link) return;
 
     const href = link.getAttribute('href');
     if (!href) return;
@@ -183,6 +147,7 @@ export function initRouting() {
 
 export function loadPage(url, push) {
   if (isTransitioning) return;
+
   if (currentFetchController) {
     currentFetchController.abort();
   }
@@ -227,7 +192,7 @@ export function loadPage(url, push) {
 
         cleanupPageSpecificResources();
         injectStyles(doc);
-        applyPageBodyStyles(url);
+        applyPageBodyStyles();
 
         const liveContent = document.querySelector('.wrapper')
             || document.querySelector('.projects-container')

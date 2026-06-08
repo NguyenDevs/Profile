@@ -37,7 +37,12 @@ export function initMusicPlayer() {
   document.addEventListener('click', handleGlobalClick);
   document.addEventListener('input', handleGlobalInput);
   
+  let lastTimeupdate = 0;
   music.addEventListener('timeupdate', () => {
+    if (!elements.progressBars.length) cacheDuplicateEls();
+    const now = performance.now();
+    if (now - lastTimeupdate < 200) return;
+    lastTimeupdate = now;
     updateUI();
     localStorage.setItem('music_current_time', music.currentTime);
   });
@@ -67,6 +72,15 @@ export function initMusicPlayer() {
   music.volume = (savedVol !== null) ? parseFloat(savedVol) : 0.5;
 }
 
+function cacheDuplicateEls() {
+  elements.progressBars = document.querySelectorAll('#player-progress-bar');
+  elements.currentTimes = document.querySelectorAll('#player-current-time');
+  elements.durations = document.querySelectorAll('#player-duration');
+  elements.trackNames = document.querySelectorAll('#player-track-name');
+  elements.volSliders = document.querySelectorAll('#player-volume');
+  elements.volIcons = document.querySelectorAll('#vol-icon');
+}
+
 export function syncPlayerElements(isInitialLoad) {
   elements.music = document.getElementById('bg-music');
   elements.btn = document.getElementById('music-btn');
@@ -94,6 +108,7 @@ export function syncPlayerElements(isInitialLoad) {
   elements.mModalClose = document.getElementById('close-playlist-modal');
   elements.mModalOverlay = document.getElementById('modal-overlay');
 
+  cacheDuplicateEls();
   setupPlaylist(isInitialLoad);
   updateUI();
 }
@@ -262,36 +277,29 @@ export function updateUI() {
 
   if (music.duration) {
     const perc = (music.currentTime / music.duration) * 100;
-    const progressBars = document.querySelectorAll('#player-progress-bar');
-    progressBars.forEach(bar => { bar.style.width = `${perc}%` });
-
-    const currentTimes = document.querySelectorAll('#player-current-time');
-    currentTimes.forEach(el => { el.textContent = formatTime(music.currentTime) });
-
-    const durations = document.querySelectorAll('#player-duration');
-    durations.forEach(el => { el.textContent = formatTime(music.duration) });
-
-    const trackNames = document.querySelectorAll('#player-track-name');
     const track = playlist[currentTrackIndex];
+    elements.progressBars.forEach(bar => { bar.style.width = `${perc}%` });
+    elements.currentTimes.forEach(el => { el.textContent = formatTime(music.currentTime) });
+    elements.durations.forEach(el => { el.textContent = formatTime(music.duration) });
     if (track) {
-      trackNames.forEach(el => { el.textContent = `${track.name} — ${track.artist}` });
+      elements.trackNames.forEach(el => { el.textContent = `${track.name} — ${track.artist}` });
     }
   }
 
   const vol = music.volume;
-  const volSliders = document.querySelectorAll('#player-volume');
-  volSliders.forEach(slider => { slider.value = vol; });
-
-  const volIcons = document.querySelectorAll('#vol-icon');
-  volIcons.forEach(icon => {
-    if (vol === 0) {
-      icon.innerHTML = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
-    } else if (vol < 0.5) {
-      icon.innerHTML = '<path d="M7 9v6h4l5 5V4L11 9H7zm11.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>';
-    } else {
-      icon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
-    }
-  });
+  elements.volSliders.forEach(slider => { slider.value = vol; });
+  if (vol !== elements.volIcons[0]?.dataset.lastVol) {
+    elements.volIcons.forEach(icon => {
+      icon.dataset.lastVol = vol;
+      if (vol === 0) {
+        icon.innerHTML = '<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
+      } else if (vol < 0.5) {
+        icon.innerHTML = '<path d="M7 9v6h4l5 5V4L11 9H7zm11.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>';
+      } else {
+        icon.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
+      }
+    });
+  }
 }
 
 function playPause() {
@@ -368,80 +376,10 @@ function handleGlobalClick(e) {
   const music = elements.music || document.getElementById('bg-music');
   if (!music) return;
 
-  if (e.target.closest('#music-btn')) {
-    e.stopPropagation();
-    stopAutoCollapse();
-    if (elements.mobilePlayer) {
-      elements.mobilePlayer.classList.toggle('expanded');
-      document.body.classList.toggle('mobile-player-expanded', elements.mobilePlayer.classList.contains('expanded'));
-      if (elements.mobilePlayer.classList.contains('expanded')) startAutoCollapse();
-    }
-    return;
-  }
-
-  if (e.target.closest('#mobile-play-pause') || e.target.closest('#player-play-pause')) {
-    e.stopPropagation();
-    playPause();
-    return;
-  }
-
-  if (e.target.closest('#mobile-next') || e.target.closest('#player-next')) {
-    e.stopPropagation();
-    nextTrack();
-    return;
-  }
-
-  if (e.target.closest('#mobile-prev') || e.target.closest('#player-prev')) {
-    e.stopPropagation();
-    prevTrack();
-    return;
-  }
-
-  if (e.target.closest('#mobile-playlist') || e.target.closest('#player-toggle-playlist')) {
-    e.stopPropagation();
-    if (e.target.closest('#mobile-playlist')) {
-      openMobilePlaylist();
-      if (elements.mobilePlayer) elements.mobilePlayer.classList.remove('expanded');
-    } else {
-      if (elements.dPlaylistContainer) {
-        elements.dPlaylistContainer.classList.toggle('expanded');
-        document.body.classList.toggle('playlist-is-expanded');
-        if (elements.dPlaylistContainer.classList.contains('expanded') ||
-          (elements.mobilePlayer && elements.mobilePlayer.classList.contains('expanded'))) {
-          startAutoCollapse();
-        }
-      }
-    }
-    return;
-  }
-
-  if (e.target.closest('#close-playlist-modal') || e.target.closest('#modal-overlay')) {
-    closeMobilePlaylist();
-    return;
-  }
-
-  if (e.target.closest('#player-mute')) {
-    e.stopPropagation();
-    if (music.volume > 0) {
-      lastVolume = music.volume;
-      music.volume = 0;
-    } else {
-      music.volume = lastVolume || 0.5;
-    }
-    localStorage.setItem('music_volume', music.volume);
-    updateUI();
-    return;
-  }
-
-  if (e.target.closest('.player-progress') || e.target.closest('#player-progress-container')) {
-    const container = e.target.closest('.player-progress');
-    const rect = container.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    music.currentTime = (clickX / container.clientWidth) * music.duration;
-    return;
-  }
-
-    if (elements.mobilePlayer && elements.mobilePlayer.classList.contains('expanded') && !e.target.closest('#mobile-music-player')) {
+  const target = e.target;
+  const playerEl = target.closest('#music-btn, #mobile-play-pause, #player-play-pause, #mobile-next, #player-next, #mobile-prev, #player-prev, #mobile-playlist, #player-toggle-playlist, #close-playlist-modal, #modal-overlay, #player-mute, #player-progress-container, .player-progress, #mobile-music-player');
+  if (!playerEl) {
+    if (elements.mobilePlayer?.classList.contains('expanded')) {
       if (elements.dPlaylistContainer?.classList.contains('expanded')) {
         elements.dPlaylistContainer.classList.remove('expanded');
         document.body.classList.remove('playlist-is-expanded');
@@ -454,6 +392,56 @@ function handleGlobalClick(e) {
         document.body.classList.remove('mobile-player-expanded');
       }
     }
+    return;
+  }
+
+  const id = playerEl.id;
+  e.stopPropagation();
+
+  if (id === 'music-btn') {
+    stopAutoCollapse();
+    if (elements.mobilePlayer) {
+      elements.mobilePlayer.classList.toggle('expanded');
+      document.body.classList.toggle('mobile-player-expanded', elements.mobilePlayer.classList.contains('expanded'));
+      if (elements.mobilePlayer.classList.contains('expanded')) startAutoCollapse();
+    }
+  } else if (id === 'mobile-play-pause' || id === 'player-play-pause') {
+    playPause();
+  } else if (id === 'mobile-next' || id === 'player-next') {
+    nextTrack();
+  } else if (id === 'mobile-prev' || id === 'player-prev') {
+    prevTrack();
+  } else if (id === 'mobile-playlist') {
+    openMobilePlaylist();
+    if (elements.mobilePlayer) elements.mobilePlayer.classList.remove('expanded');
+  } else if (id === 'player-toggle-playlist') {
+    if (elements.dPlaylistContainer) {
+      elements.dPlaylistContainer.classList.toggle('expanded');
+      document.body.classList.toggle('playlist-is-expanded');
+      if (elements.dPlaylistContainer.classList.contains('expanded') ||
+        (elements.mobilePlayer && elements.mobilePlayer.classList.contains('expanded'))) {
+        startAutoCollapse();
+      }
+    }
+  } else if (id === 'close-playlist-modal' || id === 'modal-overlay') {
+    closeMobilePlaylist();
+  } else if (id === 'player-mute') {
+    if (music.volume > 0) {
+      lastVolume = music.volume;
+      music.volume = 0;
+    } else {
+      music.volume = lastVolume || 0.5;
+    }
+    localStorage.setItem('music_volume', music.volume);
+    updateUI();
+  } else if (playerEl.matches('#player-progress-container')) {
+    const container = playerEl.querySelector('.player-progress') || playerEl;
+    const rect = container.getBoundingClientRect();
+    music.currentTime = ((e.clientX - rect.left) / container.clientWidth) * music.duration;
+  } else if (playerEl.classList.contains('player-progress')) {
+    const rect = playerEl.getBoundingClientRect();
+    music.currentTime = ((e.clientX - rect.left) / playerEl.clientWidth) * music.duration;
+  }
 }
 
 function handleGlobalInput(e) {

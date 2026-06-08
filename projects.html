@@ -42,6 +42,7 @@
   <!-- ── Google Fonts ── -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=Rubik:wght@600;700;800&display=swap">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=Rubik:wght@600;700;800&display=swap" rel="stylesheet">
 
   <!-- ── Page Stylesheet ── -->
@@ -50,9 +51,22 @@
 </head>
 
 <body>
-  <!-- ── Background ── -->
+  <!-- ── Animated Gradient Background ── -->
   <div class="gradient-bg">
+    <svg xmlns="http://www.w3.org/2000/svg" style="position:fixed;top:0;left:0;width:0;height:0;">
+      <defs>
+        <filter id="goo">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="40" result="blur" />
+          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0" />
+        </filter>
+      </defs>
+    </svg>
     <div class="gradients-container">
+      <div class="g1"></div>
+      <div class="g2"></div>
+      <div class="g3"></div>
+      <div class="g4"></div>
+      <div class="g5"></div>
       <div class="interactive"></div>
     </div>
   </div>
@@ -74,7 +88,7 @@
         </div>
         <div class="project-icon">
           <div class="icon-glow glow-freesia"></div>
-          <img src="assets/project_icon/freesia.jpg" alt="Freesia II Icon">
+          <img src="assets/project_icon/freesia.webp" alt="Freesia II Icon">
         </div>
         <div class="project-content">
           <h3>Freesia II</h3>
@@ -97,7 +111,7 @@
         </div>
         <div class="project-icon">
           <div class="icon-glow glow-ecolens"></div>
-          <img src="assets/project_icon/ecolens.jpg" alt="EcoLens Icon">
+          <img src="assets/project_icon/ecolens.webp" alt="EcoLens Icon">
         </div>
         <div class="project-content">
           <h3>EcoLens</h3>
@@ -129,7 +143,7 @@
         </div>
         <div class="project-icon">
           <div class="icon-glow glow-sudden"></div>
-          <img src="assets/project_icon/suddendeath.jpg" alt="Sudden-Death Icon">
+          <img src="assets/project_icon/suddendeath.webp" alt="Sudden-Death Icon">
         </div>
         <div class="project-content">
           <h3>Sudden-Death</h3>
@@ -159,7 +173,7 @@
         </div>
         <div class="project-icon">
           <div class="icon-glow glow-orbital"></div>
-          <img src="assets/project_icon/orbitalstrike.jpg" alt="Orbitalstrike Icon">
+          <img src="assets/project_icon/orbitalstrike.webp" alt="Orbitalstrike Icon">
         </div>
         <div class="project-content">
           <h3>Orbitalstrike</h3>
@@ -307,10 +321,7 @@
         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
         <span class="nav-text">Projects</span>
       </a>
-      <a href="info.html" class="nav-item" title="Info">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-        <span class="nav-text">Info</span>
-      </a>
+
     </div>
   </nav>
 
