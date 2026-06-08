@@ -209,7 +209,7 @@ body {
 .bg-text-strip {
   position: fixed;
   inset: 0;
-  z-index: 2;
+  z-index: 1;
   pointer-events: none;
   overflow: hidden;
   font-size: clamp(60px, 8vw, 120px);
