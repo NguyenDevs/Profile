@@ -52,6 +52,10 @@ export function initMusicPlayer() {
   });
 
   music.addEventListener('ended', nextTrack);
+  music.addEventListener('error', () => {
+    console.warn('[Music] Error loading track, skipping to next');
+    if (currentTrackIndex < playlist.length - 1) nextTrack();
+  });
 
   const tryAutoPlay = () => {
     if (isManuallyPaused) {
@@ -212,11 +216,11 @@ function loadTrack(index) {
 
   const newSrc = `assets/music/${track.file}`;
   const currentFile = music.src.split('/').pop();
-  if (decodeURIComponent(currentFile) !== track.file) {
+  if (decodeURIComponent(currentFile) !== track.file || music.error) {
     music.src = newSrc;
   }
 
-  if (elements.dTrackName) elements.dTrackName.textContent = `${track.name} — ${track.artist}`;
+  document.querySelectorAll('#player-track-name').forEach(el => { el.textContent = `${track.name} — ${track.artist}`; });
   updatePlaylistActiveStates();
 }
 
@@ -263,9 +267,9 @@ export function updateUI() {
     }
   }
 
-  if (elements.dPlayPauseBtn) {
-    const playIcon = elements.dPlayPauseBtn.querySelector('.icon-play');
-    const pauseIcon = elements.dPlayPauseBtn.querySelector('.icon-pause');
+  document.querySelectorAll('#player-play-pause').forEach(btn => {
+    const playIcon = btn.querySelector('.icon-play');
+    const pauseIcon = btn.querySelector('.icon-pause');
     if (isPaused) {
       if (playIcon) playIcon.style.display = 'block';
       if (pauseIcon) pauseIcon.style.display = 'none';
@@ -273,7 +277,7 @@ export function updateUI() {
       if (playIcon) playIcon.style.display = 'none';
       if (pauseIcon) pauseIcon.style.display = 'block';
     }
-  }
+  });
 
   if (music.duration) {
     const perc = (music.currentTime / music.duration) * 100;
@@ -415,10 +419,12 @@ function handleGlobalClick(e) {
     openMobilePlaylist();
     if (elements.mobilePlayer) elements.mobilePlayer.classList.remove('expanded');
   } else if (id === 'player-toggle-playlist') {
-    if (elements.dPlaylistContainer) {
-      elements.dPlaylistContainer.classList.toggle('expanded');
+    const pc = playerEl.closest('.player-container');
+    const playlist = pc?.querySelector('#player-playlist');
+    if (playlist) {
+      playlist.classList.toggle('expanded');
       document.body.classList.toggle('playlist-is-expanded');
-      if (elements.dPlaylistContainer.classList.contains('expanded') ||
+      if (playlist.classList.contains('expanded') ||
         (elements.mobilePlayer && elements.mobilePlayer.classList.contains('expanded'))) {
         startAutoCollapse();
       }

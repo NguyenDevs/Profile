@@ -118,12 +118,15 @@ export default async function handler(request) {
  * @param {number} depth giới hạn độ sâu để tránh vô hạn
  * @returns {*|null}
  */
-function deepFind(obj, predicate, depth = 0) {
+function deepFind(obj, predicate, depth = 0, visited = new Set()) {
   if (depth > 12 || obj === null || typeof obj !== 'object') return null;
+  if (visited.has(obj)) return null;
+  visited.add(obj);
+
   if (predicate(obj)) return obj;
 
   for (const key of Object.keys(obj)) {
-    const result = deepFind(obj[key], predicate, depth + 1);
+    const result = deepFind(obj[key], predicate, depth + 1, visited);
     if (result) return result;
   }
   return null;

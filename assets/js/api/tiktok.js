@@ -23,6 +23,7 @@ export function fetchTikTokStats() {
       likesEl.textContent    = formatShort(likes);
 
       if (Date.now() - timestamp < CACHE_TTL) {
+        return;
       }
     } catch (e) {
       console.warn('[TikTok] Cache error:', e);

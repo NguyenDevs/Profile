@@ -31,6 +31,7 @@ export function initProjectSlider() {
   const dotsContainer = document.getElementById('project-dots');
 
   if (!grid || !prevBtn || !nextBtn || !dotsContainer || window.innerWidth > 768) return;
+  if (grid.children.length === 0) return;
 
   const cards = Array.from(grid.children);
   const dots = Array.from(dotsContainer.children);
