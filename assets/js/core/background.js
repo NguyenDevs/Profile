@@ -23,7 +23,7 @@ export function initDynamicBackground() {
 }
 
 /* ── Background Text Strip ── */
-const STRIP_FONTS = ['Black Ops One', 'Kablammo', 'Bungee', 'Rubik Glitch'];
+const STRIP_FONTS = ['Black Ops One', 'Bitcount Single', 'Kablammo', 'Bungee', 'Rubik Glitch'];
 
 function pickFont() {
   if (Math.random() < 0.5) return '';
@@ -52,7 +52,7 @@ function runSingle(el, path, duration, font) {
   el.style.bottom = path.bottom;
   el.style.transform = `rotate(${path.rotate}deg) translateX(${path.startX}%)`;
   el.style.opacity = '1';
-  el.style.fontFamily = font || '';
+  el.style.fontFamily = font ? `'${font}', sans-serif` : '';
   el.offsetHeight;
   el._anim = el.animate([
     { transform: `rotate(${path.rotate}deg) translateX(${path.startX}%)` },
