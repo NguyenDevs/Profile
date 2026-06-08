@@ -23,6 +23,13 @@ export function initDynamicBackground() {
 }
 
 /* ── Background Text Strip ── */
+const STRIP_FONTS = ['Black Ops One', 'Kablammo', 'Bungee', 'Rubik Glitch'];
+
+function pickFont() {
+  if (Math.random() < 0.5) return '';
+  return STRIP_FONTS[Math.floor(Math.random() * STRIP_FONTS.length)];
+}
+
 const STRIP_PATHS = [
   { rotate: -30, startX: -250, endX: 250, left: '0', bottom: '15%', top: 'auto', right: 'auto' },
   { rotate:  25, startX: -250, endX: 250, left: '0', top: '12%',   bottom: 'auto', right: 'auto' },
@@ -37,7 +44,7 @@ function pickPath(exclude) {
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-function runSingle(el, path, duration) {
+function runSingle(el, path, duration, font) {
   if (el._anim) el._anim.cancel();
   el.style.left = path.left;
   el.style.right = path.right;
@@ -45,6 +52,7 @@ function runSingle(el, path, duration) {
   el.style.bottom = path.bottom;
   el.style.transform = `rotate(${path.rotate}deg) translateX(${path.startX}%)`;
   el.style.opacity = '1';
+  el.style.fontFamily = font || '';
   el.offsetHeight;
   el._anim = el.animate([
     { transform: `rotate(${path.rotate}deg) translateX(${path.startX}%)` },
@@ -62,9 +70,10 @@ function runStrip(mainEl) {
   const shadowSweep = mainSweep * 1.3;
   const longest = shadowSweep + 500;
   const cooldown = Math.max(8000, 30000 - longest);
+  const font = pickFont();
 
-  runSingle(mainEl, mainPath, mainSweep);
-  setTimeout(() => runSingle(shadowEl, shadowPath, shadowSweep), 500);
+  runSingle(mainEl, mainPath, mainSweep, font);
+  setTimeout(() => runSingle(shadowEl, shadowPath, shadowSweep, font), 500);
   setTimeout(() => runStrip(mainEl), longest + cooldown);
 }
 
