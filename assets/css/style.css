@@ -52,14 +52,14 @@ body {
 
 /* ── Animated Gradient Background ── */
 :root {
-  --color-bg1: rgb(108, 0, 162);
-  --color-bg2: rgb(0, 17, 82);
-  --color1: 18, 113, 255;
-  --color2: 221, 74, 255;
-  --color3: 100, 220, 255;
-  --color4: 200, 50, 50;
-  --color5: 180, 180, 50;
-  --color-interactive: 140, 100, 255;
+  --color-bg1: rgb(72, 16, 110);
+  --color-bg2: rgb(26, 8, 56);
+  --color1: 180, 130, 255;
+  --color2: 210, 150, 255;
+  --color3: 155, 105, 240;
+  --color4: 220, 170, 255;
+  --color5: 130, 90, 220;
+  --color-interactive: 200, 160, 255;
   --circle-size: 80%;
   --blending: hard-light;
 }
@@ -97,7 +97,7 @@ body {
   content: '';
   position: fixed;
   inset: 0;
-  background: rgba(11, 11, 15, 0.45);
+  background: rgba(11, 11, 15, 0.35);
   z-index: 1;
   pointer-events: none;
 }
