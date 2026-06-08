@@ -216,15 +216,18 @@ body {
 .bg-text-strip-inner {
   position: absolute;
   left: 0;
-  bottom: -5%;
-  font-size: clamp(50px, 10vw, 120px);
+  bottom: 10%;
+  font-size: clamp(40px, 5vw, 70px);
   font-weight: 800;
   font-family: 'Syne', sans-serif;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.12em;
   color: rgba(15, 15, 20, 0.35);
   white-space: nowrap;
   user-select: none;
   animation: stripScroll 30s linear infinite;
+}
+@media (max-width: 768px) {
+  .bg-text-strip { display: none; }
 }
 @keyframes stripScroll {
   0%   { transform: rotate(-30deg) translateX(-60%); }
