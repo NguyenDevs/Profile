@@ -241,6 +241,8 @@ body {
   animation: none;
   opacity: 0;
 }
+body.is-mobile .bg-text-strip-inner { display: none; }
+
 .bg-text-strip::after {
   content: '';
   position: absolute;
