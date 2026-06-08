@@ -212,10 +212,11 @@ body {
   z-index: 2;
   pointer-events: none;
   overflow: hidden;
+  font-size: clamp(60px, 8vw, 120px);
 }
 .bg-text-strip-inner {
   position: absolute;
-  font-size: clamp(60px, 8vw, 120px);
+  font-size: inherit;
   font-weight: 800;
   font-family: 'Syne', sans-serif;
   letter-spacing: 0.1em;
