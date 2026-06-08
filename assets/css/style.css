@@ -232,6 +232,14 @@ body {
   will-change: transform;
   animation: crtFlicker 0.12s steps(3) infinite;
 }
+.bg-text-strip-shadow {
+  font-size: 0.6em;
+  color: rgba(80, 60, 120, 0.01);
+  -webkit-text-stroke: 0.5px rgba(100, 80, 160, 0.2);
+  text-shadow: none;
+  animation: none;
+  opacity: 0;
+}
 .bg-text-strip::after {
   content: '';
   position: absolute;

@@ -30,31 +30,47 @@ const STRIP_PATHS = [
   { rotate:  35, startX:  250, endX:-250, left:'50%', top: '10%',   bottom: 'auto', right: 'auto' },
 ];
 
-function runStrip(el) {
-  const path = STRIP_PATHS[Math.floor(Math.random() * STRIP_PATHS.length)];
-  const sweep = 6000 + Math.random() * 9000;
-  const cooldown = Math.max(15000, 30000 - sweep);
+function pickPath(exclude) {
+  const pool = exclude >= 0
+    ? STRIP_PATHS.filter((_, i) => i !== exclude)
+    : STRIP_PATHS;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
 
+function runSingle(el, path, duration) {
+  if (el._anim) el._anim.cancel();
   el.style.left = path.left;
   el.style.right = path.right;
   el.style.top = path.top;
   el.style.bottom = path.bottom;
   el.style.transform = `rotate(${path.rotate}deg) translateX(${path.startX}%)`;
   el.style.opacity = '1';
-
   el.offsetHeight;
-
-  const anim = el.animate([
+  el._anim = el.animate([
     { transform: `rotate(${path.rotate}deg) translateX(${path.startX}%)` },
     { transform: `rotate(${path.rotate}deg) translateX(${path.endX}%)` },
-  ], { duration: sweep, easing: 'linear', fill: 'forwards' });
+  ], { duration, easing: 'linear', fill: 'forwards' });
+}
 
-  anim.onfinish = () => setTimeout(() => runStrip(el), cooldown);
+function runStrip(mainEl) {
+  const shadowEl = mainEl.nextElementSibling;
+  if (!shadowEl || !shadowEl.classList.contains('bg-text-strip-shadow')) return;
+
+  const mainPath = pickPath(-1);
+  const shadowPath = pickPath(STRIP_PATHS.indexOf(mainPath));
+  const mainSweep = 6000 + Math.random() * 9000;
+  const shadowSweep = mainSweep * 1.3;
+  const longest = shadowSweep + 500;
+  const cooldown = Math.max(8000, 30000 - longest);
+
+  runSingle(mainEl, mainPath, mainSweep);
+  setTimeout(() => runSingle(shadowEl, shadowPath, shadowSweep), 500);
+  setTimeout(() => runStrip(mainEl), longest + cooldown);
 }
 
 export function initBgTextStrip() {
   if (window.innerWidth <= 768) return;
-  const el = document.querySelector('.bg-text-strip-inner');
-  if (!el) return;
-  setTimeout(() => runStrip(el), Math.random() * 10000);
+  const mainEl = document.querySelector('.bg-text-strip-inner');
+  if (!mainEl) return;
+  setTimeout(() => runStrip(mainEl), Math.random() * 10000);
 }
