@@ -220,13 +220,16 @@ body {
   font-weight: 800;
   font-family: 'Syne', sans-serif;
   letter-spacing: 0.1em;
-  color: rgba(180, 155, 220, 0.04);
-  -webkit-text-stroke: 1.2px rgba(200, 180, 255, 0.55);
+  color: rgba(200, 180, 255, 0.06);
   text-shadow:
-    1.5px 0 0 rgba(255, 60, 60, 0.25),
-    -1.5px 0 0 rgba(60, 130, 255, 0.25),
-    0 0 6px rgba(178, 137, 239, 0.35),
-    0 0 18px rgba(178, 137, 239, 0.12);
+    0.8px 0 0 rgba(200, 180, 255, 0.35),
+    -0.8px 0 0 rgba(200, 180, 255, 0.35),
+    0 0.8px 0 rgba(200, 180, 255, 0.35),
+    0 -0.8px 0 rgba(200, 180, 255, 0.35),
+    1.5px 0 0 rgba(255, 70, 70, 0.18),
+    -1.5px 0 0 rgba(70, 130, 255, 0.18),
+    0 0 5px rgba(178, 137, 239, 0.25),
+    0 0 15px rgba(178, 137, 239, 0.08);
   white-space: nowrap;
   user-select: none;
   opacity: 0;
@@ -236,7 +239,6 @@ body {
 .bg-text-strip-shadow {
   font-size: 0.95em;
   color: rgba(80, 60, 120, 0.01);
-  -webkit-text-stroke: 0.5px rgba(100, 80, 160, 0.2);
   text-shadow: none;
   animation: none;
   opacity: 0;
