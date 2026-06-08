@@ -241,7 +241,9 @@ body {
   animation: none;
   opacity: 0;
 }
-body.is-mobile .bg-text-strip-inner { display: none; }
+@media (max-width: 768px) {
+  .bg-text-strip-inner { display: none; }
+}
 
 .bg-text-strip::after {
   content: '';
