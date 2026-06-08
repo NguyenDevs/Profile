@@ -264,9 +264,7 @@ body {
   60%  { opacity: 1; filter: brightness(0.98) contrast(1.01); }
   100% { opacity: 0.98; filter: brightness(1.01) contrast(1); }
 }
-@media (max-width: 768px) {
-  .bg-text-strip { display: none; }
-}
+
 
 html { scroll-behavior: smooth; }
 @media (max-width: 1024px) { html { scroll-behavior: auto !important; } }
