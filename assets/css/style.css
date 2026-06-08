@@ -589,8 +589,8 @@ html { scroll-behavior: smooth; }
 }
 .social-btn:hover::before { opacity: 0.15; }
 .social-btn svg { position: relative; z-index: 1; width: 18px; height: 18px; fill: currentColor; }
-#social-discord svg { width: 23px; height: 23px; }
-#social-tiktok svg  { width: 23px; height: 23px; }
+#social-discord svg { transform: scale(1.3); }
+#social-tiktok svg  { transform: scale(1.25); }
 
 /* Section label */
 .section-label {
