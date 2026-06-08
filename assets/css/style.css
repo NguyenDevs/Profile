@@ -54,12 +54,12 @@ body {
 :root {
   --color-bg1: rgb(20, 5, 40);
   --color-bg2: rgb(8, 2, 20);
-  --color1: 120, 80, 200;
-  --color2: 140, 90, 220;
-  --color3: 100, 60, 180;
-  --color4: 160, 110, 230;
-  --color5: 90, 50, 170;
-  --color-interactive: 150, 100, 220;
+  --color1: 80, 40, 170;
+  --color2: 100, 50, 190;
+  --color3: 60, 30, 150;
+  --color4: 120, 65, 200;
+  --color5: 50, 25, 140;
+  --color-interactive: 110, 60, 210;
   --circle-size: 80%;
   --blending: screen;
 }
