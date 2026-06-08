@@ -221,11 +221,11 @@ body {
   font-weight: 800;
   font-family: 'Syne', sans-serif;
   letter-spacing: 0.1em;
-  color: rgba(15, 15, 20, 0.35);
+  color: rgba(240, 237, 247, 0.06);
   text-shadow:
-    0 0 7px rgba(15, 15, 20, 0.25),
-    0 0 20px rgba(120, 80, 200, 0.15),
-    0 0 40px rgba(120, 80, 200, 0.08);
+    0 0 10px rgba(178, 137, 239, 0.15),
+    0 0 30px rgba(178, 137, 239, 0.08),
+    0 0 60px rgba(150, 97, 255, 0.04);
   white-space: nowrap;
   user-select: none;
   animation: stripScroll 30s linear infinite;
