@@ -221,12 +221,12 @@ body {
   font-weight: 800;
   font-family: 'Syne', sans-serif;
   letter-spacing: 0.1em;
-  color: rgba(240, 237, 247, 0.15);
-  -webkit-text-stroke: 1px rgba(178, 137, 239, 0.3);
+  color: rgba(240, 237, 247, 0.35);
+  -webkit-text-stroke: 1px rgba(178, 137, 239, 0.5);
   text-shadow:
-    0 0 15px rgba(178, 137, 239, 0.35),
-    0 0 40px rgba(178, 137, 239, 0.18),
-    0 0 80px rgba(150, 97, 255, 0.1);
+    0 0 15px rgba(178, 137, 239, 0.5),
+    0 0 40px rgba(178, 137, 239, 0.25),
+    0 0 80px rgba(150, 97, 255, 0.12);
   white-space: nowrap;
   user-select: none;
   animation: stripScroll 30s linear infinite;
@@ -235,10 +235,8 @@ body {
   .bg-text-strip { display: none; }
 }
 @keyframes stripScroll {
-  0%   { transform: rotate(-30deg) translateX(-120%); opacity: 0; }
-  65%  { transform: rotate(-30deg) translateX(-120%); opacity: 0; }
-  70%  { transform: rotate(-30deg) translateX(-120%); opacity: 1; }
-  100% { transform: rotate(-30deg) translateX(120%);  opacity: 0; }
+  0%   { transform: rotate(-30deg) translateX(-250%); }
+  100% { transform: rotate(-30deg) translateX(250%); }
 }
 
 html { scroll-behavior: smooth; }
