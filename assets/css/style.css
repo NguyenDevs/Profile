@@ -1894,7 +1894,7 @@ body.is-mobile .music-toggle {
   justify-content: flex-start;
   min-height: 100vh;
   position: relative;
-  z-index: 15;
+  z-index: 2;
 }
 
 .projects-header {
@@ -1936,8 +1936,6 @@ body.is-mobile .music-toggle {
   overflow: hidden;
   height: 100%;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  contain: layout style;
-  will-change: transform;
 }
 
 .project-card::before {
