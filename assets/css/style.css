@@ -1923,10 +1923,10 @@ body.is-mobile .music-toggle {
 }
 
 .project-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 24px;
   padding: 32px 24px;
   display: flex;
@@ -1936,6 +1936,7 @@ body.is-mobile .music-toggle {
   overflow: hidden;
   height: 100%;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  isolation: isolate;
 }
 
 .project-card::before {
@@ -2162,11 +2163,12 @@ body.is-mobile .music-toggle {
     justify-content: space-between;
     align-items: center;
     text-align: center;
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    isolation: isolate;
     transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.5s ease;
   }
 
