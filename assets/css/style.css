@@ -1894,7 +1894,7 @@ body.is-mobile .music-toggle {
   justify-content: flex-start;
   min-height: 100vh;
   position: relative;
-  z-index: 2;
+  z-index: 15;
 }
 
 .projects-header {
