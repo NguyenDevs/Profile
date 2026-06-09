@@ -1893,6 +1893,8 @@ body.is-mobile .music-toggle {
   align-items: center;
   justify-content: flex-start;
   min-height: 100vh;
+  position: relative;
+  z-index: 15;
 }
 
 .projects-header {
