@@ -231,6 +231,8 @@ body {
   user-select: none;
   opacity: 0;
   will-change: transform;
+}
+.bg-text-strip-inner.active {
   animation: crtFlicker 0.12s steps(3) infinite;
 }
 .bg-text-strip-shadow {
