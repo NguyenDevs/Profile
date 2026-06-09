@@ -91,22 +91,21 @@
   gap: 6px;
   z-index: 2;
   transition: all 0.3s ease;
-  cursor: default;
 }
 
 .platform-badge svg { width: 12px; height: 12px; fill: currentColor; }
 
-.badge-android:hover {
+.project-card:hover .badge-android {
   color: #3DDC84;
   background: rgba(61, 220, 132, 0.1);
   border-color: rgba(61, 220, 132, 0.3);
 }
-.badge-plugin:hover {
+.project-card:hover .badge-plugin {
   color: #ff9f43;
   background: rgba(255, 159, 67, 0.1);
   border-color: rgba(255, 159, 67, 0.3);
 }
-.badge-proxy:hover {
+.project-card:hover .badge-proxy {
   color: #fff;
   background: linear-gradient(90deg, rgba(0, 162, 211, 0.15), rgba(212, 160, 23, 0.15));
   border-color: rgba(255, 255, 255, 0.2);
