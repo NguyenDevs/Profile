@@ -53,6 +53,7 @@ function runSingle(el, path, duration, font) {
   el.style.transform = `rotate(${path.rotate}deg) translateX(${path.startX}%)`;
   el.style.opacity = '1';
   el.style.fontFamily = font ? `'${font}', sans-serif` : '';
+  el.classList.add('active');
   el.offsetHeight;
   el._anim = el.animate([
     { transform: `rotate(${path.rotate}deg) translateX(${path.startX}%)` },
