@@ -1944,7 +1944,7 @@ body.is-mobile .music-toggle {
   background: linear-gradient(135deg, var(--accent) 0%, transparent 100%);
   opacity: 0;
   transition: opacity 0.5s;
-  z-index: 0;
+  z-index: 1;
 }
 
 .project-card:hover {
@@ -1973,7 +1973,7 @@ body.is-mobile .music-toggle {
   display: flex;
   align-items: center;
   gap: 6px;
-  z-index: 2;
+  z-index: 3;
   transition: all 0.3s ease;
 }
 
@@ -2003,7 +2003,7 @@ body.is-mobile .music-toggle {
   align-items: center;
   justify-content: center;
   margin-bottom: 30px;
-  z-index: 1;
+  z-index: 2;
 }
 
 .project-icon img {
@@ -2018,7 +2018,7 @@ body.is-mobile .music-toggle {
 .icon-glow {
   position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: 1;
   filter: blur(20px);
   opacity: 0.3;
   animation: morphGlow 8s linear infinite;
@@ -2038,7 +2038,7 @@ body.is-mobile .music-toggle {
 .project-content {
   flex: 1;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .project-card h3 {
@@ -2099,7 +2099,7 @@ body.is-mobile .music-toggle {
   font-weight: 600;
   transition: all 0.4s;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .repo-btn:hover {

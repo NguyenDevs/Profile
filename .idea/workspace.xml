@@ -4,9 +4,7 @@
     <option name="flavorId" value="CMakePlainProjectFlavor" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="958296cf-5caf-4ada-8e22-de162986b5d7" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="958296cf-5caf-4ada-8e22-de162986b5d7" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -124,7 +122,7 @@
       <workItem from="1777990801098" duration="15000" />
       <workItem from="1780935185808" duration="1152000" />
       <workItem from="1780962354503" duration="1238000" />
-      <workItem from="1780987096064" duration="934000" />
+      <workItem from="1780987096064" duration="1274000" />
     </task>
     <servers />
   </component>
