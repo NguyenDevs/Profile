@@ -1,6 +1,6 @@
 let playlist = [
   { name: "Comfort Chain", artist: "Instupendo", file: "Instupendo - Comfort Chain.mp3" },
-  { name: "Skins 2", artist: "KREZUS, Surreal_dvd", file: "KREZUS, Surreal_dvd - Skins 2.mp3" },
+  { name: "Golden Brown", artist: "The Stranglers", file: "The Stranglers - Golden Brown.mp3" },
   { name: "Time To Pretend", artist: "Lazer Boomerang", file: "Lazer Boomerang - Time To Pretend.mp3" },
   { name: "Interlinked", artist: "Lonely Lies, GOLDKID", file: "Lonely Lies, GOLDKID - Interlinked.mp3" },
   { name: "Deep Focus for Study", artist: "Relaxing Medieval", file: "Relaxing Medieval - Deep Focus for Study.mp3" },
