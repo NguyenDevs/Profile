@@ -10,11 +10,7 @@
     dirLightIntensity: 2.2, fillLightIntensity: 1.5, pointLightIntensity: 5.0,
     speed: 1.0, zoom: 18, offsetX: -4.5, offsetY: 2.0,
     ringAmount: 4, particleAmount: 5500, particleSize: 0.08,
-    debrisAmount: 30, debrisSize: 1.0,
-    birthDate: '2004-07-04T09:00:00+07:00', yearLabelText: 'Năm thứ',
-    mouseDrag: true, mouseFollow: false, mouseWeight: 50,
-    musicEnable: true, musicSensitive: 50, musicStyle: 'tectonic',
-    clockMode: 0, clockEnable: true, ringSpacing: 1.0,
+    debrisAmount: 30, debrisSize: 1.0, ringSpacing: 1.0,
     glowSize: 1.0, glowIntensity: 1.0,
     endskyHoleSize: 80, endskyZoom: 1.0, endskyIterations: 16, backgroundSpeed: 0.5
   };
@@ -25,61 +21,8 @@
   /* ─── DOM ─── */
   var root = document.createElement('div');
   root.id = 'core-block';
-
-  var canvasWrap = document.createElement('div');
-  canvasWrap.id = 'core-block-canvas-wrap';
-
   var canvas = document.createElement('canvas');
-  canvas.id = 'core-block-canvas';
-
-  var hint = document.createElement('div');
-  hint.id = 'core-block-hint';
-  hint.textContent = 'drag • dbl-click';
-
-  canvasWrap.appendChild(canvas);
-  canvasWrap.appendChild(hint);
-  root.appendChild(canvasWrap);
-
-  var clock = document.createElement('div');
-  clock.id = 'core-clock';
-  clock.innerHTML =
-    '<div class="core-clock-top" id="cb-label-top">nguyendevs \u0111\u00e3 tham gia server Tr\u00e1i \u0110\u1ea5t</div>' +
-    '<div class="core-units">' +
-      '<div class="core-unit"><div class="core-num" id="cb-y">--</div><div class="core-unit-label" id="cb-label-y">N\u0103m</div></div>' +
-      '<div class="core-sep">:</div>' +
-      '<div class="core-unit"><div class="core-num" id="cb-mo">--</div><div class="core-unit-label" id="cb-label-mo">Th\u00e1ng</div></div>' +
-      '<div class="core-sep">:</div>' +
-      '<div class="core-unit"><div class="core-num" id="cb-d">--</div><div class="core-unit-label" id="cb-label-d">Ng\u00e0y</div></div>' +
-      '<div class="core-sep">:</div>' +
-      '<div class="core-unit"><div class="core-num" id="cb-h">--</div><div class="core-unit-label" id="cb-label-h">Gi\u1edd</div></div>' +
-      '<div class="core-sep">:</div>' +
-      '<div class="core-unit"><div class="core-num" id="cb-m">--</div><div class="core-unit-label" id="cb-label-m">Ph\u00fat</div></div>' +
-      '<div class="core-sep">:</div>' +
-      '<div class="core-unit"><div class="core-num" id="cb-s">--</div><div class="core-unit-label" id="cb-label-s">Gi\u00e2y</div></div>' +
-    '</div>' +
-    '<div class="core-progress-wrap">' +
-      '<div class="core-progress-bg"><div class="core-progress-fill" id="cb-prog" style="width:0%"></div></div>' +
-      '<div class="core-progress-meta"><span id="cb-year-label">N\u0103m th\u1ee9 --</span><span id="cb-pct">0%</span></div>' +
-    '</div>' +
-    '<div class="core-total"><span class="core-total-num" id="cb-total-s">0</span><span class="core-total-label" id="cb-label-total">T\u1ed4NG S\u1ed0 GI\u00c2Y</span></div>' +
-    '<div class="core-divider"></div>' +
-    '<div class="core-current-wrap">' +
-      '<div class="core-curr-header"><span class="core-curr-label" id="cb-label-current">Current Time</span><span class="core-curr-tz" id="cb-current-tz">GMT+0</span></div>' +
-      '<div class="core-curr-time">' +
-        '<div class="core-unit"><div class="core-curr-num" id="cb-current-h">00</div></div>' +
-        '<div class="core-curr-sep">:</div>' +
-        '<div class="core-unit"><div class="core-curr-num" id="cb-current-m">00</div></div>' +
-        '<div class="core-curr-sep">:</div>' +
-        '<div class="core-unit"><div class="core-curr-num core-num--sec" id="cb-current-s">00</div></div>' +
-      '</div>' +
-      '<div class="core-curr-bottom"><span class="core-curr-day" id="cb-current-day">Wed</span><span class="core-curr-date" id="cb-current-date-sub">01/01/2026</span></div>' +
-      '<div class="core-day-prog">' +
-        '<div class="core-day-prog-label"><span id="cb-label-dayprog">% day</span><span class="core-day-prog-pct" id="cb-day-pct">0%</span></div>' +
-        '<div class="core-day-prog-bg"><div class="core-day-prog-fill" id="cb-day-prog" style="width:0%"></div></div>' +
-      '</div>' +
-    '</div>';
-
-  root.appendChild(clock);
+  root.appendChild(canvas);
   document.body.appendChild(root);
 
   /* ─── THREE.JS ENGINE ─── */
@@ -107,9 +50,9 @@
   /* SceneManager */
   var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
   var scene = new THREE.Scene();
-  var camera = new THREE.PerspectiveCamera(45, canvasWrap.clientWidth / canvasWrap.clientHeight, 0.1, 1000);
+  var camera = new THREE.PerspectiveCamera(45, root.clientWidth / root.clientHeight, 0.1, 1000);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setSize(canvasWrap.clientWidth, canvasWrap.clientHeight);
+  renderer.setSize(root.clientWidth, root.clientHeight);
   renderer.setClearColor(0x000000, 0);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -151,122 +94,6 @@
   var fillLight = new THREE.DirectionalLight(0x4400aa, 1.5);
   fillLight.position.set(-15, -10, -15);
   scene.add(fillLight);
-
-  /* InputController */
-  var rotQ = new THREE.Quaternion();
-  var drag = { active: false, px: 0, py: 0 };
-  var velocity = { x: 0, y: 0 };
-  var manualZoom = null;
-  var autoRotate = true;
-  var autoRotateTimeout = null;
-  var lastT = null;
-  var initialPinchDist = null;
-
-  function onMouseDown(e) {
-    if (!CFG.mouseDrag) return;
-    drag.active = true;
-    drag.px = e.clientX;
-    drag.py = e.clientY;
-    root.style.cursor = 'grabbing';
-    autoRotate = false;
-    clearTimeout(autoRotateTimeout);
-  }
-  function onMouseUp() {
-    drag.active = false;
-    root.style.cursor = '';
-    autoRotateTimeout = setTimeout(function () { autoRotate = true; }, 3000);
-  }
-  function onMouseMove(e) {
-    var canDrag = CFG.mouseDrag;
-    var follow = CFG.mouseFollow;
-    var weight = CFG.mouseWeight;
-    var sens = 0.01 * (1.1 - weight / 100);
-    var dx = e.clientX - (drag.px || e.clientX);
-    var dy = e.clientY - (drag.py || e.clientY);
-    if ((drag.active && canDrag) || follow) {
-      velocity.x = dx;
-      velocity.y = dy;
-      var speed = Math.sqrt(dx * dx + dy * dy);
-      if (drag.active && canDrag && speed > 0) {
-        rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(dy, dx, 0).normalize(), speed * sens));
-      }
-      if (follow) {
-        autoRotate = false;
-        clearTimeout(autoRotateTimeout);
-        autoRotateTimeout = setTimeout(function () { autoRotate = true; }, 3000);
-      }
-    }
-    drag.px = e.clientX;
-    drag.py = e.clientY;
-  }
-  function onWheel(e) {
-    if (manualZoom === null) manualZoom = CFG.zoom;
-    manualZoom = Math.max(5, Math.min(50, manualZoom + e.deltaY * 0.015));
-  }
-  function onTouchStart(e) {
-    if (e.touches.length === 2) {
-      initialPinchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-      drag.active = false;
-    } else if (CFG.mouseDrag) {
-      lastT = e.touches[0];
-      drag.active = true;
-    }
-    autoRotate = false;
-    clearTimeout(autoRotateTimeout);
-  }
-  function onTouchMove(e) {
-    var weight = CFG.mouseWeight;
-    var sens = 0.01 * (1.1 - weight / 100);
-    if (e.touches.length === 2 && initialPinchDist !== null) {
-      var dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-      var delta = dist - initialPinchDist;
-      if (manualZoom === null) manualZoom = CFG.zoom;
-      manualZoom = Math.max(5, Math.min(50, manualZoom - delta * 0.05));
-      initialPinchDist = dist;
-    } else if (e.touches.length === 1 && lastT && CFG.mouseDrag) {
-      var t = e.touches[0];
-      var dx = t.clientX - lastT.clientX;
-      var dy = t.clientY - lastT.clientY;
-      velocity.x = dx;
-      velocity.y = dy;
-      var speed = Math.sqrt(dx * dx + dy * dy);
-      if (speed > 0) {
-        rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(dy, dx, 0).normalize(), speed * sens));
-      }
-      lastT = t;
-    }
-  }
-  function onTouchEnd(e) {
-    if (e.touches.length < 2) initialPinchDist = null;
-    if (e.touches.length === 0) { drag.active = false; lastT = null; autoRotateTimeout = setTimeout(function () { autoRotate = true; }, 3000); }
-  }
-
-  canvasWrap.addEventListener('mousedown', onMouseDown);
-  window.addEventListener('mouseup', onMouseUp);
-  window.addEventListener('mousemove', onMouseMove);
-  window.addEventListener('wheel', onWheel, { passive: true });
-  canvasWrap.addEventListener('touchstart', onTouchStart, { passive: true });
-  canvasWrap.addEventListener('touchmove', onTouchMove, { passive: true });
-  canvasWrap.addEventListener('touchend', onTouchEnd);
-
-  function updateInput(speedProp) {
-    var weight = CFG.mouseWeight;
-    var sens = 0.012 * (1.05 - weight / 100);
-    var damp = 0.96 + (weight / 100) * 0.038;
-    if (!drag.active) {
-      var speed = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
-      if (speed > 0.01) {
-        rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(velocity.y, velocity.x, 0).normalize(), speed * sens));
-        velocity.x *= damp;
-        velocity.y *= damp;
-      }
-    }
-    if (autoRotate) {
-      rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0.0015 * speedProp));
-    }
-    rotQ.normalize();
-    return rotQ;
-  }
 
   /* ─── CORE 3D CLASSES ─── */
 
@@ -418,7 +245,6 @@
     this.blackHole.renderOrder = 50;
     this.group.add(this.blackHole);
 
-    var self = this;
     function createGlowMat(opacity, power) {
       return new THREE.ShaderMaterial({
         uniforms: { uColor: { value: new THREE.Color(0x9933ff) }, uOpacity: { value: opacity }, uPower: { value: power } },
@@ -653,7 +479,6 @@
     pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
     pGeo.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1));
     pGeo.setAttribute('aDist', new THREE.BufferAttribute(distances, 1));
-    var self = this;
     var pMat = new THREE.PointsMaterial({ size: size, map: Utils.getGlowTex('rgba(190,100,255,1)', 16), transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false });
     pMat.onBeforeCompile = function (shader) {
       shader.uniforms.uAudioIntensity = { value: 0 };
@@ -692,6 +517,7 @@
 
   var engineT = 0, introProgress = 0, smoothAudioIntensity = 0;
   var _envPeak = 0, _envAvg = 0, _envRelative = 0;
+  var autoRotQ = new THREE.Quaternion();
 
   camera.position.set(CFG.offsetX, CFG.offsetY, CFG.zoom);
 
@@ -724,131 +550,38 @@
     window.__coreBlockRaf = requestAnimationFrame(animate);
     engineT += 0.01;
     var speedProp = CFG.speed;
-    var targetZoom = manualZoom !== null ? manualZoom : CFG.zoom;
-    camera.position.z += (targetZoom - camera.position.z) * 0.05;
+
+    camera.position.z += (CFG.zoom - camera.position.z) * 0.05;
     camera.position.y += (CFG.offsetY - camera.position.y) * 0.05;
     camera.updateProjectionMatrix();
-    var rot = updateInput(speedProp);
-    mainGroup.quaternion.copy(rot);
-    window._threejsRotQ = rot;
+
+    autoRotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0.0015 * speedProp));
+    autoRotQ.normalize();
+    mainGroup.quaternion.copy(autoRotQ);
+    window._threejsRotQ = autoRotQ;
+
     introProgress = Math.min(1, introProgress + 0.004);
     var ringIntro = Utils.smoothstep(Math.min(1, introProgress / 0.75));
     var coreIntro = Utils.smoothstep(Math.max(0, (introProgress - 0.7) / 0.3));
     var speedBoost = 1.0 + Math.pow(1.0 - ringIntro, 2) * 15.0;
     var audioIntensity = updateAudioIntensity();
     var audioData = window._wallpaperAudioData;
+
     core.update(engineT, coreIntro, ringIntro, speedProp, audioIntensity, audioData, CFG.musicEnable, CFG.musicStyle, CFG.musicSensitive, coreLight);
     rings.update(ringIntro, speedBoost, speedProp);
     debris.update(engineT, speedProp);
     particles.update(engineT, speedProp, audioIntensity, CFG.musicEnable);
+
     ambientLight.intensity = 0.6;
     dirLight.intensity = CFG.dirLightIntensity;
     fillLight.intensity = CFG.fillLightIntensity;
     renderer.render(scene, camera);
   }
 
-  /* ─── CLOCK UPDATE ─── */
-  var prevS = -1, prevM = -1, prevH = -1, prevD = -1;
-  var prevSH = -1, prevSM = -1, prevSS = -1;
-
-  function fmt(n) { return String(n).padStart(2, '0'); }
-  function flash(id) { var el = document.getElementById(id); if (!el) return; el.classList.add('flash'); setTimeout(function () { el.classList.remove('flash'); }, 300); }
-
-  function updateClock() {
-    var now = new Date();
-    var birthDate = new Date(CFG.birthDate);
-    if (!isNaN(birthDate.getTime())) {
-      var diffMs = now - birthDate, totalSecs = Math.floor(diffMs / 1000);
-      var years = now.getFullYear() - birthDate.getFullYear(), months = now.getMonth() - birthDate.getMonth(), days = now.getDate() - birthDate.getDate(), hours = now.getHours() - birthDate.getHours(), minutes = now.getMinutes() - birthDate.getMinutes(), seconds = now.getSeconds() - birthDate.getSeconds();
-      if (seconds < 0) { seconds += 60; minutes--; }
-      if (minutes < 0) { minutes += 60; hours--; }
-      if (hours < 0) { hours += 24; days--; }
-      if (days < 0) { days += new Date(now.getFullYear(), now.getMonth(), 0).getDate(); months--; }
-      if (months < 0) { months += 12; years--; }
-      document.getElementById('cb-y').textContent = years;
-      document.getElementById('cb-mo').textContent = fmt(months);
-      document.getElementById('cb-d').textContent = fmt(days);
-      document.getElementById('cb-h').textContent = fmt(hours);
-      document.getElementById('cb-m').textContent = fmt(minutes);
-      document.getElementById('cb-s').textContent = fmt(seconds);
-      document.getElementById('cb-total-s').textContent = totalSecs.toLocaleString();
-      document.getElementById('cb-year-label').textContent = CFG.yearLabelText + ' ' + (years + 1);
-      if (seconds !== prevS) { flash('cb-s'); prevS = seconds; }
-      if (minutes !== prevM) { flash('cb-m'); prevM = minutes; }
-      if (hours !== prevH) { flash('cb-h'); prevH = hours; }
-      if (days !== prevD) { flash('cb-d'); prevD = days; }
-      var daysInYear = (years % 4 === 0 && (years % 100 !== 0 || years % 400 === 0)) ? 366 : 365;
-      var startOfYear = new Date(now.getFullYear(), birthDate.getMonth(), birthDate.getDate(), birthDate.getHours(), birthDate.getMinutes(), birthDate.getSeconds());
-      if (now < startOfYear) startOfYear.setFullYear(now.getFullYear() - 1);
-      var yearPct = Math.min(100, ((now - startOfYear) / (daysInYear * 86400000)) * 100).toFixed(1);
-      document.getElementById('cb-prog').style.width = yearPct + '%';
-      document.getElementById('cb-pct').textContent = yearPct + '%';
-    }
-    var hh = now.getHours(), mm = now.getMinutes(), ss = now.getSeconds();
-    document.getElementById('cb-current-h').textContent = fmt(hh);
-    document.getElementById('cb-current-m').textContent = fmt(mm);
-    document.getElementById('cb-current-s').textContent = fmt(ss);
-    if (ss !== prevSS) { flash('cb-current-s'); prevSS = ss; }
-    if (mm !== prevSM) { flash('cb-current-m'); prevSM = mm; }
-    if (hh !== prevSH) { flash('cb-current-h'); prevSH = hh; }
-    var daysEN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    document.getElementById('cb-current-day').textContent = daysEN[now.getDay()];
-    document.getElementById('cb-current-date-sub').textContent = fmt(now.getDate()) + '/' + fmt(now.getMonth() + 1) + '/' + now.getFullYear();
-    var offset = -now.getTimezoneOffset() / 60;
-    document.getElementById('cb-current-tz').textContent = 'GMT' + (offset >= 0 ? '+' : '') + offset;
-    var secOfDay = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-    var dayPctValue = (secOfDay / 86400 * 100).toFixed(1);
-    var dpEl = document.getElementById('cb-day-prog'), dpPct = document.getElementById('cb-day-pct');
-    if (dpEl) dpEl.style.width = dayPctValue + '%';
-    if (dpPct) dpPct.textContent = dayPctValue + '%';
-  }
-
-  setInterval(updateClock, 1000);
-  updateClock();
-
-  /* ─── DOUBLE CLICK WAVE ─── */
-  canvasWrap.addEventListener('dblclick', function (e) {
-    var wave = document.createElement('div');
-    wave.className = 'core-wave';
-    wave.style.left = e.clientX + 'px';
-    wave.style.top = e.clientY + 'px';
-    document.body.appendChild(wave);
-    setTimeout(function () { wave.remove(); }, 600);
-    CFG.clockMode = CFG.clockMode === 0 ? 1 : 0;
-    if (CFG.clockMode === 1) { clock.classList.add('mode-current'); } else { clock.classList.remove('mode-current'); }
-  });
-
-  /* ─── DRAG TO REPOSITION ─── */
-  (function () {
-    var isDragging = false, startX, startY, origX, origY;
-    var header = canvasWrap;
-    header.addEventListener('mousedown', function (e) {
-      if (e.target !== canvas && e.target !== hint && e.target !== canvasWrap) return;
-      isDragging = true;
-      startX = e.clientX; startY = e.clientY;
-      var rect = root.getBoundingClientRect();
-      origX = rect.left; origY = rect.top;
-      root.classList.add('dragging');
-      e.preventDefault();
-    });
-    window.addEventListener('mousemove', function (e) {
-      if (!isDragging) return;
-      var dx = e.clientX - startX, dy = e.clientY - startY;
-      root.style.left = (origX + dx) + 'px';
-      root.style.top = (origY + dy) + 'px';
-      root.style.right = 'auto';
-    });
-    window.addEventListener('mouseup', function () {
-      if (!isDragging) return;
-      isDragging = false;
-      root.classList.remove('dragging');
-    });
-  })();
-
   /* ─── RESIZE ─── */
   function onResize() {
-    var w = canvasWrap.clientWidth;
-    var h = canvasWrap.clientHeight;
+    var w = root.clientWidth;
+    var h = root.clientHeight;
     if (w > 0 && h > 0) {
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
