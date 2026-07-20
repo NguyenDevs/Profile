@@ -8,9 +8,9 @@
 
   var CFG = {
     dirLightIntensity: 2.2, fillLightIntensity: 1.5, pointLightIntensity: 5.0,
-    speed: 1.0,     zoom: 20, offsetX: 0, offsetY: 0,
+    speed: 1.0,     zoom: 26, offsetX: 0, offsetY: 0,
     ringAmount: 3, particleAmount: 5500, particleSize: 0.08,
-    debrisAmount: 30, debrisSize: 1.0, ringSpacing: 1.0,
+    debrisAmount: 30, debrisSize: 1.0,     ringSpacing: 1.3,
     glowSize: 1.0, glowIntensity: 1.0,
     endskyHoleSize: 80, endskyZoom: 1.0, endskyIterations: 16, backgroundSpeed: 0.5
   };
@@ -555,7 +555,7 @@
     camera.position.y += (CFG.offsetY - camera.position.y) * 0.05;
     camera.updateProjectionMatrix();
 
-    autoRotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0.0015 * speedProp));
+    autoRotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0.003 * speedProp));
     autoRotQ.normalize();
     mainGroup.quaternion.copy(autoRotQ);
     window._threejsRotQ = autoRotQ;
