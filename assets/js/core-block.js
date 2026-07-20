@@ -305,14 +305,7 @@
     this.userData = { smoothM: 0, targetM: 0, nextPickTime: 0 };
   }
   CoreSystem.prototype.update = function (t, coreIntro, ringIntro, speedProp, audioIntensity, audioData, musicEnable, musicStyle, musicSensitive, coreLight) {
-    if (!musicEnable) {
-      if (!this.userData.nextPickTime || t > this.userData.nextPickTime) {
-        var r = Math.random();
-        this.userData.targetM = r < 0.25 ? 0 : r < 0.5 ? 1 : r < 0.75 ? 2 : 3;
-        this.userData.nextPickTime = t + 5 + Math.random() * 5;
-      }
-      this.userData.smoothM += (this.userData.targetM - this.userData.smoothM) * 0.04;
-    } else { this.userData.smoothM = 0; }
+    this.userData.smoothM = 0;
     this.mesh.update(t, this.userData.smoothM, coreIntro, musicEnable, musicStyle, audioIntensity, audioData);
     this.filaments.update(t, coreIntro);
     this.aura.update(t, coreIntro, audioIntensity, musicEnable, coreLight);

@@ -6,7 +6,6 @@
   width: 240px;
   height: 240px;
   border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.06);
   box-shadow: 0 10px 40px rgba(0,0,0,0.5);
   overflow: hidden;
   pointer-events: none;
