@@ -40,13 +40,14 @@
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Source Code/Profile&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Source Code/Profile/assets/music&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Source Code\Profile\assets\music" />
       <recent name="D:\Source Code\Profile" />
       <recent name="D:\Source Code\Profile\assets\background" />
     </key>
@@ -127,6 +128,8 @@
       <workItem from="1780987096064" duration="1274000" />
       <workItem from="1780990505694" duration="162000" />
       <workItem from="1780998528929" duration="66000" />
+      <workItem from="1784033126093" duration="478000" />
+      <workItem from="1784435010178" duration="7000" />
     </task>
     <servers />
   </component>
