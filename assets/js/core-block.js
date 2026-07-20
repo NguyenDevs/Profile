@@ -8,7 +8,7 @@
 
   var CFG = {
     dirLightIntensity: 2.2, fillLightIntensity: 1.5, pointLightIntensity: 5.0,
-    speed: 1.0,     zoom: 38, offsetX: 0, offsetY: 0,
+    speed: 1.0,     zoom: 48, offsetX: 0, offsetY: 0,
     ringAmount: 3, particleAmount: 5500, particleSize: 0.08,
     debrisAmount: 30, debrisSize: 1.0,     ringSpacing: 1.3,
     glowSize: 0.55, glowIntensity: 0.8,
@@ -518,6 +518,8 @@
   var engineT = 0, introProgress = 0, smoothAudioIntensity = 0;
   var _envPeak = 0, _envAvg = 0, _envRelative = 0;
   var autoRotQ = new THREE.Quaternion();
+  var hoverBoost = 1.0;
+  var hoverTarget = 1.0;
 
   camera.position.set(CFG.offsetX, CFG.offsetY, CFG.zoom);
 
@@ -555,7 +557,8 @@
     camera.position.y += (CFG.offsetY - camera.position.y) * 0.05;
     camera.updateProjectionMatrix();
 
-    autoRotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0.0045 * speedProp));
+    hoverBoost += (hoverTarget - hoverBoost) * 0.04;
+    autoRotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0.0045 * speedProp * hoverBoost));
     autoRotQ.normalize();
     mainGroup.quaternion.copy(autoRotQ);
     window._threejsRotQ = autoRotQ;
@@ -590,6 +593,10 @@
   }
   window.addEventListener('resize', onResize);
   setTimeout(onResize, 100);
+
+  /* ─── HOVER SPEED BOOST ─── */
+  canvas.addEventListener('mouseenter', function () { hoverTarget = 6.0; });
+  canvas.addEventListener('mouseleave', function () { hoverTarget = 1.0; });
 
   /* ─── START ─── */
   animate();
