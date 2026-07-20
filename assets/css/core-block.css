@@ -1,7 +1,7 @@
 #core-block {
   position: fixed;
-  top: 14px;
-  right: 14px;
+  top: -40px;
+  right: -45px;
   z-index: 9997;
   width: 380px;
   height: 380px;
@@ -16,10 +16,5 @@
 }
 
 @media (max-width: 768px) {
-  #core-block {
-    width: 240px;
-    height: 240px;
-    top: 8px;
-    right: 8px;
-  }
+  #core-block { display: none; }
 }
