@@ -13,6 +13,7 @@
   width: 100% !important;
   height: 100% !important;
   display: block;
+  pointer-events: auto;
 }
 
 @media (max-width: 768px) {
