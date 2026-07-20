@@ -298,7 +298,7 @@
     this.rotGroup.rotation.x = 0.15;
     this.rotGroup.rotation.y = -0.25;
     this.group.add(this.rotGroup);
-    this.RADIUS = 1.4;
+    this.RADIUS = 2.0;
     this.mesh = new CoreMesh(this.rotGroup, this.RADIUS);
     this.filaments = new FilamentSystem(this.rotGroup);
     this.aura = new AuraSystem(this.group);
