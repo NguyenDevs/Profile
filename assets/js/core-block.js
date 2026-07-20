@@ -8,7 +8,7 @@
 
   var CFG = {
     dirLightIntensity: 2.2, fillLightIntensity: 1.5, pointLightIntensity: 5.0,
-    speed: 1.0, zoom: 18, offsetX: -4.5, offsetY: 2.0,
+    speed: 1.0,     zoom: 20, offsetX: 0, offsetY: 0,
     ringAmount: 3, particleAmount: 5500, particleSize: 0.08,
     debrisAmount: 30, debrisSize: 1.0, ringSpacing: 1.0,
     glowSize: 1.0, glowIntensity: 1.0,
@@ -305,7 +305,14 @@
     this.userData = { smoothM: 0, targetM: 0, nextPickTime: 0 };
   }
   CoreSystem.prototype.update = function (t, coreIntro, ringIntro, speedProp, audioIntensity, audioData, musicEnable, musicStyle, musicSensitive, coreLight) {
-    this.userData.smoothM = 0;
+    if (!musicEnable) {
+      if (!this.userData.nextPickTime || t > this.userData.nextPickTime) {
+        var r = Math.random();
+        this.userData.targetM = r < 0.25 ? 0 : r < 0.5 ? 1 : r < 0.75 ? 2 : 3;
+        this.userData.nextPickTime = t + 5 + Math.random() * 5;
+      }
+      this.userData.smoothM += (this.userData.targetM - this.userData.smoothM) * 0.04;
+    } else { this.userData.smoothM = 0; }
     this.mesh.update(t, this.userData.smoothM, coreIntro, musicEnable, musicStyle, audioIntensity, audioData);
     this.filaments.update(t, coreIntro);
     this.aura.update(t, coreIntro, audioIntensity, musicEnable, coreLight);
