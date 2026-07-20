@@ -9,7 +9,7 @@
   var CFG = {
     dirLightIntensity: 2.2, fillLightIntensity: 1.5, pointLightIntensity: 5.0,
     speed: 1.0, zoom: 18, offsetX: -4.5, offsetY: 2.0,
-    ringAmount: 4, particleAmount: 5500, particleSize: 0.08,
+    ringAmount: 3, particleAmount: 5500, particleSize: 0.08,
     debrisAmount: 30, debrisSize: 1.0, ringSpacing: 1.0,
     glowSize: 1.0, glowIntensity: 1.0,
     endskyHoleSize: 80, endskyZoom: 1.0, endskyIterations: 16, backgroundSpeed: 0.5
