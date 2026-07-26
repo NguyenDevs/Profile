@@ -607,6 +607,37 @@
   canvas.addEventListener('mouseenter', function () { hoverTarget = 6.0; });
   canvas.addEventListener('mouseleave', function () { hoverTarget = 1.0; });
 
+  /* ─── DRAG ROTATION ─── */
+  var isDragging = false;
+  var prevMouseX = 0, prevMouseY = 0;
+  var dragQuat = new THREE.Quaternion();
+
+  canvas.addEventListener('mousedown', function (e) {
+    isDragging = true;
+    prevMouseX = e.clientX;
+    prevMouseY = e.clientY;
+    hoverTarget = 0.2;
+  });
+
+  window.addEventListener('mousemove', function (e) {
+    if (!isDragging) return;
+    var dx = e.clientX - prevMouseX;
+    var dy = e.clientY - prevMouseY;
+    if (dx === 0 && dy === 0) return;
+    var q = new THREE.Quaternion()
+      .setFromEuler(new THREE.Euler(dy * 0.005, dx * 0.005, 0, 'XYZ'));
+    autoRotQ.premultiply(q);
+    autoRotQ.normalize();
+    prevMouseX = e.clientX;
+    prevMouseY = e.clientY;
+  });
+
+  window.addEventListener('mouseup', function () {
+    if (!isDragging) return;
+    isDragging = false;
+    hoverTarget = 6.0;
+  });
+
   /* ─── START ─── */
   animate();
 })();
