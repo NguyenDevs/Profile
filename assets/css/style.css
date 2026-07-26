@@ -669,8 +669,8 @@ html { scroll-behavior: smooth; }
   );
 }
 .section-divider .divider-dot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   background: var(--accent);
   border-radius: 50%;
   box-shadow: 0 0 10px var(--accent);
@@ -679,7 +679,11 @@ html { scroll-behavior: smooth; }
 .section-divider .divider-dot::after {
   content: '';
   position: absolute;
-  inset: -5px;
+  top: 50%;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  transform: translate(-50%, -50%);
   border: 1.5px dashed rgba(178,137,239,0.35);
   border-radius: 50%;
   animation: spinRing 8s linear infinite;
@@ -2312,31 +2316,5 @@ body.is-mobile .music-toggle {
   }
 }
 
-/* ── Clock Mode ── */
-body.clock-mode .wrapper,
-body.clock-mode .projects-container {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.5s ease;
-}
-body.clock-mode .bg-text-strip {
-  z-index: 0;
-}
-body.clock-mode #core-block {
-  top: 0 !important;
-  right: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  z-index: 2;
-  transition: all 0.8s cubic-bezier(0.34, 1.08, 0.64, 1);
-}
-body.clock-mode #core-block canvas {
-  pointer-events: none;
-}
-body.clock-mode #nav-clock {
-  color: #b289ef;
-}
-body.clock-mode #nav-clock .nav-icon {
-  filter: drop-shadow(0 0 8px rgba(178, 137, 239, 0.8));
-}
+
 
