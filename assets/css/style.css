@@ -2312,3 +2312,31 @@ body.is-mobile .music-toggle {
   }
 }
 
+/* ── Clock Mode ── */
+body.clock-mode .wrapper,
+body.clock-mode .projects-container {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+body.clock-mode .bg-text-strip {
+  z-index: 0;
+}
+body.clock-mode #core-block {
+  top: 0 !important;
+  right: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 2;
+  transition: all 0.8s cubic-bezier(0.34, 1.08, 0.64, 1);
+}
+body.clock-mode #core-block canvas {
+  pointer-events: none;
+}
+body.clock-mode #nav-clock {
+  color: #b289ef;
+}
+body.clock-mode #nav-clock .nav-icon {
+  filter: drop-shadow(0 0 8px rgba(178, 137, 239, 0.8));
+}
+
