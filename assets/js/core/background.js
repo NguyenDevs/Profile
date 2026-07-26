@@ -23,7 +23,7 @@ export function initDynamicBackground() {
 }
 
 /* ── Background Text Strip ── */
-const STRIP_FONTS = ['Black Ops One', 'Bitcount Single', 'Kablammo', 'Bungee', 'Rubik Glitch'];
+const STRIP_FONTS = ['Kablammo', 'Bungee', 'Rubik Glitch', 'Jersey 10 Charted', 'Griffy', 'Rubik Maze'];
 
 function pickFont() {
   if (Math.random() < 0.5) return '';
