@@ -1,7 +1,7 @@
 #core-block {
   position: fixed;
-  top: clamp(-80px, -6vw, -40px);
-  right: clamp(-80px, -6vw, -45px);
+  top: clamp(-40px, -3vw, -20px);
+  right: clamp(-45px, -3vw, -25px);
   z-index: 9997;
   width: min(380px, 35vw);
   height: min(380px, 35vw);
