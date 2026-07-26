@@ -149,7 +149,7 @@ export function initRouting() {
 export function loadPage(url, push) {
   if (isTransitioning) return;
 
-  if (window.app?.toggleClockMode) window.app.toggleClockMode(false);
+
 
   if (currentFetchController) {
     currentFetchController.abort();
