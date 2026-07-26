@@ -679,9 +679,14 @@ html { scroll-behavior: smooth; }
 .section-divider .divider-dot::after {
   content: '';
   position: absolute;
-  inset: -4px;
-  border: 1px solid rgba(178,137,239,0.2);
+  inset: -5px;
+  border: 1.5px dashed rgba(178,137,239,0.35);
   border-radius: 50%;
+  animation: spinRing 8s linear infinite;
+}
+
+@keyframes spinRing {
+  to { transform: rotate(360deg); }
 }
 
 .link-card::before {
