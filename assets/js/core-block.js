@@ -15,6 +15,15 @@
     endskyHoleSize: 80, endskyZoom: 1.0, endskyIterations: 16, backgroundSpeed: 0.5
   };
 
+  var userCfg = window.__coreBlockConfig;
+  if (userCfg) {
+    for (var key in userCfg) {
+      if (userCfg.hasOwnProperty(key)) {
+        CFG[key] = userCfg[key];
+      }
+    }
+  }
+
   window.wallpaperConfig = CFG;
   if (!window._wallpaperAudioData) window._wallpaperAudioData = new Array(64).fill(0);
 
