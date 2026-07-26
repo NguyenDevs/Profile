@@ -116,6 +116,7 @@ export function initRouting() {
     if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.shiftKey) return;
     const link = e.target.nodeName === 'A' ? e.target : e.target.closest('a');
     if (!link) return;
+    if (link.hasAttribute('data-no-spa')) return;
 
     const href = link.getAttribute('href');
     if (!href) return;
@@ -147,6 +148,8 @@ export function initRouting() {
 
 export function loadPage(url, push) {
   if (isTransitioning) return;
+
+  if (window.app?.toggleClockMode) window.app.toggleClockMode(false);
 
   if (currentFetchController) {
     currentFetchController.abort();
