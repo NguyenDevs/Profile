@@ -30,53 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 window.addEventListener('resize', detectMobile);
 
-let savedWallpaperConfig = null;
-let savedUrl = null;
-
-function toggleClockMode(force) {
-  const cfg = window.wallpaperConfig;
-  if (force === false) {
-    if (!document.body.classList.contains('clock-mode')) return;
-    document.body.classList.remove('clock-mode');
-    if (savedUrl) {
-      history.replaceState(null, '', savedUrl);
-      savedUrl = null;
-    }
-    if (savedWallpaperConfig && cfg) {
-      Object.assign(cfg, savedWallpaperConfig);
-      savedWallpaperConfig = null;
-    }
-    updateNavActiveState();
-    return;
-  }
-  if (!cfg) return;
-  const isActive = document.body.classList.toggle('clock-mode');
-  if (isActive) {
-    savedUrl = window.location.pathname;
-    savedWallpaperConfig = { zoom: cfg.zoom, offsetX: cfg.offsetX, offsetY: cfg.offsetY };
-    Object.assign(cfg, { zoom: 15, offsetX: 0, offsetY: 0 });
-    history.replaceState(null, '', 'clock.html');
-  } else {
-    if (savedUrl) {
-      history.replaceState(null, '', savedUrl);
-      savedUrl = null;
-    }
-    if (savedWallpaperConfig) {
-      Object.assign(cfg, savedWallpaperConfig);
-      savedWallpaperConfig = null;
-    }
-  }
-  updateNavActiveState();
-}
-
-document.getElementById('nav-clock')?.addEventListener('click', (e) => {
-  e.preventDefault();
-  toggleClockMode();
-});
-
 window.app = {
   syncPlayerElements,
   updateUI,
-  loadPage: (url) => import('./core/router.js').then(m => m.loadPage(url, true)),
-  toggleClockMode
+  loadPage: (url) => import('./core/router.js').then(m => m.loadPage(url, true))
 };
