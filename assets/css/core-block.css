@@ -1,12 +1,13 @@
 #core-block {
   position: fixed;
-  top: -40px;
-  right: -45px;
+  top: clamp(-80px, -6vw, -40px);
+  right: clamp(-80px, -6vw, -45px);
   z-index: 9997;
-  width: 380px;
-  height: 380px;
+  width: min(380px, 35vw);
+  height: min(380px, 35vw);
   pointer-events: none;
   background: transparent;
+  aspect-ratio: 1;
 }
 
 #core-block canvas {
