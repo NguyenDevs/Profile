@@ -43,10 +43,12 @@
 
   <style>
     #core-block {
-      top: 0 !important;
-      right: 0 !important;
-      width: 100vw !important;
-      height: 100vh !important;
+      top: 50% !important;
+      right: auto !important;
+      left: 50% !important;
+      width: min(85vw, 85vh) !important;
+      height: min(85vw, 85vh) !important;
+      transform: translate(-50%, -50%);
       z-index: 2;
     }
     #core-block canvas {
@@ -172,7 +174,7 @@
 <div class="clock-page"></div>
 
 <script>
-  window.__coreBlockConfig = { zoom: 15, offsetX: 0, offsetY: 0, speed: 0.6, ringAmount: 3, particleAmount: 3500 };
+  window.__coreBlockConfig = { zoom: 22, offsetX: 0, offsetY: 0, speed: 0.6, ringAmount: 3, particleAmount: 3500 };
 </script>
 <script src="assets/js/main.js" type="module"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
