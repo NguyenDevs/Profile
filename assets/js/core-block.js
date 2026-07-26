@@ -526,9 +526,12 @@
 
   var engineT = 0, introProgress = 0, smoothAudioIntensity = 0;
   var _envPeak = 0, _envAvg = 0, _envRelative = 0;
-  var autoRotQ = new THREE.Quaternion();
-  var hoverBoost = 1.0;
-  var hoverTarget = 1.0;
+  var rotQ = new THREE.Quaternion();
+  var dragVel = { x: 0, y: 0 };
+  var dragActive = false;
+  var dragPX = 0, dragPY = 0;
+  var autoRotate = true;
+  var autoRotateTimer = null;
 
   camera.position.set(CFG.offsetX, CFG.offsetY, CFG.zoom);
 
@@ -566,11 +569,24 @@
     camera.position.y += (CFG.offsetY - camera.position.y) * 0.05;
     camera.updateProjectionMatrix();
 
-    hoverBoost += (hoverTarget - hoverBoost) * 0.04;
-    autoRotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0.0045 * speedProp * hoverBoost));
-    autoRotQ.normalize();
-    mainGroup.quaternion.copy(autoRotQ);
-    window._threejsRotQ = autoRotQ;
+    if (!dragActive) {
+      var spd = Math.sqrt(dragVel.x * dragVel.x + dragVel.y * dragVel.y);
+      if (spd > 0.01) {
+        rotQ.premultiply(
+          new THREE.Quaternion().setFromAxisAngle(
+            new THREE.Vector3(dragVel.y, dragVel.x, 0).normalize(), spd * 0.008
+          )
+        );
+        dragVel.x *= 0.97;
+        dragVel.y *= 0.97;
+      }
+      if (autoRotate) {
+        rotQ.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0.0015 * speedProp));
+      }
+    }
+    rotQ.normalize();
+    mainGroup.quaternion.copy(rotQ);
+    window._threejsRotQ = rotQ;
 
     introProgress = Math.min(1, introProgress + 0.004);
     var ringIntro = Utils.smoothstep(Math.min(1, introProgress / 0.75));
@@ -603,39 +619,41 @@
   window.addEventListener('resize', onResize);
   setTimeout(onResize, 100);
 
-  /* ─── HOVER SPEED BOOST ─── */
-  canvas.addEventListener('mouseenter', function () { hoverTarget = 6.0; });
-  canvas.addEventListener('mouseleave', function () { hoverTarget = 1.0; });
-
   /* ─── DRAG ROTATION ─── */
-  var isDragging = false;
-  var prevMouseX = 0, prevMouseY = 0;
-  var dragQuat = new THREE.Quaternion();
+  canvas.style.cursor = 'grab';
 
   canvas.addEventListener('mousedown', function (e) {
-    isDragging = true;
-    prevMouseX = e.clientX;
-    prevMouseY = e.clientY;
-    hoverTarget = 0.2;
-  });
-
-  window.addEventListener('mousemove', function (e) {
-    if (!isDragging) return;
-    var dx = e.clientX - prevMouseX;
-    var dy = e.clientY - prevMouseY;
-    if (dx === 0 && dy === 0) return;
-    var q = new THREE.Quaternion()
-      .setFromEuler(new THREE.Euler(dy * 0.005, dx * 0.005, 0, 'XYZ'));
-    autoRotQ.premultiply(q);
-    autoRotQ.normalize();
-    prevMouseX = e.clientX;
-    prevMouseY = e.clientY;
+    dragActive = true;
+    dragPX = e.clientX;
+    dragPY = e.clientY;
+    canvas.style.cursor = 'grabbing';
+    autoRotate = false;
+    clearTimeout(autoRotateTimer);
   });
 
   window.addEventListener('mouseup', function () {
-    if (!isDragging) return;
-    isDragging = false;
-    hoverTarget = 6.0;
+    if (!dragActive) return;
+    dragActive = false;
+    canvas.style.cursor = 'grab';
+    autoRotateTimer = setTimeout(function () { autoRotate = true; }, 3000);
+  });
+
+  window.addEventListener('mousemove', function (e) {
+    var dx = e.clientX - dragPX;
+    var dy = e.clientY - dragPY;
+    dragPX = e.clientX;
+    dragPY = e.clientY;
+    if (!dragActive) return;
+    dragVel.x = dx;
+    dragVel.y = dy;
+    var spd = Math.sqrt(dx * dx + dy * dy);
+    if (spd > 0) {
+      rotQ.premultiply(
+        new THREE.Quaternion().setFromAxisAngle(
+          new THREE.Vector3(dy, dx, 0).normalize(), spd * 0.008
+        )
+      );
+    }
   });
 
   /* ─── START ─── */
