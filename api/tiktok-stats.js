@@ -11,8 +11,8 @@ const CORS_HEADERS = {
 };
 
 const FALLBACK = {
-  followers_raw: 111111,
-  likes_raw: 3900000,
+  followers_raw: 113799,
+  likes_raw: 4082986,
   source: 'fallback',
 };
 
