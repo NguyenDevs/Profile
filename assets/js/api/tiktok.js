@@ -47,8 +47,8 @@ export function fetchTikTokStats() {
     .catch(err => {
       console.warn('[TikTok] Fetch error:', err);
       if (followerEl.textContent === '' || followerEl.textContent === '0') {
-        followerEl.textContent = '110.6K';
-        likesEl.textContent    = '3.8M';
+        followerEl.textContent = '113.8K';
+        likesEl.textContent    = '4.1M';
       }
     });
 }
