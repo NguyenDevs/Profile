@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="958296cf-5caf-4ada-8e22-de162986b5d7" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/tiktok-stats.js" beforeDir="false" afterPath="$PROJECT_DIR$/api/tiktok-stats.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -186,7 +185,7 @@
       <workItem from="1785761583210" duration="265000" />
       <workItem from="1786019309641" duration="646000" />
       <workItem from="1786111143761" duration="600000" />
-      <workItem from="1786809743676" duration="709000" />
+      <workItem from="1786809743676" duration="1996000" />
     </task>
     <servers />
   </component>
